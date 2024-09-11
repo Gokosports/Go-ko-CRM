@@ -1,0 +1,12 @@
+.bg-primary-600 {
+  background-color: #3b82f6;
+}
+
+.bg-primary-600:hover {
+  background-color: #2563eb;
+}
+
+.bg-primary-600:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+}

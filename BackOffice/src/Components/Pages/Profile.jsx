@@ -56,7 +56,7 @@ const Profile = () => {
   const onFinish = async (values) => {
     const role = decodedToken.role;
     const id = userData._id;
-    const url = `http://localhost:5000/${role === 'Admin' ? 'admin' : 'commercials'}/${id}`;
+    const url = `https://go-ko.onrender.com/${role === 'Admin' ? 'admin' : 'commercials'}/${id}`;
 
     try {
       const response = await axios.put(url, {
@@ -103,7 +103,7 @@ const Profile = () => {
         // Updating the backend immediately after the image is uploaded
         const role = decodedToken.role;
         const id = userData._id;
-        const url = `http://localhost:5000/${role === 'Admin' ? 'admin' : 'commercials'}/${id}`;
+        const url = `https://go-ko.onrender.com/${role === 'Admin' ? 'admin' : 'commercials'}/${id}`;
         axios.put(url, {
           ...userData,
           imageUrl: newImageUrl
@@ -143,7 +143,7 @@ const Profile = () => {
   const handleDeleteImage = async () => {
     const role = decodedToken.role;
     const id = userData._id;
-    const url = `http://localhost:5000/${role === 'Admin' ? 'admin' : 'commercials'}/${id}`;
+    const url = `https://go-ko.onrender.com/${role === 'Admin' ? 'admin' : 'commercials'}/${id}`;
 
     try {
       const response = await axios.put(url, {

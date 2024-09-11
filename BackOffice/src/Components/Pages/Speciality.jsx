@@ -44,7 +44,7 @@ const SpecialityDashboard = () => {
 
     const deleteSpeciality = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/speciality/${id}`);
+            await axios.delete(`https://go-ko.onrender.com/speciality/${id}`);
             setSpecialities(specialities.filter(speciality => speciality._id !== id));
             message.success('Spécialité supprimée avec succès');
         } catch (error) {
@@ -61,7 +61,7 @@ const SpecialityDashboard = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/speciality', values);
+            const response = await axios.post('https://go-ko.onrender.com/speciality', values);
             setSpecialities([...specialities, response.data]);
             message.success('Spécialité ajoutée avec succès');
             addForm.resetFields();
@@ -89,7 +89,7 @@ const SpecialityDashboard = () => {
         }
 
         try {
-            const response = await axios.put(`http://localhost:5000/speciality/${currentSpeciality._id}`, values);
+            const response = await axios.put(`https://go-ko.onrender.com/speciality/${currentSpeciality._id}`, values);
             setSpecialities(specialities.map(speciality =>
                 speciality._id === currentSpeciality._id ? response.data : speciality
             ));

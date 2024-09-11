@@ -20,7 +20,7 @@ function Dashboard() {
 
     const fetchCounts = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/dash/counts', {
+            const response = await axios.get('https://go-ko.onrender.com/dash/counts', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

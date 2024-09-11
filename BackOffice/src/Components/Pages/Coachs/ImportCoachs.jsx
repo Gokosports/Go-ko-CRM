@@ -14,7 +14,7 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        axios.get('http://localhost:5000/speciality', {
+        axios.get('https://go-ko.onrender.com/speciality', {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -78,7 +78,7 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:5000/speciality', { nom: specialityName, description: specialityName }, {
+            const response = await axios.post('https://go-ko.onrender.com/speciality', { nom: specialityName, description: specialityName }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }

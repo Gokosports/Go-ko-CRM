@@ -39,6 +39,7 @@ mongoose
 app.get('/', (req, res) => {
     res.send('Bienvenue sur le backend !');
 });
+app.options('*', cors())
 
 
 app.use('/dash', DashboardRoutes);

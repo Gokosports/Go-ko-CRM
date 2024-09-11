@@ -23,7 +23,7 @@ const AddClient = () => {
         console.log('Données envoyées pour ajout de client:', values);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/clients', values, {
+            await axios.post('https://go-ko.onrender.com/clients', values, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

@@ -23,7 +23,7 @@ const Profile = () => {
     const fetchUserData = async () => {
       const role = decodedToken.role;
       const userId = decodedToken.userId;
-      const url = `http://localhost:5000/${role === 'Admin' ? 'admin' : 'commercials'}/${userId}`;
+      const url = `https://go-ko.onrender.com/${role === 'Admin' ? 'admin' : 'commercials'}/${userId}`;
 
       console.log('Fetching data from URL:', url); // Debug log
 

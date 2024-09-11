@@ -37,7 +37,7 @@ const ClientDetailsPage = () => {
         const fetchClient = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`http://localhost:5000/clients/${id}`, {
+                const response = await axios.get(`https://go-ko.onrender.com/clients/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -52,7 +52,7 @@ const ClientDetailsPage = () => {
         const fetchCommercials = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:5000/commercials', {
+                const response = await axios.get('https://go-ko.onrender.com/commercials', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -99,7 +99,7 @@ const ClientDetailsPage = () => {
     const handleSave = async (values) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5000/clients/${id}`, values, {
+            await axios.put(`https://go-ko.onrender.com/clients/${id}`, values, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -117,7 +117,7 @@ const ClientDetailsPage = () => {
     const handleAssign = async (values) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5000/clients/${id}`, { commercial: values.commercial }, {
+            await axios.put(`https://go-ko.onrender.com/clients/${id}`, { commercial: values.commercial }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

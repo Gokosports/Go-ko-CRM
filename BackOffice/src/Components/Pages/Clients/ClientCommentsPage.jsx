@@ -84,8 +84,8 @@ const ClientCommentsPage = () => {
             };
 
             const response = isEdit
-                ? await axios.put(`http://localhost:5000/clients/${clientId}/comments/${currentComment._id}`, values, config)
-                : await axios.post(`http://localhost:5000/clients/${clientId}/comments`, values, config);
+                ? await axios.put(`https://go-ko.onrender.com/clients/${clientId}/comments/${currentComment._id}`, values, config)
+                : await axios.post(`https://go-ko.onrender.com/clients/${clientId}/comments`, values, config);
 
             const updatedComments = isEdit
                 ? comments.map(comment => (comment._id === currentComment._id ? response.data.comment : comment))
@@ -125,7 +125,7 @@ const ClientCommentsPage = () => {
 
     const handleDeleteComment = async (commentId) => {
         try {
-            await axios.delete(`http://localhost:5000/clients/${clientId}/comments/${commentId}`, {
+            await axios.delete(`https://go-ko.onrender.com/clients/${clientId}/comments/${commentId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

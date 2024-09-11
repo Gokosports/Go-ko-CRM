@@ -40,7 +40,7 @@ const Header = () => {
   useEffect(() => {
     const fetchProfileImage = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/admin", { headers: { authorization: `Bearer ${token}` } });
+        const response = await axios.get("https://go-ko.onrender.com/admin", { headers: { authorization: `Bearer ${token}` } });
         const data = response.data;
         setProfileImage(data.imageUrl);
       } catch (error) {

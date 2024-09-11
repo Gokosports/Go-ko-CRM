@@ -17,7 +17,7 @@ const ListeAdmins = () => {
   const fetchAdmins = async () => {
     try {
       const token = localStorage.getItem('token'); // Récupérer le token du local storage
-      const response = await axios.get('http://localhost:5000/admin', {
+      const response = await axios.get('https://go-ko.onrender.com/admin', {
         headers: {
           Authorization: `Bearer ${token}`
         }

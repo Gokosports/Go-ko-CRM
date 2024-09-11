@@ -20,7 +20,7 @@ const SpecialityDashboard = () => {
 
     const fetchSpecialities = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/speciality');
+            const response = await axios.get('https://go-ko.onrender.com/speciality');
             setSpecialities(response.data);
         } catch (error) {
             console.error('Error fetching specialities:', error);

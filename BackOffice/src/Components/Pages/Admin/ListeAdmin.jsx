@@ -86,7 +86,7 @@ const ListeAdmins = () => {
     try {
       const token = localStorage.getItem('token'); // Récupérer le token du local storage
       if (currentAdmin) {
-        await axios.put(`http://localhost:5000/admin/${currentAdmin._id}`, values, {
+        await axios.put(`https://go-ko.onrender.com/admin/${currentAdmin._id}`, values, {
           headers: {
             Authorization: `Bearer ${token}`
           }

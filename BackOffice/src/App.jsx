@@ -36,6 +36,8 @@ import AffectationCoach from "./Components/Pages/Coachs/AffectationCoach";
 
 
 import { LoginContext } from "./Components/store/LoginContext";
+import ContractPage from "./Components/Pages/ContratDetails";
+import TéléhargeContrat from "./Components/Pages/TéléhargeContrat";
 
 
 
@@ -249,14 +251,23 @@ function App() {
        />
       
       <Route
-          path="/contrat"
+          path="/coach/:id/contrat"
           element={
             <MainLayout>
-              <Contrat/>
+              <ContractPage/>
             </MainLayout>
           }
         />
-      {!isDoc()&&( 
+       <Route
+  path="/téléchargecontrat"
+  element={
+    <MainLayout>
+      <TéléhargeContrat />
+    </MainLayout>
+  }
+/>
+
+      {!isDoc()&&(
 
       <Route
           path="/commerciaux"

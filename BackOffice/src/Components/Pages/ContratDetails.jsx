@@ -5,27 +5,25 @@ import {
   Button,
   DatePicker,
   message,
-  Checkbox,
-  Modal,
   Radio,
   Select,
+  Modal,
 } from "antd";
 import { jsPDF } from "jspdf";
-import "jspdf-autotable"; // To create tables in PDF
+import "jspdf-autotable";
 import "tailwindcss/tailwind.css";
 import logo from "../../assets/images/goko.png";
+import axios from "axios";
 
-// const { TextArea } = Input;
 const { Option } = Select;
 
 const ContractPage = () => {
   const [form] = Form.useForm();
   const [contracts, setContracts] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [totalPrice, setTotalPrice] = useState("€ 24,99"); // Initial price for 1 year
+  const [totalPrice, setTotalPrice] = useState("€ 0");
   const [selectedDuration, setSelectedDuration] = useState("1 an");
 
-  // Handle form submission
   const handleFinish = (values) => {
     const newContract = { ...values, id: contracts.length + 1 };
     setContracts([...contracts, newContract]);
@@ -33,85 +31,17 @@ const ContractPage = () => {
     form.resetFields();
   };
 
-  // Function to handle radio change and set price accordingly
   const handleDurationChange = (e) => {
     const duration = e.target.value;
     setSelectedDuration(duration);
-
-    // Set the corresponding price based on selected duration
-    switch (duration) {
-      case "1 an":
-        setTotalPrice("€ 49,00");
-        break;
-      case "1.5 ans":
-        setTotalPrice("€ 59,00");
-        break;
-      case "2 ans":
-        setTotalPrice("€ 69,00");
-        break;
-      default:
-        setTotalPrice("€ 49,00");
-    }
+    const priceMap = {
+      "12 mois - 64,90 € par mois": "€ 64,90 par mois",
+      "18 mois - 59,90 € par mois": "€ 59,90 par mois",
+      "24 mois - 54,90 € par mois": "€ 54,90 par mois",
+    };
+    setTotalPrice(priceMap[duration] || "€");
   };
 
-  // Generate and download PDF
-  // const downloadPDF = (contract) => {
-  //     const doc = new jsPDF('p', 'pt', 'a4');
-
-  //     // Add GOKO Logo at the top
-  //     const logoUrl = 'path_to_your_logo_here'; // Use your logo URL or file path
-  //     doc.addImage(logoUrl, 'PNG', 40, 20, 100, 40); // Adjust the position and size as needed
-
-  //     doc.setFontSize(16);
-  //     doc.text("Contrat d'Abonnement au Service de Coaching", 40, 80);
-
-  //     const tableData = [
-  //         ["Champ", "Information"],
-  //         ["No de membre (référence du mandat)", contract.memberNumber],
-  //         ["Club", "Application Coach Clients"],
-  //         ["Adresse club", contract.clubAddress], // Club address from form
-  //         ["Code postal", "00000"],
-  //         ["Localité", "Virtuelle"],
-  //         ["Date d’inscription", contract.startDate.format('DD-MM-YYYY')],
-  //         ["Date de début du contrat", contract.startDate.format('DD-MM-YYYY')],
-  //         ["Date de fin du contrat", contract.endDate.format('DD-MM-YYYY')],
-  //         ["Prénom + Nom", contract.clientName],
-  //         ["Date de naissance", contract.dateOfBirth.format('DD-MM-YYYY')],
-  //         ["Adresse", `rue ${contract.address}, Numéro: ${contract.addressNumber}`],
-  //         ["Code postal", contract.zipCode],
-  //         ["Localité", contract.city],
-  //         ["Pays", contract.country],
-  //         ["Téléphone", contract.phone],
-  //         ["Adresse e-mail", contract.email],
-  //         ["Type d’affiliation", contract.affiliationType],
-  //         ["Durée du contrat", contract.contractDuration],
-  //         ["Suppléments", "Yanga Sportswater Pro-App"],
-  //         ["Suppléments non récurrents", "€ 5,00"],
-  //         ["Total (par période)", "€ 24,99"],
-  //         ["Montant total", "€ 44,98"],
-  //         ["RIB", contract.rib],
-  //         ["MANDAT DE PRÉLÈVEMENT SEPA", "En signant ce mandat, vous donnez l’autorisation (A) à [Nom de l'Application] d’envoyer des instructions à votre banque pour débiter votre compte et (B) votre banque à débiter votre compte conformément aux instructions de [Nom de l'Application]."],
-  //         ["Lieu", contract.location],
-  //         ["Date", contract.startDate.format('DD-MM-YYYY')],
-  //         ["La société [Nom de l'Application]", "au capital de [Capital Social] ayant son siège social à [Adresse du Siège Social], immatriculée au RCS sous le no [Numéro RCS]."],
-  //     ];
-
-  //     doc.autoTable({
-  //         head: [['Champ', 'Information']],
-  //         body: tableData,
-  //         startY: 100,
-  //         margin: { horizontal: 40 },
-  //         theme: 'grid',
-  //         headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
-  //         styles: { cellPadding: 5, fontSize: 10 },
-  //     });
-
-  //     // Add signature field at the bottom right of the page
-  //     doc.text("Signature:", 400, doc.lastAutoTable.finalY + 50);
-  //     doc.line(450, doc.lastAutoTable.finalY + 45, 550, doc.lastAutoTable.finalY + 45); // Line for signature
-
-  //     doc.save(`contrat_${contract.id}.pdf`);
-  // };
   const downloadPDF = (contract) => {
     const doc = new jsPDF("p", "pt", "a4");
     doc.addImage(logo, "PNG", 450, 16, 100, 40);
@@ -119,14 +49,11 @@ const ContractPage = () => {
     doc.text("Contrat d'Abonnement au Service de Coaching", 40, 40);
     const tableData = [
       ["No de membre (référence du mandat)", contract.memberNumber],
-      ["Club", "Application Coach Clients"],
       ["Adresse club", contract.clubAddress],
-
       ["Date d’inscription", contract.startDate.format("DD-MM-YYYY")],
       ["Date de début du contrat", contract.startDate.format("DD-MM-YYYY")],
       ["Date de fin du contrat", contract.endDate.format("DD-MM-YYYY")],
       ["Prénom + Nom", contract.clientName],
-
       ["Montant total", totalPrice],
       ["Adresse", `rue ${contract.address}`],
       ["Code postal", contract.zipCode],
@@ -163,7 +90,6 @@ const ContractPage = () => {
     doc.save(`contrat_${contract.id}.pdf`);
   };
 
-  // Show modal with terms and conditions
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -176,11 +102,27 @@ const ContractPage = () => {
     setIsModalVisible(false);
   };
 
+  const fetchCoach = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`https://go-ko.onrender.com/coaches/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log(response.data)
+        setCoach(response.data);
+    } catch (error) {
+        console.error('Error fetching coach:', error);
+    }
+};
+
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-6">Créer un Contrat pour Coach</h2>
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Form Items */}
           <Form.Item
             name="memberNumber"
             label="No de membre (référence du mandat)"
@@ -226,7 +168,6 @@ const ContractPage = () => {
           >
             <DatePicker style={{ width: "100%" }} className="rounded-md" />
           </Form.Item>
-
           <Form.Item
             name="address"
             label="Adresse"
@@ -234,7 +175,6 @@ const ContractPage = () => {
           >
             <Input className="rounded-md" />
           </Form.Item>
-
           <Form.Item
             name="zipCode"
             label="Code Postal"
@@ -300,7 +240,6 @@ const ContractPage = () => {
           >
             <Input className="rounded-md" />
           </Form.Item>
-
           <Form.Item
             name="contractDuration"
             label="Durée du contrat"
@@ -312,21 +251,16 @@ const ContractPage = () => {
             ]}
           >
             <Radio.Group onChange={handleDurationChange}>
-              <Radio value="1 an">1 année</Radio>
-              <Radio value="1.5 ans">1.5 années</Radio>
-              <Radio value="2 ans">2 années</Radio>
+              <Radio value="12 mois - 64,90 € par mois">
+                12 mois - 64,90 € par mois
+              </Radio>
+              <Radio value="18 mois - 59,90 € par mois">
+                18 mois - 59,90 € par mois
+              </Radio>
+              <Radio value="24 mois - 54,90 € par mois">
+                24 mois - 54,90 € par mois
+              </Radio>
             </Radio.Group>
-          </Form.Item>
-          <div className="text-lg font-bold mb-4">
-            Total (par période): {totalPrice}
-          </div>
-
-          <Form.Item
-            name="rib"
-            label="RIB"
-            rules={[{ required: true, message: "Veuillez entrer le RIB" }]}
-          >
-            <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="supplement"
@@ -342,47 +276,84 @@ const ContractPage = () => {
               placeholder="Choisissez un supplément"
               className="rounded-md"
             >
-              <Option value="Natation">Natation</Option>
-              <Option value="Basketball">Basketball</Option>
-              <Option value="Volleyball">Volleyball</Option>
               <Option value="Football">Football</Option>
+              <Option value="Course à pied">Course à pied</Option>
               <Option value="Fitness">Fitness</Option>
-              <Option value="Boxe">Boxe</Option>
-              <Option value="Surf">Surf</Option>
+              <Option value="Musculation">Musculation</Option>
               <Option value="Tennis">Tennis</Option>
-              <Option value="Polo">Polo</Option>
-              <Option value="Climbing">Climbing</Option>
+              <Option value="Basketball">Basketball</Option>
+              <Option value="Cyclisme (incluant BMX)">
+                Cyclisme (incluant BMX)
+              </Option>
+              <Option value="Rugby">Rugby</Option>
+              <Option value="Natation">Natation</Option>
+              <Option value="Handball">Handball</Option>
+              <Option value="Volleyball">Volleyball</Option>
+              <Option value="Golf">Golf</Option>
+              <Option value="Ski">Ski</Option>
+              <Option value="Boxe">Boxe</Option>
+              <Option value="Arts martiaux (inclut Judo et Taekwondo)">
+                Arts martiaux (inclut Judo et Taekwondo)
+              </Option>
+              <Option value="Escalade">Escalade</Option>
+              <Option value="Gymnastique">Gymnastique</Option>
+              <Option value="Surf">Surf</Option>
+              <Option value="Paddle">Paddle</Option>
+              <Option value="Triathlon">Triathlon</Option>
+              <Option value="Patinage artistique">Patinage artistique</Option>
+              <Option value="Skateboard">Skateboard</Option>
+              <Option value="Aviron">Aviron</Option>
+              <Option value="Kitesurf">Kitesurf</Option>
+              <Option value="Plongeon">Plongeon</Option>
+              <Option value="Breakdance">Breakdance</Option>
+              <Option value="Escrime">Escrime</Option>
+              <Option value="Lutte">Lutte</Option>
+              <Option value="Canoë-Kayak (Sprint et Slalom)">
+                Canoë-Kayak (Sprint et Slalom)
+              </Option>
+              <Option value="Softball">Softball</Option>
+              <Option value="Snowboard">Snowboard</Option>
+              <Option value="Hockey sur glace">Hockey sur glace</Option>
+              <Option value="Squash">Squash</Option>
+              <Option value="Renforcement musculaire et conditionnement">
+                Renforcement musculaire et conditionnement
+              </Option>
+              <Option value="Baseball">Baseball</Option>
+              <Option value="Tir à l'arc">Tir à l'arc</Option>
+              <Option value="Pentathlon moderne">Pentathlon moderne</Option>
+              <Option value="Cheerleading">Cheerleading</Option>
+              <Option value="Lacrosse">Lacrosse</Option>
+              <Option value="Hockey sur gazon">Hockey sur gazon</Option>
+              <Option value="Danse">Danse</Option>
+              <Option value="Badminton">Badminton</Option>
+              <Option value="Électrostimulation">Électrostimulation</Option>
             </Select>
           </Form.Item>
           <Form.Item
-            name="location"
-            label="Lieu de signature"
-            rules={[{ required: true, message: "Veuillez entrer le lieu" }]}
+            name="rib"
+            label="RIB"
+            rules={[{ required: true, message: "Veuillez entrer le RIB" }]}
           >
             <Input className="rounded-md" />
           </Form.Item>
         </div>
-
-        <Form.Item>
-          <Checkbox style={{ display: "flex", alignItems: "center" }}>
-            J'accepte les
-            <Button
-              type="link"
-              onClick={showModal}
-              style={{ paddingLeft: "0", marginLeft: "5px" }}
-            >
-              termes et conditions
-            </Button>
-          </Checkbox>
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Créer le Contrat
+        <div className="flex justify-between items-center mt-6">
+          <p className="text-lg font-semibold">Montant total : {totalPrice}</p>
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="bg-blue-500 hover:bg-blue-600"
+          >
+            Générer le Contrat
           </Button>
-        </Form.Item>
+          <Button
+            onClick={showModal}
+            className="bg-green-500 hover:bg-green-600"
+          >
+            Conditions Générales
+          </Button>
+        </div>
       </Form>
-
       {/* List of created contracts */}
       {contracts.length > 0 && (
         <div className="mt-8">
@@ -401,17 +372,11 @@ const ContractPage = () => {
           </ul>
         </div>
       )}
-
       <Modal
-        title="Termes et Conditions"
+        title="Conditions Générales"
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
-        bodyStyle={{
-          maxHeight: "400px",
-          overflowY: "auto",
-          padding: "0px",
-        }}
       >
         <ul
           className="list-disc list-inside"

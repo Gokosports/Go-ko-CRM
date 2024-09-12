@@ -79,15 +79,28 @@ const CoachDetailsPage = () => {
         }
     }, [id, location]);
 
+    // const handleTabChange = (key) => {
+    //     setActiveTab(key);
+    //     if (key === "2") {
+    //         navigate(`/coach/${id}/comments`);
+    //     } else if {
+    //         navigate(`/coach/${id}`);
+    //     } else {
+    //         navigate(`/coach/${id}/contract`);
+    //     }
+    // };
+
     const handleTabChange = (key) => {
         setActiveTab(key);
         if (key === "2") {
             navigate(`/coach/${id}/comments`);
+        } else if (key === "3") {
+            navigate(`/coach/${id}/contrat`);
         } else {
             navigate(`/coach/${id}`);
         }
     };
-
+    
     const handleEdit = () => {
         form.setFieldsValue({
             ...coach,
@@ -350,11 +363,12 @@ const CoachDetailsPage = () => {
                         scroll={{ x: 'max-content' }}
                     />
                 </TabPane>
-                <TabPane tab="Contract" key="3">
+                <TabPane tab="Contrat" key="3">
                     <Button type="primary" icon={<PlusOutlined />}>
                         Créer un contract
                     </Button>
-                  <Link To='/contract'></Link>
+                    
+                 
                 </TabPane>
                 
             </Tabs>

@@ -30,7 +30,7 @@ const CoachDetailsPage = () => {
     const fetchCoach = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:5000/coaches/${id}`, {
+            const response = await axios.get(`https://go-ko.onrender.com/coaches/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -44,7 +44,7 @@ const CoachDetailsPage = () => {
     const fetchCommercials = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:5000/commercials', {
+            const response = await axios.get('https://go-ko.onrender.com/commercials', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -58,7 +58,7 @@ const CoachDetailsPage = () => {
     const fetchSpecialities = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:5000/speciality', {
+            const response = await axios.get('https://go-ko.onrender.com/speciality', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -109,7 +109,7 @@ const CoachDetailsPage = () => {
     const handleSave = async (values) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.put(`http://localhost:5000/coaches/${id}`, values, {
+            const response = await axios.put(`https://go-ko.onrender.com/coaches/${id}`, values, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -130,7 +130,7 @@ const CoachDetailsPage = () => {
     const handleAssign = async (values) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5000/coaches/${id}`, { commercial: values.commercial }, {
+            await axios.put(`https://go-ko.onrender.com/coaches/${id}`, { commercial: values.commercial }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -147,7 +147,7 @@ const CoachDetailsPage = () => {
     const handleDeleteComment = async (commentId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/coaches/${id}/comments/${commentId}`, {
+            await axios.delete(`https://go-ko.onrender.com/coaches/${id}/comments/${commentId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

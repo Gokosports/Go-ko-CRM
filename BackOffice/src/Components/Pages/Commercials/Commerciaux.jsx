@@ -25,7 +25,7 @@ const CommercialsPage = () => {
 
     const fetchCommercials = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/commercials');
+            const response = await axios.get('https://go-ko.onrender.com/commercials');
             setCommercials(response.data);
         } catch (error) {
             console.error('Error fetching commercials:', error);
@@ -52,7 +52,7 @@ const CommercialsPage = () => {
 
     const handleDeleteCommercial = async (commercialId) => {
         try {
-            await axios.delete(`http://localhost:5000/commercials/${commercialId}`);
+            await axios.delete(`https://go-ko.onrender.com/commercials/${commercialId}`);
             message.success('Commercial supprimé avec succès');
             fetchCommercials();
         } catch (error) {
@@ -77,10 +77,10 @@ const CommercialsPage = () => {
 
         try {
             if (isEditing) {
-                await axios.put(`http://localhost:5000/commercials/${currentCommercial._id}`, values);
+                await axios.put(`https://go-ko.onrender.com/commercials/${currentCommercial._id}`, values);
                 message.success('Commercial mis à jour avec succès');
             } else {
-                await axios.post('http://localhost:5000/commercials', values);
+                await axios.post('https://go-ko.onrender.com/commercials', values);
                 message.success('Commercial ajouté avec succès');
             }
             setIsModalVisible(false);

@@ -46,7 +46,7 @@ const ClientTable = () => {
     const fetchClients = async () => {
         try {
             const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
-            const response = await axios.get('http://localhost:5000/clients', {
+            const response = await axios.get('https://go-ko.onrender.com/clients', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -66,7 +66,7 @@ const ClientTable = () => {
     const fetchCommercials = async () => {
         try {
             const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
-            const response = await axios.get('http://localhost:5000/commercials', {
+            const response = await axios.get('https://go-ko.onrender.com/commercials', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -96,7 +96,7 @@ const ClientTable = () => {
     const handleDelete = async (clientId) => {
         try {
             const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
-            await axios.delete(`http://localhost:5000/clients/${clientId}`, {
+            await axios.delete(`https://go-ko.onrender.com/clients/${clientId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -131,14 +131,14 @@ const ClientTable = () => {
         try {
             const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
             if (editingClient) {
-                await axios.put(`http://localhost:5000/clients/${editingClient._id}`, values, {
+                await axios.put(`https://go-ko.onrender.com/clients/${editingClient._id}`, values, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
                 message.success('Client mis à jour avec succès');
             } else {
-                await axios.post('http://localhost:5000/clients', values, {
+                await axios.post('https://go-ko.onrender.com/clients', values, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -160,7 +160,7 @@ const ClientTable = () => {
     const handleAssign = async (values) => {
         try {
             const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
-            await axios.post('http://localhost:5000/clients/assign-clients', {
+            await axios.post('https://go-ko.onrender.com/clients/assign-clients', {
                 clientIds: selectedClients,
                 commercialId: values.commercial,
             }, {
@@ -193,7 +193,7 @@ const ClientTable = () => {
     const handleUnassign = async () => {
         try {
             const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
-            await axios.post('http://localhost:5000/clients/unassign-clients', {
+            await axios.post('https://go-ko.onrender.com/clients/unassign-clients', {
                 clientIds: selectedClients,
             }, {
                 headers: {

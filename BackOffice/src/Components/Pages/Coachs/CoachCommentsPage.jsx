@@ -24,7 +24,7 @@ const CoachCommentsPage = () => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/coachs-comment/${id}/comments`);
+                const response = await axios.get(`https://go-ko.onrender.com/coachs-comment/${id}/comments`);
                 setComments(response.data);
             } catch (error) {
                 console.error('Error fetching comments:', error);
@@ -33,7 +33,7 @@ const CoachCommentsPage = () => {
 
         const fetchCommercials = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/commercials');
+                const response = await axios.get('https://go-ko.onrender.com/commercials');
                 setCommercials(response.data);
             } catch (error) {
                 console.error('Error fetching commercials:', error);
@@ -78,11 +78,11 @@ const CoachCommentsPage = () => {
             };
 
             if (isEdit && currentComment) {
-                const response = await axios.put(`http://localhost:5000/coachs-comment/${id}/comments/${currentComment._id}`, requestData);
+                const response = await axios.put(`https://go-ko.onrender.com/coachs-comment/${id}/comments/${currentComment._id}`, requestData);
                 setComments(comments.map(comment => comment._id === currentComment._id ? response.data.comment : comment));
                 message.success('Commentaire mis à jour avec succès');
             } else {
-                const response = await axios.post(`http://localhost:5000/coachs-comment/${id}/comments`, requestData);
+                const response = await axios.post(`https://go-ko.onrender.com/coachs-comment/${id}/comments`, requestData);
                 setComments([...comments, response.data.comment]);
                 message.success('Commentaire ajouté avec succès');
             }
@@ -96,7 +96,7 @@ const CoachCommentsPage = () => {
 
     const handleDeleteComment = async (commentId) => {
         try {
-            await axios.delete(`http://localhost:5000/coachs-comment/${id}/comments/${commentId}`);
+            await axios.delete(`https://go-ko.onrender.com/coachs-comment/${id}/comments/${commentId}`);
             setComments(comments.filter(comment => comment._id !== commentId));
             message.success('Commentaire supprimé avec succès');
         } catch (error) {

@@ -17,7 +17,7 @@ const MyCalendar = () => {
         fetchEvents()
     }, []);
     const fetchEvents = async ()=>{
-        const responseDoc = await axios.get(`http://localhost:3000/consultation/doctor/${userLoged}`);
+        const responseDoc = await axios.get(`https://go-ko.onrender.com/consultation/doctor/${userLoged}`);
         const eventsWithColors = responseDoc.data.map(event => ({
             ...event,
             color: getColorForEvent(event) // Assign color dynamically

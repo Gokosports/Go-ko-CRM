@@ -44,7 +44,7 @@ const CoachList = () => {
         message.error('No token found, please login first');
         return;
       }
-      const response = await axios.get('http://localhost:5000/coaches', {
+      const response = await axios.get('https://go-ko.onrender.com/coaches', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -58,7 +58,7 @@ const CoachList = () => {
 
   const fetchSpecialities = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/speciality');
+      const response = await axios.get('https://go-ko.onrender.com/speciality');
       setSpecialities(response.data);
     } catch (error) {
       console.error('Error fetching specialities:', error);
@@ -68,7 +68,7 @@ const CoachList = () => {
 
   const fetchCommercials = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/commercials');
+      const response = await axios.get('https://go-ko.onrender.com/commercials');
       setCommercials(response.data);
     } catch (error) {
       console.error('Error fetching commercials:', error);
@@ -113,7 +113,7 @@ const CoachList = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:5000/coaches/${coachId}`, {
+      await axios.delete(`https://go-ko.onrender.com/coaches/${coachId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -141,7 +141,7 @@ const CoachList = () => {
       };
 
       if (currentCoach) {
-        const response = await axios.put(`http://localhost:5000/coaches/${currentCoach._id}`, data, {
+        const response = await axios.put(`https://go-ko.onrender.com/coaches/${currentCoach._id}`, data, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -149,7 +149,7 @@ const CoachList = () => {
         setCoaches(coaches.map(coach => (coach._id === currentCoach._id ? { ...coach, ...response.data } : coach)));
         message.success('Coach updated successfully');
       } else {
-        const response = await axios.post('http://localhost:5000/coaches', data, {
+        const response = await axios.post('https://go-ko.onrender.com/coaches', data, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -172,7 +172,7 @@ const CoachList = () => {
         return;
       }
 
-      await axios.post('http://localhost:5000/coaches/assign-coaches', {
+      await axios.post('https://go-ko.onrender.com/coaches/assign-coaches', {
         coachIds: selectedCoaches,
         commercialId: values.commercial,
       }, {
@@ -208,7 +208,7 @@ const CoachList = () => {
         return;
       }
 
-      await axios.post('http://localhost:5000/coaches/unassign-coaches', {
+      await axios.post('https://go-ko.onrender.com/coaches/unassign-coaches', {
         coachIds: selectedCoaches,
       }, {
         headers: {

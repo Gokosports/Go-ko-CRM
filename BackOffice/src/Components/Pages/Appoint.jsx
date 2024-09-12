@@ -50,12 +50,12 @@ const MyTable = () => {
       )() : (
         async () => {
           try {
-            const responseDoc = await axios.get(`http://localhost:3000/consultation/doctor/${userLoged}`);
+            const responseDoc = await axios.get(`https://go-ko.onrender.com/consultation/doctor/${userLoged}`);
             const docConsultations = responseDoc.data;
 
             const updatedAppointments = await Promise.all(docConsultations.map(async (appointment) => {
               try {
-                const docPatiResponse = await axios.get(`http://localhost:3000/patient/${appointment.patient_id}`, {
+                const docPatiResponse = await axios.get(`https://go-ko.onrender.com/patient/${appointment.patient_id}`, {
                   headers: {
                     'Authorization': `Bearer ${token}`
                   }

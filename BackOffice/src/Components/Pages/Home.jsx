@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faUserFriends, faPersonSnowboarding, faUsers } from '@fortawesome/free-solid-svg-icons';
 import ListCoach from './Coachs/ListCoach';
 import Speciality from './Speciality';
+import homeImage from '../../assets/images/home.png';
 
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode'; // Fix the import statement
@@ -44,7 +45,7 @@ function Dashboard() {
                         </div>
                         <div className="w-full md:w-1/2 flex justify-end items-center">
                             <img
-                                src="src/assets/images/home.png"
+                                src={homeImage}
                                 alt="Home"
                                 className="h-full w-auto max-h-40 lg:max-h-32 max-w-full"
                             />

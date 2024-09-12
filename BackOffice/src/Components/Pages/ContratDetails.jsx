@@ -364,12 +364,15 @@ const ContractPage = () => {
         </div>
 
         <Form.Item>
-          <Checkbox>
-            J'accepte les{" "}
-            <Button type="link" onClick={showModal}>
+          <Checkbox style={{ display: "flex", alignItems: "center" }}>
+            J'accepte les
+            <Button
+              type="link"
+              onClick={showModal}
+              style={{ paddingLeft: "0", marginLeft: "5px" }}
+            >
               termes et conditions
             </Button>
-            .
           </Checkbox>
         </Form.Item>
 
@@ -404,55 +407,69 @@ const ContractPage = () => {
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
+        bodyStyle={{
+          maxHeight: "400px",
+          overflowY: "auto",
+          padding: "0px",
+        }}
       >
-        <p>
-          <ul className="list-disc list-inside">
-            <li>
-              Le coach s'engage à fournir des séances d'entraînement selon
-              l'horaire convenu.
-            </li>
-            <li>
-              Le client s'engage à participer aux séances programmées et à
-              respecter les horaires.
-            </li>
-            <li>
-              Le paiement doit être effectué en totalité avant le début des
-              séances.
-            </li>
-            <li>
-              Le coach n'est pas responsable des blessures subies en dehors des
-              séances d'entraînement.
-            </li>
-            <li>
-              Le client doit informer le coach de tout problème de santé ou
-              blessure pouvant affecter la participation.
-            </li>
-            <li>
-              Le contrat peut être résilié par l'une ou l'autre des parties avec
-              un préavis de deux semaines.
-            </li>
-            <li>
-              En cas d'annulation de séance, un préavis de 24 heures est requis
-              pour éviter des frais supplémentaires.
-            </li>
-            <li>
-              Les séances non annulées dans les délais seront facturées au plein
-              tarif.
-            </li>
-            <li>
-              Le client doit respecter les horaires de début et de fin des
-              séances.
-            </li>
-            <li>
-              Tout retard de plus de 15 minutes sera considéré comme une séance
-              annulée sans préavis et sera facturé au plein tarif.
-            </li>
-            <li>
-              Le coach se réserve le droit de terminer la séance à l'heure
-              prévue même si le client est en retard.
-            </li>
-          </ul>
-        </p>
+        <ul
+          className="list-disc list-inside"
+          style={{
+            marginLeft: "0px",
+            padding: "10px",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "8px",
+            lineHeight: "1.8",
+            color: "#333",
+            fontSize: "16px",
+          }}
+        >
+          <li>
+            Le coach s'engage à fournir des séances d'entraînement selon
+            l'horaire convenu.
+          </li>
+          <li>
+            Le client s'engage à participer aux séances programmées et à
+            respecter les horaires.
+          </li>
+          <li>
+            Le paiement doit être effectué en totalité avant le début des
+            séances.
+          </li>
+          <li>
+            Le coach n'est pas responsable des blessures subies en dehors des
+            séances d'entraînement.
+          </li>
+          <li>
+            Le client doit informer le coach de tout problème de santé ou
+            blessure pouvant affecter la participation.
+          </li>
+          <li>
+            Le contrat peut être résilié par l'une ou l'autre des parties avec
+            un préavis de deux semaines.
+          </li>
+          <li>
+            En cas d'annulation de séance, un préavis de 24 heures est requis
+            pour éviter des frais supplémentaires.
+          </li>
+          <li>
+            Les séances non annulées dans les délais seront facturées au plein
+            tarif.
+          </li>
+          <li>
+            Le client doit respecter les horaires de début et de fin des
+            séances.
+          </li>
+          <li>
+            Tout retard de plus de 15 minutes sera considéré comme une séance
+            annulée sans préavis et sera facturé au plein tarif.
+          </li>
+          <li>
+            Le coach se réserve le droit de terminer la séance à l'heure prévue
+            même si le client est en retard.
+          </li>
+        </ul>
       </Modal>
     </div>
   );

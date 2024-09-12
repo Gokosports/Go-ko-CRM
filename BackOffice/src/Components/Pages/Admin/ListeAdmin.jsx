@@ -44,7 +44,7 @@ const ListeAdmins = () => {
   const handleDelete = async (adminId) => {
     try {
       const token = localStorage.getItem('token'); // Récupérer le token du local storage
-      await axios.delete(`http://localhost:5000/admin/${adminId}`, {
+      await axios.delete(`https://go-ko.onrender.com/admin/${adminId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -94,7 +94,7 @@ const ListeAdmins = () => {
         setAdmins(admins.map(admin => (admin._id === currentAdmin._id ? { ...admin, ...values } : admin)));
         message.success('Admin mis à jour avec succès');
       } else {
-        const response = await axios.post('http://localhost:5000/admin', values, {
+        const response = await axios.post('https://go-ko.onrender.com/admin', values, {
           headers: {
             Authorization: `Bearer ${token}`
           }

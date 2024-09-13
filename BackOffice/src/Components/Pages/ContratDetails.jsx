@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import {
   Form,
   Input,
@@ -23,6 +24,34 @@ const ContractPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [totalPrice, setTotalPrice] = useState("€ 0");
   const [selectedDuration, setSelectedDuration] = useState("1 an");
+  const [coach, setCoach] = useState(null);
+
+  useEffect(() => {
+    fetchCoach();
+  }, []);
+
+  const fetchCoach = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`https://go-ko.onrender.com/coaches/6683e4584d8cf4b9550af4ed`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        setCoach(response.data);
+        form.setFieldsValue({
+          nemuro: response.data._id,
+          clientName: `${response.data.prenom} ${response.data.nom}`,
+          phone: response.data.phone,
+          email: response.data.email,
+          age: response.data.age,
+          sex: response.data.sex,
+          address: response.data.address.ville,
+        });
+    } catch (error) {
+        console.error('Error fetching coach:', error);
+    }
+  };
 
   const handleFinish = (values) => {
     const newContract = { ...values, id: contracts.length + 1 };
@@ -48,14 +77,14 @@ const ContractPage = () => {
     doc.setFontSize(16);
     doc.text("Contrat d'Abonnement au Service de Coaching", 40, 40);
     const tableData = [
-      ["No de membre (référence du mandat)", contract.memberNumber],
+      ["No de membre (référence du mandat)", contract.nemuro],
       ["Adresse club", contract.clubAddress],
       ["Date d’inscription", contract.startDate.format("DD-MM-YYYY")],
       ["Date de début du contrat", contract.startDate.format("DD-MM-YYYY")],
       ["Date de fin du contrat", contract.endDate.format("DD-MM-YYYY")],
       ["Prénom + Nom", contract.clientName],
       ["Montant total", totalPrice],
-      ["Adresse", `rue ${contract.address}`],
+      ["Adresse", `${contract.address}`],
       ["Code postal", contract.zipCode],
       ["Localité", contract.city],
       ["Pays", contract.country],
@@ -69,7 +98,7 @@ const ContractPage = () => {
         "MANDAT DE PRÉLÈVEMENT SEPA",
         "En signant ce mandat, vous donnez l’autorisation (A) à [Nom de l'Application] d’envoyer des instructions à votre banque pour débiter votre compte et (B) votre banque à débiter votre compte conformément aux instructions de [Nom de l'Application].",
       ],
-      ["Lieu", contract.location],
+
       ["Date", contract.startDate.format("DD-MM-YYYY")],
       [
         "La société [Nom de l'Application]",
@@ -102,21 +131,6 @@ const ContractPage = () => {
     setIsModalVisible(false);
   };
 
-  const fetchCoach = async () => {
-    try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`https://go-ko.onrender.com/coaches/${id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        console.log(response.data)
-        setCoach(response.data);
-    } catch (error) {
-        console.error('Error fetching coach:', error);
-    }
-};
-
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-6">Créer un Contrat pour Coach</h2>
@@ -124,47 +138,30 @@ const ContractPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Form Items */}
           <Form.Item
-            name="memberNumber"
+            name="nemuro"
             label="No de membre (référence du mandat)"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez entrer le numéro de membre",
-              },
-            ]}
+            rules={[{ required: true, message: "Veuillez entrer le numéro de membre" }]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="clientName"
             label="Prénom + Nom"
-            rules={[
-              { required: true, message: "Veuillez entrer le nom du client" },
-            ]}
+            rules={[{ required: true, message: "Veuillez entrer le nom du client" }]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="startDate"
             label="Date de Début"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez sélectionner la date de début",
-              },
-            ]}
+            rules={[{ required: true, message: "Veuillez sélectionner la date de début" }]}
           >
             <DatePicker style={{ width: "100%" }} className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="endDate"
             label="Date de Fin"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez sélectionner la date de fin",
-              },
-            ]}
+            rules={[{ required: true, message: "Veuillez sélectionner la date de fin" }]}
           >
             <DatePicker style={{ width: "100%" }} className="rounded-md" />
           </Form.Item>
@@ -178,9 +175,7 @@ const ContractPage = () => {
           <Form.Item
             name="zipCode"
             label="Code Postal"
-            rules={[
-              { required: true, message: "Veuillez entrer le code postal" },
-            ]}
+            rules={[{ required: true, message: "Veuillez entrer le code postal" }]}
           >
             <Input className="rounded-md" />
           </Form.Item>
@@ -201,46 +196,32 @@ const ContractPage = () => {
           <Form.Item
             name="phone"
             label="Téléphone"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez entrer le numéro de téléphone",
-              },
-            ]}
+            rules={[{ required: true, message: "Veuillez entrer le numéro de téléphone" }]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="email"
             label="Adresse e-mail"
-            rules={[
-              { required: true, message: "Veuillez entrer l’adresse e-mail" },
-            ]}
+            rules={[{ required: true, message: "Veuillez entrer l’adresse e-mail" }]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="affiliationType"
             label="Type d’affiliation"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez entrer le type d’affiliation",
-              },
-            ]}
+            rules={[{ required: true, message: "Veuillez entrer le type d’affiliation" }]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="clubAddress"
             label="Adresse du Club"
-            rules={[
-              { required: true, message: "Veuillez entrer l’adresse du club" },
-            ]}
+            rules={[{ required: true, message: "Veuillez entrer l’adresse du club" }]}
           >
             <Input className="rounded-md" />
           </Form.Item>
-          <Form.Item
+                   <Form.Item
             name="contractDuration"
             label="Durée du contrat"
             rules={[
@@ -262,7 +243,7 @@ const ContractPage = () => {
               </Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item
+                 <Form.Item
             name="supplement"
             label="Suppléments"
             rules={[
@@ -335,106 +316,73 @@ const ContractPage = () => {
             rules={[{ required: true, message: "Veuillez entrer le RIB" }]}
           >
             <Input className="rounded-md" />
-          </Form.Item>
+          </Form.Item> 
+          <p className="text-lg mt-10 font-semibold">Montant total : {totalPrice}</p>
         </div>
-        <div className="flex justify-between items-center mt-6">
-          <p className="text-lg font-semibold">Montant total : {totalPrice}</p>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="bg-blue-500 hover:bg-blue-600"
-          >
-            Générer le Contrat
+        <Form.Item className="mt-4">
+          
+          <Button type="primary" htmlType="submit" className="mr-4">
+            Créer le Contrat
           </Button>
-          <Button
-            onClick={showModal}
-            className="bg-green-500 hover:bg-green-600"
-          >
-            Conditions Générales
+          <Button onClick={showModal} type="default">
+            Prévisualiser
           </Button>
-        </div>
+        </Form.Item>
       </Form>
-      {/* List of created contracts */}
-      {contracts.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Contrats Créés</h3>
-          <ul className="list-disc list-inside">
-            {contracts.map((contract) => (
-              <li key={contract.id}>
-                <span className="text-lg font-semibold">
-                  Contrat #{contract.id}
-                </span>
-                <Button type="link" onClick={() => downloadPDF(contract)}>
-                  Télécharger PDF
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </div>
+    {contracts.length > 0 && (
+         <div className="mt-8">
+           <h3 className="text-xl font-bold mb-4">Contrats Créés</h3>
+           <ul className="list-disc list-inside">
+             {contracts.map((contract) => (
+               <li key={contract.id}>
+                 <span className="text-lg font-semibold">
+                   Contrat #{contract.id}
+                 </span>
+                 <Button type="link" onClick={() => downloadPDF(contract)}>
+                   Télécharger PDF
+                 </Button>
+               </li>
+             ))}
+           </ul>
+         </div>
       )}
       <Modal
-        title="Conditions Générales"
+        title="Aperçu du Contrat"
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <ul
-          className="list-disc list-inside"
-          style={{
-            marginLeft: "0px",
-            padding: "10px",
-            backgroundColor: "#f9f9f9",
-            borderRadius: "8px",
-            lineHeight: "1.8",
-            color: "#333",
-            fontSize: "16px",
-          }}
-        >
-          <li>
-            Le coach s'engage à fournir des séances d'entraînement selon
-            l'horaire convenu.
-          </li>
-          <li>
-            Le client s'engage à participer aux séances programmées et à
-            respecter les horaires.
-          </li>
-          <li>
-            Le paiement doit être effectué en totalité avant le début des
-            séances.
-          </li>
-          <li>
-            Le coach n'est pas responsable des blessures subies en dehors des
-            séances d'entraînement.
-          </li>
-          <li>
-            Le client doit informer le coach de tout problème de santé ou
-            blessure pouvant affecter la participation.
-          </li>
-          <li>
-            Le contrat peut être résilié par l'une ou l'autre des parties avec
-            un préavis de deux semaines.
-          </li>
-          <li>
-            En cas d'annulation de séance, un préavis de 24 heures est requis
-            pour éviter des frais supplémentaires.
-          </li>
-          <li>
-            Les séances non annulées dans les délais seront facturées au plein
-            tarif.
-          </li>
-          <li>
-            Le client doit respecter les horaires de début et de fin des
-            séances.
-          </li>
-          <li>
-            Tout retard de plus de 15 minutes sera considéré comme une séance
-            annulée sans préavis et sera facturé au plein tarif.
-          </li>
-          <li>
-            Le coach se réserve le droit de terminer la séance à l'heure prévue
-            même si le client est en retard.
-          </li>
-        </ul>
+        <div className="flex flex-col">
+          {contracts.map((contract, index) => (
+            <div key={index} className="border border-gray-300 p-4 mb-4 rounded-md">
+              <h3 className="text-lg font-semibold">Contrat #{contract._id}</h3>
+              <p><strong>ID du Contrat:</strong> {contract.nemuro}</p>
+              <p><strong>Adresse du club:</strong> {contract.clubAddress}</p>
+              <p><strong>Date d’inscription:</strong> {contract.startDate.format("DD-MM-YYYY")}</p>
+              <p><strong>Date de début:</strong> {contract.startDate.format("DD-MM-YYYY")}</p>
+              <p><strong>Date de fin:</strong> {contract.endDate.format("DD-MM-YYYY")}</p>
+              <p><strong>Prénom + Nom:</strong> {contract.clientName}</p>
+              <p><strong>Montant total:</strong> {totalPrice}</p>
+              <p><strong>Adresse:</strong> {contract.address}</p>
+              <p><strong>Code postal:</strong> {contract.zipCode}</p>
+              <p><strong>Localité:</strong> {contract.city}</p>
+              <p><strong>Pays:</strong> {contract.country}</p>
+              <p><strong>Téléphone:</strong> {contract.phone}</p>
+              <p><strong>Adresse e-mail:</strong> {contract.email}</p>
+              <p><strong>Type d’affiliation:</strong> {contract.affiliationType}</p>
+              <p><strong>Durée du contrat:</strong> {contract.contractDuration}</p>
+              <p><strong>Suppléments:</strong> {contract.supplement}</p>
+              <p><strong>RIB:</strong> {contract.rib}</p>
+              <Button
+                type="primary"
+                className="mt-4"
+                onClick={() => downloadPDF(contract)}
+              >
+                Télécharger le PDF
+              </Button>
+            </div>
+          ))}
+        </div>
       </Modal>
     </div>
   );

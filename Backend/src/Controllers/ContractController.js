@@ -1,48 +1,103 @@
-const fs = require('fs'); // Ensure fs is imported
-const { jsPDF } = require('jspdf');
+const Contract = require('../Models/ContractModel');
+const fs = require('fs');
 const path = require('path');
 
 class ContractController {
-  static async createContract(req, res) {
+  // Create a contract and upload PDF
+//   static async createContract(req, res) {
+//     try {
+//       if (!req.files || !req.files.pdf) {
+//         return res.status(400).send({ message: 'No PDF file uploaded' });
+//       }
+
+//       const pdfFile = req.files.pdf; // Assuming `pdf` is the field name for the uploaded file
+//       const uploadDir = path.join(__dirname, '..', 'uploads');
+      
+//       if (!fs.existsSync(uploadDir)) {
+//         fs.mkdirSync(uploadDir); // Create uploads directory if it doesn't exist
+//       }
+
+//       const pdfPath = path.join(uploadDir, pdfFile.name);
+//       pdfFile.mv(pdfPath, async (err) => {
+//         if (err) {
+//           return res.status(500).send({ message: 'File upload failed', error: err });
+//         }
+
+//         const contract = new Contract({ pdfPath });
+//         await contract.save();
+//         res.status(200).send({ message: 'Contract created and PDF uploaded', contract });
+//       });
+//     } catch (error) {
+//       console.error('Error creating contract:', error);
+//       res.status(500).send({ message: 'Server error', error });
+//     }
+//   }
+//   static async getContract(req, res) {
+//     try {
+//       const contracts = await Contract.find();
+//       res.status(200).send({ message: 'Contracts retrieved successfully', contracts });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).send({ message: 'Error retrieving contracts' });
+//     }
+//   }
+
+// Inside ContractController.js
+
+static async createContract(req, res) {
     try {
-        const contractData = req.body;
-        const doc = new jsPDF();
+      if (!req.files || !req.files.pdf) {
+        return res.status(400).send({ message: 'No PDF file uploaded' });
+      }
   
-        // Add content to PDF
-        doc.setFontSize(16);
-        doc.text("Contrat d'Abonnement au Service de Coaching", 40, 40);
+      const pdfFile = req.files.pdf; // Assuming `pdf` is the field name for the uploaded file
+      const uploadDir = path.join(__dirname, '..', 'uploads');
+      
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir); // Create uploads directory if it doesn't exist
+      }
   
-        // Add contract data to PDF
-        doc.setFontSize(12);
-        let yPosition = 60;
-        for (const [key, value] of Object.entries(contractData)) {
-          doc.text(`${key}: ${value}`, 40, yPosition);
-          yPosition += 10; // Adjust spacing between lines
+      const pdfName = pdfFile.name;
+      const pdfPath = path.join(uploadDir, pdfName);
+  
+      pdfFile.mv(pdfPath, async (err) => {
+        if (err) {
+          return res.status(500).send({ message: 'File upload failed', error: err });
         }
   
-        // Save PDF to server
-        const pdfFilePath = path.join(__dirname, 'pdfs', `contract_${Date.now()}.pdf`);
-        console.log('Saving contract to:', pdfFilePath);
-        doc.save(pdfFilePath);
-  
-        // Send URL to client
-        res.json({
-          pdfUrl: `/getContrat?file=${encodeURIComponent(path.basename(pdfFilePath))}`,
-        });
-      } catch (error) {
-        console.error('Error creating contract:', error);
-        res.status(500).send('Error creating contract');
-      }
-  }
-
-  static async getContract(req, res) {
-    const file = path.join(__dirname, 'pdfs', req.query.file);
-    if (fs.existsSync(file)) {
-      res.sendFile(file);
-    } else {
-      res.status(404).send('File not found');
+        const contract = new Contract({ pdfPath: `/uploads/${pdfName}` }); // Store relative path
+        await contract.save();
+        res.status(200).send({ message: 'Contract created and PDF uploaded', contract });
+      });
+    } catch (error) {
+      console.error('Error creating contract:', error);
+      res.status(500).send({ message: 'Server error', error });
     }
   }
+  
+  static async getContract(req, res) {
+    try {
+      const contracts = await Contract.find();
+      res.status(200).send({ message: 'Contracts retrieved successfully', contracts });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: 'Error retrieving contracts' });
+    }
+  }
+  
 }
 
 module.exports = ContractController;
+
+
+
+
+
+
+
+
+
+
+
+
+

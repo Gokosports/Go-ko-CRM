@@ -2,11 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors'); // Add this line
-
+const fileUpload = require('express-fileupload');
 const app = express();
+const path = require('path');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const DashboardRoutes = require('./src/Routes/dashboardRoutes');
 const AdminRoutes = require('./src/Routes/AdminRoutes');
@@ -20,6 +22,7 @@ const commercialRoutes = require('./src/Routes/commercialRoutes'); // Ajustez le
 
 const abonnementRoutes = require('./src/Routes/AbonnementRoutes');
 const commandeRoutes = require('./src/Routes/CommandeRoutes');
+const contractRoutes = require('./src/Routes/ContractRoutes')
 
 
 // Connecter à MongoDB
@@ -56,6 +59,13 @@ app.use('/commercials', commercialRoutes); // Route pour les commerciaux
 
 app.use('/abonnements', abonnementRoutes); // Route pour les abonnements
 app.use('/commandes', commandeRoutes); // Route pour les commandes
+
+app.use('/contract', contractRoutes);
+
+
+app.use(fileUpload());
+
+
 
 
 app.get('/specialities', async (req, res) => {

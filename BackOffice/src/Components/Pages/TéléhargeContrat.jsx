@@ -33,7 +33,7 @@ const TéléhargeContrat = () => {
           <List.Item>
             <div className="flex justify-between items-center w-full">
               <span>Contrat {contract._id}</span>
-              <Link href={`http://localhost:3000/${contract.pdfPath}`} download>
+              <Link href={`https://go-ko.onrender.com/${contract.pdfPath}`} download>
                 <Button type="primary">Télécharger le PDF</Button>
               </Link>
             </div>

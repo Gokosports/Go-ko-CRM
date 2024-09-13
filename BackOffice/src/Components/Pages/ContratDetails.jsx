@@ -53,6 +53,8 @@ const ContractPage = () => {
     }
   };
 
+  
+
   const handleFinish = (values) => {
     const newContract = { ...values, id: contracts.length + 1 };
     setContracts([...contracts, newContract]);

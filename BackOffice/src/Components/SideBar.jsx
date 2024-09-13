@@ -133,7 +133,7 @@ const SideBar = () => {
         {
             key: '/téléchargecontrat',
             icon: <FontAwesomeIcon icon={faFileContract} />,
-            label: 'Contract',
+            label: 'Contrat',
 
         },
         {

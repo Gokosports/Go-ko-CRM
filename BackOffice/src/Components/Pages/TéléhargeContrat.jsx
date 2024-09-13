@@ -13,7 +13,7 @@ const TéléhargeContrat = () => {
 
   const fetchContracts = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/contract');
+      const response = await axios.get('https://go-ko.onrender.com/contract');
       setContracts(response.data.contracts);
     } catch (error) {
       console.error('Error fetching contracts:', error);

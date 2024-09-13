@@ -605,7 +605,7 @@ const ContractPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/contract/upload",
+        "https://go-ko.onrender.com/contract/upload",
         formData,
         {
           headers: {

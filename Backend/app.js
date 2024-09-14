@@ -22,7 +22,8 @@ const commercialRoutes = require('./src/Routes/commercialRoutes'); // Ajustez le
 
 const abonnementRoutes = require('./src/Routes/AbonnementRoutes');
 const commandeRoutes = require('./src/Routes/CommandeRoutes');
-const contractRoutes = require('./src/Routes/ContractRoutes')
+
+const contractRoutes = require('./src/Routes/uploadRoute');
 
 
 // Connecter à MongoDB
@@ -60,7 +61,8 @@ app.use('/commercials', commercialRoutes); // Route pour les commerciaux
 app.use('/abonnements', abonnementRoutes); // Route pour les abonnements
 app.use('/commandes', commandeRoutes); // Route pour les commandes
 
-app.use('/contract', contractRoutes);
+
+app.use('/api', contractRoutes);
 
 
 app.use(fileUpload());

@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
 const contractSchema = new mongoose.Schema({
-  pdfPath: { type: String }, // This will store the path to the uploaded PDF
-});
+  fileName: { type: String, required: true },
+  fileUrl: { type: String, required: true },
+}, { timestamps: true });
 
 const Contract = mongoose.model('Contract', contractSchema);
 

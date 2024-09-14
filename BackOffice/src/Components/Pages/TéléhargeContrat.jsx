@@ -1,45 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { List, Button, message } from 'antd';
-import { Link } from 'react-router-dom';
 
 const TéléhargeContrat = () => {
   const [contracts, setContracts] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch contracts data from your API
+    const fetchContracts = async () => {
+      try {
+        const response = await axios.get('https://go-ko.onrender.com/api/contracts');
+        setContracts(response.data);
+      } catch (error) {
+        console.error('Error fetching contracts:', error);
+      }
+    };
+
     fetchContracts();
   }, []);
 
-  const fetchContracts = async () => {
-    try {
-      const response = await axios.get('https://go-ko.onrender.com/contract');
-      setContracts(response.data.contracts);
-    } catch (error) {
-      console.error('Error fetching contracts:', error);
-      message.error('Failed to fetch contracts.');
-    } finally {
-      setLoading(false);
-    }
+  const handleRedirect = (url) => {
+    window.location.href = url;
   };
 
   return (
-    <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-6">Téléchargez vos Contrats</h2>
-      <List
-        loading={loading}
-        dataSource={contracts}
-        renderItem={contract => (
-          <List.Item>
-            <div className="flex justify-between items-center w-full">
-              <span>Contrat {contract._id}</span>
-              <Link href={`https://go-ko.onrender.com/${contract.pdfPath}`} download>
-                <Button type="primary">Télécharger le PDF</Button>
-              </Link>
-            </div>
-          </List.Item>
-        )}
-      />
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-2xl font-bold text-center mb-6">Télécharger Contrats</h1>
+      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="py-3 px-6 text-left font-medium text-gray-700">Nom</th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">Télécharger</th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">Créé le</th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">Mis à jour le</th>
+          </tr>
+        </thead>
+        <tbody>
+          {contracts.map(contract => (
+            <tr key={contract._id} className="border-t border-gray-200 hover:bg-gray-50">
+              <td className="py-3 px-6">{contract.fileName}</td>
+              <td className="py-3 px-6">
+                <button
+                  className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-all"
+                  onClick={() => handleRedirect(contract.fileUrl)}
+                >
+                  Télécharger
+                </button>
+              </td>
+              <td className="py-3 px-6">{new Date(contract.createdAt).toLocaleString()}</td>
+              <td className="py-3 px-6">{new Date(contract.updatedAt).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

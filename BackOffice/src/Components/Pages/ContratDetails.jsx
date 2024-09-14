@@ -598,28 +598,25 @@ const ContractPage = () => {
     const pdfBlob = doc.output("blob");
     uploadPDFToServer(pdfBlob, contract.id);
   };
-
   const uploadPDFToServer = async (pdfBlob, contractId) => {
     const formData = new FormData();
-    formData.append("pdf", pdfBlob, `contrat_${contractId}.pdf`);
-
+    formData.append("pdf", new Blob([pdfBlob], { type: "application/pdf" }), `contrat_${contractId}.pdf`);
+  
     try {
-      const response = await axios.post(
-        "https://go-ko.onrender.com/contract/upload",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post("https://go-ko.onrender.com/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("PDF uploaded successfully:", response.data);
       message.success("PDF envoyé au serveur avec succès.");
     } catch (error) {
-      console.error("Erreur lors de l'envoi du PDF :", error);
+      console.error("Erreur lors de l'envoi du PDF :", error.response?.data || error);
       message.error("Échec de l'envoi du PDF.");
     }
   };
-
+  
+ 
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-6">Créer un Contrat pour Coach</h2>

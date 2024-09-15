@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import '../../../assets/style/login.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPersonSnowboarding, faLock, faEnvelope, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import {  faLock, faEnvelope, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { message } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 
@@ -11,7 +11,8 @@ const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const [redirect, setRedirect] = useState(false);
+  
 
   const handleUsernameChange = (event) => {
     setEmail(event.target.value);
@@ -33,14 +34,19 @@ const SignIn = () => {
       const token = response.data.token; // Assurez-vous que c'est bien la clé que vous utilisez
       localStorage.setItem('token', token);
       const decodedToken = jwtDecode(token);
-      console.log('Login successful. Token:', token);
+      setRedirect(true);
+      // console.log('Login successful. Token:', token);
       message.success(`Bienvenue dans le tableau de bord ${decodedToken.role}`);
-      navigate('/');
+      setRedirect(true);
     } catch (error) {
       message.error('Email ou mot de passe invalide');
       console.error('Erreur lors de la connexion:', error);
     }
   };
+
+  if (redirect) {
+    return <Navigate to={"/"} />;
+}
   
   return (
     <>

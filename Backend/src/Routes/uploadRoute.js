@@ -1,4 +1,3 @@
-
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
@@ -75,8 +74,8 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
 
 router.get("/contracts", async (req, res) => {
     try {
-      const contracts = await Contract.find(); // Fetch all contracts
-      console.log("Fetched contracts:", contracts); // Log fetched contracts
+        const contracts = await Contract.find().sort({ createdAt: -1 });
+      
       res.status(200).json(contracts);
     } catch (error) {
       console.error(error);

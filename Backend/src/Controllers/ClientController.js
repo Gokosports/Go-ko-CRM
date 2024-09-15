@@ -1,3 +1,4 @@
+const { default: mongoose } = require('mongoose');
 const Client = require('../Models/ClientModel');
 const Commercial = require('../Models/Commercial');
 const bcrypt = require('bcrypt');
@@ -179,20 +180,50 @@ const importClients = async (req, res) => {
 };
 // Fonction pour assigner des clients à un commercial
 
+// const assignClients = async (req, res) => {
+//     const { clientIds, commercialId } = req.body;
+
+//     try {
+//         const response = await Client.updateMany(
+//             { _id: { $in: clientIds } },
+//             { $set: { commercial: commercialId } },
+//             { multi: true }
+//         );
+//         res.status(200).json({ response });
+//         console.log('Clients affectés avec succès' , response);
+//     } catch (error) {
+//         res.status(500).json({ message: 'Erreur lors de l\'affectation des clients', error });
+//     }
+// };
 const assignClients = async (req, res) => {
     const { clientIds, commercialId } = req.body;
 
     try {
-        await Client.updateMany(
-            { _id: { $in: clientIds } },
-            { $set: { commercial: commercialId } },
-            { multi: true }
+        // Ensure clientIds are valid ObjectId
+        const validClientIds = clientIds.filter(id => mongoose.Types.ObjectId.isValid(id));
+        
+        if (!validClientIds.length) {
+            return res.status(400).json({ message: 'No valid client IDs provided' });
+        }
+
+        const response = await Client.updateMany(
+            { _id: { $in: validClientIds } },
+            { $set: { commercial: commercialId } }
         );
-        res.status(200).json({ message: 'Clients affectés avec succès' });
+
+        if (response.matchedCount === 0) {
+            return res.status(404).json({ message: 'No clients found with the provided IDs' });
+        }
+
+        res.status(200).json({ response });
+        console.log('Clients successfully assigned', response);
     } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de l\'affectation des clients', error });
+        console.error('Error assigning clients:', error.message);  // Log error message
+        console.error(error.stack);  // Log full error stack
+        res.status(500).json({ message: 'Error assigning clients', error: error.message });
     }
 };
+
 
 // Désaffecter des clients d'un commercial
 const unassignClients = async (req, res) => {

@@ -1,17 +1,3 @@
-// // const { initializeApp } = require('firebase/app');
-// // const { getStorage } = require('firebase/storage');
-// const admin = require('firebase-admin');
-// const serviceAccount = require('./config/goko-bcf4f-firebase-adminsdk-ngw8e-9945bc55ca.json');
-
-// admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount),
-//      storageBucket: "goko-bcf4f.appspot.com"
-    
-//   });
-//   const bucket = admin.storage().bucket();
-
-//   module.exports = { bucket };
-
 // Load environment variables from .env file
 require('dotenv').config();
 

@@ -558,6 +558,7 @@ const ContractPage = () => {
     doc.addImage(logo, "PNG", 450, 16, 100, 40);
     doc.setFontSize(16);
     doc.text("Contrat d'Abonnement au Service de Coaching", 40, 40);
+    const supplementsList = contract.supplement.length > 0 ? contract.supplement.join(", ") : "Aucun";
 
     const tableData = [
       ["No de membre (référence du mandat)", contract.nemuro],
@@ -575,7 +576,7 @@ const ContractPage = () => {
       ["Adresse e-mail", contract.email],
       ["Type d’affiliation", contract.affiliationType],
       ["Durée du contrat", contract.contractDuration],
-      ["Suppléments", contract.supplement],
+      ["Suppléments", supplementsList],
       ["RIB", contract.rib],
       [
         "MANDAT DE PRÉLÈVEMENT SEPA",
@@ -734,7 +735,12 @@ const ContractPage = () => {
               },
             ]}
           >
-            <Select placeholder="Choisissez un supplément" className="rounded-md">
+            <Select 
+                placeholder="Choisissez un supplément" 
+                className="rounded-md"
+                mode="multiple"
+                allowClear
+            >
             <Option value="Football">Football</Option>
               <Option value="Course à pied">Course à pied</Option>
               <Option value="Fitness">Fitness</Option>

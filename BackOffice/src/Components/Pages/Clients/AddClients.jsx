@@ -7,11 +7,11 @@ import axios from 'axios';
 
 const { Option } = Select;
 
-const clientTypes = [
-    { label: 'Client Actif', value: 'client_actif' },
-    { label: 'Prospect VRG', value: 'prospect_vr' },
-    { label: 'Prospect Qlf', value: 'prospect_qlf' },
-];
+// const clientTypes = [
+//     { label: 'Client Actif', value: 'client_actif' },
+//     { label: 'Prospect VRG', value: 'prospect_vr' },
+//     { label: 'Prospect Qlf', value: 'prospect_qlf' },
+// ];
 
 const AddClient = () => {
     const [form] = Form.useForm();
@@ -105,13 +105,13 @@ const AddClient = () => {
                             <Option value="femme">Femme</Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item name="type" label="Type" rules={[{ required: false, message: 'Veuillez sélectionner le type' }]}>
+                    {/* <Form.Item name="type" label="Type" rules={[{ required: false, message: 'Veuillez sélectionner le type' }]}>
                         <Radio.Group>
                             {clientTypes.map(type => (
                                 <Radio key={type.value} value={type.value}>{type.label}</Radio>
                             ))}
                         </Radio.Group>
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item name="address" label="Adresse" rules={[{ required: true, message: 'Veuillez entrer l\'adresse' }]}>
                         <Input />
                     </Form.Item>

@@ -9,12 +9,12 @@ import 'tailwindcss/tailwind.css';
 const { Option } = Select;
 const { TabPane } = Tabs;
 
-const clientTypes = [
-    { label: 'Tous', value: 'all' },
-    { label: 'Client Actif', value: 'client_actif' },
-    { label: 'Prospect VR', value: 'prospect_vr' },
-    { label: 'Prospect Qlf', value: 'prospect_qlf' },
-];
+// const clientTypes = [
+//     { label: 'Tous', value: 'all' },
+//     { label: 'Client Actif', value: 'client_actif' },
+//     { label: 'Prospect VR', value: 'prospect_vr' },
+//     { label: 'Prospect Qlf', value: 'prospect_qlf' },
+// ];
 
 const getInitials = (prenom, nom) => {
     if (!prenom || !nom) return '';
@@ -288,13 +288,13 @@ const ClientDetailsPage = () => {
                             <Option value="femme">Femme</Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item name="type" label="Type">
+                    {/* <Form.Item name="type" label="Type">
                         <Select>
                             {clientTypes.slice(1).map(type => (
                                 <Option key={type.value} value={type.value}>{type.label}</Option>
                             ))}
                         </Select>
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item name="address" label="Adresse" rules={[{ required: true, message: 'Veuillez entrer l\'adresse' }]}>
                         <Input />
                     </Form.Item>

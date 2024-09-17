@@ -58,13 +58,13 @@ const adMed = async (req, res) => {
                 process.env.JWT_SECRET || 'default_secret_key',
                 { expiresIn: '24h' }
             );
-            console.log('Commercial login successful:', token);
+            // console.log('Commercial login successful:', token);
             return res.json({ token });
         }
 
         const admin = await Admin.findOne({ email: req.body.email });
         if (!admin) {
-            console.log('Admin not found');
+            // console.log('Admin not found');
             return res.status(401).json({ message: 'Incorrect email or password' });
         }
 
@@ -79,7 +79,7 @@ const adMed = async (req, res) => {
             process.env.JWT_SECRET || 'default_secret_key',
             { expiresIn: '24h' }
         );
-        console.log('Admin login successful:', token);
+        // console.log('Admin login successful:', token);
         return res.json({ token });
 
     } catch (error) {

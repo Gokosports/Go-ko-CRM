@@ -11,14 +11,9 @@ const ClientSchema = new mongoose.Schema({
     age: { type: String },
     sex: { type: String, enum: ['homme', 'femme'] },
     address: { type: String },
-    type: { 
-        type: String, 
-        enum: ['client_actif', 'prospect_vr', 'prospect_qlf'], 
-        default: 'prospect_vr' //prospect_vr 
-    },
     commercial: { type: mongoose.Schema.Types.ObjectId, ref: 'Commercial' }, 
     commentaires: [CommentSchema],
-
+    type: { type: String, default: "all" },
 }, { timestamps: true });
 
 

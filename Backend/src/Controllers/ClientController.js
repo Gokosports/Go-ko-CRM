@@ -42,7 +42,7 @@ const getAllClients = async (req, res) => {
 
 // Créer un client
 const createClient = async (req, res) => {
-    const { nom, prenom, email, password, phone, sex, address, imageUrl, age, type,commercial } = req.body;
+    const { nom, prenom, email, password, phone, sex, address, imageUrl, age, commercial } = req.body;
 
     try {
         let hashedPassword = null;
@@ -58,14 +58,16 @@ const createClient = async (req, res) => {
             phone, 
             sex, 
             address, 
-            imageUrl, 
+            imageUrl,
             age, 
-            type ,
+            // type,
             commercial
         });
 
         const savedClient = await newClient.save();
+        console.log('Client créé avec succès', savedClient);
         res.status(201).send(savedClient);
+       
     } catch (error) {
         res.status(400).send({ message: 'Erreur lors de la création du client', details: error.message });
     }
@@ -89,10 +91,10 @@ const getClientById = async (req, res) => {
 // Mettre à jour un client par son ID
 const updateClientById = async (req, res) => {
     const { id } = req.params;
-    const { nom, prenom, email, password, phone, sex, address, imageUrl, age, type,commercial } = req.body;
+    const { nom, prenom, email, password, phone, sex, address, imageUrl, age, commercial } = req.body;
 
     try {
-        let updatedFields = { nom, prenom, email, phone, sex, address, imageUrl, age, type,commercial };
+        let updatedFields = { nom, prenom, email, phone, sex, address, imageUrl, age, commercial };
         
         if (password) {
             updatedFields.password = await bcrypt.hash(password, 10);
@@ -149,16 +151,16 @@ const importClients = async (req, res) => {
         }
 
         for (const clientData of clients) {
-            const { nom, prenom, email, phone, sex, address, age, type } = clientData;
+            const { nom, prenom, email, phone, sex, address, age,  } = clientData;
 
-            if (!nom || !prenom || !email || !phone || !sex || !address || !age || !type) {
+            if (!nom || !prenom || !email || !phone || !sex || !address || !age ) {
                 errors.push({ clientData, message: 'Missing required fields' });
                 continue;
             }
 
             try {
                 const newClient = new Client({
-                    nom, prenom, email, phone, sex, address, age, type
+                    nom, prenom, email, phone, sex, address, age
                 });
                 const savedClient = await newClient.save();
                 savedClients.push(savedClient);
@@ -240,6 +242,48 @@ const unassignClients = async (req, res) => {
         res.status(500).json({ message: 'Erreur lors de la désaffectation des clients', error });
     }
 };
+
+// Update client type (category) instead of preferredClientFilter
+const updateClientCategory = async (req, res) => {
+    const { id } = req.params;
+    const { filterType } = req.body;
+  
+    try {
+      const client = await Client.findByIdAndUpdate(
+        id,
+        { type: filterType },
+        { new: true }
+      );
+      if (client) {
+        res.json({ message: 'Filter type updated successfully', filterType: client.type });
+      } else {
+        res.status(404).json({ message: 'Client not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating filter preference', error });
+    }
+  };
+  
+
+// Get user filter preference (type)
+const getUserFilterPreference = async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const client = await Client.findById(id);
+      console.log('Client:', client);  // Log the client for debugging
+      if (client) {
+        res.json({ filterType: client.type });  // Return the client's type
+      } else {
+        res.status(404).json({ message: 'Client not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching filter preference', error });
+    }
+  };
+  
+
+
 module.exports = {
     profile,
     getAllClients,
@@ -249,5 +293,9 @@ module.exports = {
     deleteClientById,
     importClients,
     assignClients,
-    unassignClients
+    unassignClients,
+    updateClientCategory,
+    getUserFilterPreference
 };
+
+

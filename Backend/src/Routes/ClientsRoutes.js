@@ -9,7 +9,10 @@ const {
     deleteClientById,
     assignClients,
     importClients,
-    unassignClients
+    unassignClients,
+    updateClientCategory,
+    getUserFilterPreference,
+
 } = require('../Controllers/ClientController'); // Ajustez le chemin si nécessaire
 
 const {
@@ -48,7 +51,9 @@ router.post('/assign-clients', authenticateUser, authorize(['Admin']), assignCli
 // Route pour désaffecter des clients
 router.post('/unassign-clients', authenticateUser, authorize(['Admin']), unassignClients);
 
-
+// Update user filter preference
+router.put('/:id/filter', authenticateUser, authorize(['Admin', 'Commercial']), updateClientCategory);
+router.get('/:id/filtered', authenticateUser, authorize(['Admin', 'Commercial']), getUserFilterPreference);
 
 
 

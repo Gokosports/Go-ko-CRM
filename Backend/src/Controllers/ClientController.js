@@ -243,44 +243,80 @@ const unassignClients = async (req, res) => {
     }
 };
 
-// Update client type (category) instead of preferredClientFilter
 const updateClientCategory = async (req, res) => {
     const { id } = req.params;
-    const { filterType } = req.body;
+    const { filterType, categoryComment } = req.body;
   
     try {
       const client = await Client.findByIdAndUpdate(
         id,
-        { type: filterType },
+        { type: filterType, categoryComment: categoryComment || "N/A" },
         { new: true }
       );
       if (client) {
-        res.json({ message: 'Filter type updated successfully', filterType: client.type });
+        res.json({ message: 'Filter type and comment updated successfully', client });
       } else {
         res.status(404).json({ message: 'Client not found' });
       }
     } catch (error) {
-      res.status(500).json({ message: 'Error updating filter preference', error });
+      res.status(500).json({ message: 'Error updating client category', error });
     }
-  };
-  
+};
 
-// Get user filter preference (type)
 const getUserFilterPreference = async (req, res) => {
     const { id } = req.params;
   
     try {
       const client = await Client.findById(id);
-      console.log('Client:', client);  // Log the client for debugging
       if (client) {
-        res.json({ filterType: client.type });  // Return the client's type
+        res.json({ filterType: client.type, categoryComment: client.categoryComment || "N/A" });
       } else {
         res.status(404).json({ message: 'Client not found' });
       }
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching filter preference', error });
+      res.status(500).json({ message: 'Error fetching client preference', error });
     }
-  };
+};
+
+
+// // Update client type (category) instead of preferredClientFilter
+// const updateClientCategory = async (req, res) => {
+//     const { id } = req.params;
+//     const { filterType } = req.body;
+  
+//     try {
+//       const client = await Client.findByIdAndUpdate(
+//         id,
+//         { type: filterType },
+//         { new: true }
+//       );
+//       if (client) {
+//         res.json({ message: 'Filter type updated successfully', filterType: client.type });
+//       } else {
+//         res.status(404).json({ message: 'Client not found' });
+//       }
+//     } catch (error) {
+//       res.status(500).json({ message: 'Error updating filter preference', error });
+//     }
+//   };
+  
+
+// // Get user filter preference (type)
+// const getUserFilterPreference = async (req, res) => {
+//     const { id } = req.params;
+  
+//     try {
+//       const client = await Client.findById(id);
+//       console.log('Client:', client);  // Log the client for debugging
+//       if (client) {
+//         res.json({ filterType: client.type });  // Return the client's type
+//       } else {
+//         res.status(404).json({ message: 'Client not found' });
+//       }
+//     } catch (error) {
+//       res.status(500).json({ message: 'Error fetching filter preference', error });
+//     }
+//   };
   
 
 

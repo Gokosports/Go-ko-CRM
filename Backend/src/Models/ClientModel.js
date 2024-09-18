@@ -14,6 +14,7 @@ const ClientSchema = new mongoose.Schema({
     commercial: { type: mongoose.Schema.Types.ObjectId, ref: 'Commercial' }, 
     commentaires: [CommentSchema],
     type: { type: String, default: "all" },
+    categoryComment: { type: String, default: "N/A" },
 }, { timestamps: true });
 
 

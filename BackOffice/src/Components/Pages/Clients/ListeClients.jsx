@@ -64,50 +64,84 @@ const ClientTable = () => {
     fetchClients(); // Fetch clients and apply the filter immediately
     fetchCommercials();
   }, []);
-
+  
   const handleCategoryClick = async (id, categoryType) => {
+    // Prompt for a comment or use default "N/A"
+    const comment = prompt("Enter a comment for this category:") || "N/A";
+
     try {
-      const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
 
-      // Update filter type on the backend
-      const response = await axios.put(
-        `https://go-ko.onrender.com/clients/${id}/filter`,
-        { filterType: categoryType },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data) {
-        // Get the updated list of clients from the server
-        const updatedResponse = await axios.get(
-          "https://go-ko.onrender.com/clients",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        // Make the API call to update the client category and comment
+        const response = await axios.put(
+            `https://go-ko.onrender.com/clients/${id}/filter`,
+            { filterType: categoryType, categoryComment: comment },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
         );
 
-        const updatedClients = updatedResponse.data;
-
-        // Update the client list and filter type
-        setClients(updatedClients);
-        setFilterType(categoryType);
-        localStorage.setItem("filterType", categoryType);
-
-        // Apply the filter
-        filterClients(categoryType, updatedClients);
-      } else {
-        message.error("Unable to update client type");
-      }
+        if (response.data) {
+            const updatedClient = response.data.client;
+            const updatedClients = clients.map((c) =>
+                c._id === id ? updatedClient : c
+            );
+            setClients(updatedClients);
+            setFilterType(categoryType);
+            localStorage.setItem('filterType', categoryType);
+            filterClients(categoryType, updatedClients);
+        } else {
+            message.error("Unable to update client type");
+        }
     } catch (error) {
-      console.error("Error updating client type:", error);
-      message.error("Error updating client type");
+        console.error("Error updating client type:", error);
+        message.error("Error updating client type");
     }
-  };
+};
+
+
+//   const handleCategoryClick = async (id, categoryType) => {
+//     try {
+//       const token = localStorage.getItem("token");
+  
+//       // Update filter type on the backend
+//       const response = await axios.put(
+//         `http://localhost:3000/clients/${id}/filter`,
+//         { filterType: categoryType },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+  
+//       if (response.data) {
+//         // Get the updated list of clients from the server
+//         const updatedResponse = await axios.get("http://localhost:3000/clients", {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+  
+//         const updatedClients = updatedResponse.data;
+  
+//         // Update the client list and filter type
+//         setClients(updatedClients);
+//         setFilterType(categoryType);
+//         localStorage.setItem('filterType', categoryType);
+  
+//         // Apply the filter
+//         filterClients(categoryType, updatedClients);
+//       } else {
+//         message.error("Unable to update client type");
+//       }
+//     } catch (error) {
+//       console.error("Error updating client type:", error);
+//       message.error("Error updating client type");
+//     }
+//   };
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -118,7 +152,7 @@ const ClientTable = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-
+  
         if (Array.isArray(response.data)) {
           setClients(response.data);
           filterClients(filterType, response.data); // Apply filter after fetching
@@ -130,31 +164,28 @@ const ClientTable = () => {
         message.error("Error fetching clients");
       }
     };
-
+  
     fetchClients();
   }, [filterType]); // Re-run when filterType changes
-
+  
   useEffect(() => {
     const fetchFilterPreference = async () => {
       const id = localStorage.getItem("userId");
       const token = localStorage.getItem("token");
-
+  
       if (!id) {
         console.error("User ID is missing in localStorage");
         return;
       }
-
+  
       try {
-        const response = await axios.get(
-          `https://go-ko.onrender.com/clients/${id}/filtered`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
+        const response = await axios.get(`https://go-ko.onrender.com/clients/${id}/filtered`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+  
         const { filterType } = response.data;
         setFilterType(filterType || "all"); // Set the filter type
-
+  
         if (clients.length > 0) {
           filterClients(filterType || "all", clients); // Apply the filter
         }
@@ -162,10 +193,13 @@ const ClientTable = () => {
         console.error("Error fetching filter preference:", error);
       }
     };
-
+  
     fetchFilterPreference();
   }, [clients]); // Ensure this runs when clients are fetched
+  
+  
 
+  
   const fetchClients = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -182,7 +216,7 @@ const ClientTable = () => {
         message.error("Erreur lors de la récupération des données des clients");
       }
     } catch (error) {
-      console.error("Error fetching client by ID:", error);
+        console.error("Error fetching client by ID:", error);
       message.error("Erreur lors de la récupération des données du client");
     }
   };
@@ -197,215 +231,216 @@ const ClientTable = () => {
     }
   };
 
+        
   const handleFilterClick = (type) => {
     setFilterType(type);
     filterClients(type, clients);
   };
 
-  const fetchCommercials = async () => {
-    try {
-      const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-      const response = await axios.get("https://go-ko.onrender.com/commercials", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCommercials(response.data);
-    } catch (error) {
-      console.error("Error fetching commercials:", error);
-      message.error("Erreur lors de la récupération des commerciaux");
-    }
-  };
+        const fetchCommercials = async () => {
+            try {
+              const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
+              const response = await axios.get("https://go-ko.onrender.com/commercials", {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+              setCommercials(response.data);
+            } catch (error) {
+              console.error("Error fetching commercials:", error);
+              message.error("Erreur lors de la récupération des commerciaux");
+            }
+          };
+        
+        const handleUploadChange = (info) => {
+            if (info.file.status === "uploading") {
+                setUploading(true);
+            }
+            if (info.file.status === "done") {
+                const imageUrl = info.file.response.secure_url;
+                form.setFieldsValue({ imageUrl });
+                setUploadedFileName(info.file.name);
+                setImageUrl(imageUrl);
+                setUploading(false);
+                message.success(`${info.file.name} fichier téléchargé avec succès`);
+            } else if (info.file.status === "error") {
+                console.error(
+                    "Erreur de téléchargement:",
+                    info.file.error,
+                    info.file.response
+                );
+                message.error(`${info.file.name} échec du téléchargement du fichier.`);
+                setUploading(false);
+            }
+        };
 
-  const handleUploadChange = (info) => {
-    if (info.file.status === "uploading") {
-      setUploading(true);
-    }
-    if (info.file.status === "done") {
-      const imageUrl = info.file.response.secure_url;
-      form.setFieldsValue({ imageUrl });
-      setUploadedFileName(info.file.name);
-      setImageUrl(imageUrl);
-      setUploading(false);
-      message.success(`${info.file.name} fichier téléchargé avec succès`);
-    } else if (info.file.status === "error") {
-      console.error(
-        "Erreur de téléchargement:",
-        info.file.error,
-        info.file.response
-      );
-      message.error(`${info.file.name} échec du téléchargement du fichier.`);
-      setUploading(false);
-    }
-  };
+        const handleClientClick = (client) => {
+            navigate(`/client/${client._id}`);
+          };
+        
+          const handleEdit = (client) => {
+            setEditingClient(client);
+            form.setFieldsValue({
+              ...client,
+              commercial: client.commercial ? client.commercial._id : undefined,
+            });
+            setUploadedFileName(
+              client.imageUrl ? client.imageUrl.split("/").pop() : ""
+            );
+            setImageUrl(client.imageUrl || "");
+            setIsModalVisible(true);
+          };
+        
+          const handleDelete = async (clientId) => {
+            try {
+              const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
+              await axios.delete(`https://go-ko.onrender.com/clients/${clientId}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+              const updatedClients = clients.filter(
+                (client) => client._id !== clientId
+              );
+              setClients(updatedClients);
+              filterClients(filterType, updatedClients);
+              setPagination({ ...pagination, total: updatedClients.length });
+              message.success("Client supprimé avec succès");
+            } catch (error) {
+              console.error("Error deleting client:", error);
+              message.error("Erreur lors de la suppression du client");
+            }
+          };
 
-  const handleClientClick = (client) => {
-    navigate(`/client/${client._id}`);
-  };
-
-  const handleEdit = (client) => {
-    setEditingClient(client);
-    form.setFieldsValue({
-      ...client,
-      commercial: client.commercial ? client.commercial._id : undefined,
-    });
-    setUploadedFileName(
-      client.imageUrl ? client.imageUrl.split("/").pop() : ""
-    );
-    setImageUrl(client.imageUrl || "");
-    setIsModalVisible(true);
-  };
-
-  const handleDelete = async (clientId) => {
-    try {
-      const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-      await axios.delete(`https://go-ko.onrender.com/clients/${clientId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const updatedClients = clients.filter(
-        (client) => client._id !== clientId
-      );
-      setClients(updatedClients);
-      filterClients(filterType, updatedClients);
-      setPagination({ ...pagination, total: updatedClients.length });
-      message.success("Client supprimé avec succès");
-    } catch (error) {
-      console.error("Error deleting client:", error);
-      message.error("Erreur lors de la suppression du client");
-    }
-  };
-
-  const handleSave = async (values) => {
-    console.log("Données envoyées pour ajout de client:", values);
-    try {
-      const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-      if (editingClient) {
-        await axios.put(
-          `https://go-ko.onrender.com/clients/${editingClient._id}`,
-          values,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const handleSave = async (values) => {
+          console.log("Données envoyées pour ajout de client:", values);
+          try {
+            const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
+            if (editingClient) {
+              await axios.put(
+                `https://go-ko.onrender.com/clients/${editingClient._id}`,
+                values,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              message.success("Client mis à jour avec succès");
+            } else {
+              const res = await axios.post("https://go-ko.onrender.com/clients", values, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+              console.log("responseclients", res);
+              message.success("Client ajouté avec succès");
+            }
+            fetchClients();
+            setIsModalVisible(false);
+            form.resetFields();
+            setEditingClient(null);
+            setUploadedFileName("");
+            setImageUrl("");
+          } catch (error) {
+            console.error(
+              "Error saving client:",
+              error.response ? error.response.data : error.message
+            );
+            message.error("Erreur lors de la sauvegarde du client");
           }
-        );
-        message.success("Client mis à jour avec succès");
-      } else {
-        const res = await axios.post("https://go-ko.onrender.com/clients", values, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log("responseclients", res);
-        message.success("Client ajouté avec succès");
-      }
-      fetchClients();
-      setIsModalVisible(false);
-      form.resetFields();
-      setEditingClient(null);
-      setUploadedFileName("");
-      setImageUrl("");
-    } catch (error) {
-      console.error(
-        "Error saving client:",
-        error.response ? error.response.data : error.message
-      );
-      message.error("Erreur lors de la sauvegarde du client");
-    }
-  };
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    form.resetFields();
-    setEditingClient(null);
-    setUploadedFileName("");
-    setImageUrl("");
-  };
-
-  const handleAssignCancel = () => {
-    setIsAssignModalVisible(false);
-    assignForm.resetFields();
-    setSelectedClients([]);
-  };
-
-  const handleAssign = async (values) => {
-    try {
-      const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-      await axios.post(
-        "https://go-ko.onrender.com/clients/assign-clients",
-        {
-          clientIds: selectedClients,
-          commercialId: values.commercial,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const updatedClients = clients.map((client) => {
-        if (selectedClients.includes(client._id)) {
-          return {
-            ...client,
-            commercial: commercials.find(
-              (com) => com._id === values.commercial
-            ),
+        };
+        const handleCancel = () => {
+            setIsModalVisible(false);
+            form.resetFields();
+            setEditingClient(null);
+            setUploadedFileName("");
+            setImageUrl("");
           };
-        }
-        return client;
-      });
-      setClients(updatedClients);
-      filterClients(filterType, updatedClients);
-
-      message.success("Clients affectés au commercial avec succès");
-      setIsAssignModalVisible(false);
-      setSelectedClients([]);
-    } catch (error) {
-      console.error("Erreur lors de l'affectation des clients:", error);
-      message.error("Erreur lors de l'affectation des clients");
-    }
-  };
-
-  const handleUnassign = async () => {
-    try {
-      const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-      await axios.post(
-        "https://go-ko.onrender.com/clients/unassign-clients",
-        {
-          clientIds: selectedClients,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const updatedClients = clients.map((client) => {
-        if (selectedClients.includes(client._id)) {
-          return {
-            ...client,
-            commercial: null,
+        
+          const handleAssignCancel = () => {
+            setIsAssignModalVisible(false);
+            assignForm.resetFields();
+            setSelectedClients([]);
           };
-        }
-        return client;
-      });
-      setClients(updatedClients);
-      filterClients(filterType, updatedClients);
-
-      message.success("Clients désaffectés du commercial avec succès");
-      setIsUnassignModalVisible(false);
-      setSelectedClients([]);
-    } catch (error) {
-      console.error("Erreur lors de la désaffectation des clients:", error);
-      message.error("Erreur lors de la désaffectation des clients");
-    }
-  };
-  const handleTableChange = (pagination) => {
-    setPagination(pagination);
-  };
+        
+        const handleAssign = async (values) => {
+          try {
+            const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
+            await axios.post(
+              "https://go-ko.onrender.com/clients/assign-clients",
+              {
+                clientIds: selectedClients,
+                commercialId: values.commercial,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+        
+            const updatedClients = clients.map((client) => {
+              if (selectedClients.includes(client._id)) {
+                return {
+                  ...client,
+                  commercial: commercials.find(
+                    (com) => com._id === values.commercial
+                  ),
+                };
+              }
+              return client;
+            });
+            setClients(updatedClients);
+            filterClients(filterType, updatedClients);
+        
+            message.success("Clients affectés au commercial avec succès");
+            setIsAssignModalVisible(false);
+            setSelectedClients([]);
+          } catch (error) {
+            console.error("Erreur lors de l'affectation des clients:", error);
+            message.error("Erreur lors de l'affectation des clients");
+          }
+        };
+        
+        const handleUnassign = async () => {
+          try {
+            const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
+            await axios.post(
+              "https://go-ko.onrender.com/clients/unassign-clients",
+              {
+                clientIds: selectedClients,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+        
+            const updatedClients = clients.map((client) => {
+              if (selectedClients.includes(client._id)) {
+                return {
+                  ...client,
+                  commercial: null,
+                };
+              }
+              return client;
+            });
+            setClients(updatedClients);
+            filterClients(filterType, updatedClients);
+        
+            message.success("Clients désaffectés du commercial avec succès");
+            setIsUnassignModalVisible(false);
+            setSelectedClients([]);
+          } catch (error) {
+            console.error("Erreur lors de la désaffectation des clients:", error);
+            message.error("Erreur lors de la désaffectation des clients");
+          }
+        };
+        const handleTableChange = (pagination) => {
+            setPagination(pagination);
+        };
 
   const columns = [
     {
@@ -506,6 +541,9 @@ const ClientTable = () => {
           >
             Prospect QLF
           </Button>
+          <div className="mt-2">
+                    <strong>Comment:</strong> {record.categoryComment || "N/A"}
+                </div>
         </div>
       ),
     },
@@ -687,7 +725,13 @@ const ClientTable = () => {
                 <Option value="femme">Femme</Option>
               </Select>
             </Form.Item>
-
+            <Form.Item
+        name="categoryComment"
+        label="Commentaire sur la catégorie"
+        rules={[{ required: false, message: "Optionnel: Entrez un commentaire" }]}
+    >
+        <Input.TextArea rows={3} />
+    </Form.Item>
             <Form.Item
               name="address"
               label="Adresse"

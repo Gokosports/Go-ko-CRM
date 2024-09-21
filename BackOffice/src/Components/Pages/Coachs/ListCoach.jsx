@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Modal, Form, Input, Select, message, Popconfirm, Upload, Breadcrumb, Avatar } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import 'tailwindcss/tailwind.css';
 
 const { Option } = Select;
+const clientTypes = [
+  { label: "Tous", value: "all" },
+  { label: "Client Actif", value: "client_actif" },
+  { label: "Prospect VRG", value: "prospect_vr" },
+  { label: "Prospect Qlf", value: "prospect_qlf" },
+];
 
 const getInitials = (prenom, nom) => {
   if (!prenom || !nom) return '';
@@ -14,6 +20,7 @@ const getInitials = (prenom, nom) => {
 
 const CoachList = () => {
   const [coaches, setCoaches] = useState([]);
+  const [filteredCoaches, setFilteredCoaches] = useState(coaches); // New state to store filtered data
   const [specialities, setSpecialities] = useState([]);
   const [commercials, setCommercials] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -29,12 +36,68 @@ const CoachList = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [fileList, setFileList] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
+  const [filterType, setFilterType] = useState("all");
+  const [filteredClients, setFilteredClients] = useState([]);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchCoaches();
     fetchSpecialities();
     fetchCommercials();
+  }, []);
+
+ 
+  
+  useEffect(() => {
+    const fetchCoaches = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          message.error('No token found, please login first');
+          return;
+        }
+        const response = await axios.get('https://go-ko.onrender.com/coaches', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setCoaches(response.data);
+      } catch (error) {
+        console.error('Error fetching coaches:', error);
+        message.error('Failed to fetch coaches');
+      }
+    };
+    fetchCoaches();
+  }, []); // Re-run when filterType changes
+  
+  useEffect(() => {
+    const fetchFilterPreference = async () => {
+      const id = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
+  
+      if (!id) {
+        console.error("User ID is missing in localStorage");
+        return;
+      }
+  
+      try {
+        const response = await axios.get(`https://go-ko.onrender.com/coaches/${id}/filteredCoach`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+  
+        const { filterType } = response.data;
+        setFilterType(filterType || "all"); // Set the filter type
+  
+        if (clients.length > 0) {
+          filterClients(filterType || "all", clients); // Apply the filter
+        }
+      } catch (error) {
+        console.error("Error fetching filter preference:", error);
+      }
+    };
+  
+    fetchFilterPreference();
   }, []);
 
   const fetchCoaches = async () => {
@@ -45,16 +108,85 @@ const CoachList = () => {
         return;
       }
       const response = await axios.get('https://go-ko.onrender.com/coaches', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setCoaches(response.data);
+      setFilteredClients(response.data); // Set the initial filtered clients
     } catch (error) {
       console.error('Error fetching coaches:', error);
       message.error('Failed to fetch coaches');
     }
   };
+  
+  const handleCategoryClick = async (id, categoryType) => {
+    console.log("Attempting to update category with type:", categoryType);
+    
+    // Prompt the user for a comment
+    const comment = prompt("Enter a comment for this category:") || "N/A";
+
+    try {
+        // Get token from localStorage
+        const token = localStorage.getItem("token");
+        
+        // Send request to update the coach's type and category comment
+        const response = await axios.put(
+            `https://go-ko.onrender.com/coaches/${id}/filterCoach`,
+            { filterType: categoryType, categoryComment: comment },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        console.log("Response from API:", response.data);
+
+        // Check if the response is valid and update the UI
+        if (response.data) {
+            // Update the coach's type and comment in the local state
+            const updatedCoaches = coaches.map((coach) =>
+                coach._id === id
+                    ? { ...coach, type: categoryType, categoryComment: comment }
+                    : coach
+            );
+
+            console.log("Updated coaches list:", updatedCoaches);
+
+            // Update the state for coaches
+            setCoaches(updatedCoaches);
+
+            // Re-filter the clients based on the new type
+            const filtered = filterClients(filterType, updatedCoaches);
+            setFilteredCoaches(filtered);
+
+            // Show a success message or update UI as needed
+            message.success("Coach type and comment updated successfully");
+        } else {
+            message.error("Unable to update coach type");
+        }
+    } catch (error) {
+        console.error("Error updating coach type:", error);
+        message.error("Error updating coach type");
+    }
+};
+
+  
+const filterClients = (type, clients) => {
+  if (type === "all") {
+      return clients;
+  }
+  return clients.filter(client => client.type === type); // Ensure client.type exists
+};
+
+
+
+const handleFilterClick = (type) => {
+  setFilterType(type); // Set the current filter type
+  const filtered = filterClients(type, coaches); // Filter coaches based on type
+  setFilteredCoaches(filtered); // Update the filteredCoaches state with the filtered data
+};
+
+useEffect(() => {
+  const filtered = filterClients(filterType, coaches);
+  setFilteredCoaches(filtered);
+}, [filterType, coaches]);
+
 
   const fetchSpecialities = async () => {
     try {
@@ -255,6 +387,8 @@ const CoachList = () => {
     setPagination(pagination);
   };
 
+
+
   const columns = [
     {
       title: 'Coach',
@@ -273,6 +407,45 @@ const CoachList = () => {
       ),
     },
     { title: 'Email', dataIndex: 'email', key: 'email', render: (text, record) => <div className="cursor-pointer" onClick={() => handleCoachClick(record)}>{text}</div> },
+    {
+      title: "Type et Comentaire",
+      dataIndex: "type",
+      key: "type",
+      render: (type, record) => (
+        <div className="flex-1">
+        <div className="flex gap-2">
+          <Button
+            className={`btn ${
+              type === "client_actif" ? "btn-active" : "btn-inactive"
+            }`}
+            onClick={() => handleCategoryClick(record._id, "client_actif")}
+          >
+            Client Actif
+          </Button>
+          <Button
+            className={`btn ${
+              type === "prospect_vr" ? "btn-active" : "btn-inactive"
+            }`}
+            onClick={() => handleCategoryClick(record._id, "prospect_vr")}
+          >
+            Prospect VRG
+          </Button>
+          <Button
+            className={`btn ${
+              type === "prospect_qlf" ? "btn-active" : "btn-inactive"
+            }`}
+            onClick={() => handleCategoryClick(record._id, "prospect_qlf")}
+          >
+            Prospect QLF
+          </Button>
+        </div>
+        <div className="mt-2">
+          <strong>Comment:</strong> {record.categoryComment || "N/A"}
+        </div>
+      </div>
+      
+      ),
+    },
     { title: 'Téléphone', dataIndex: 'phone', key: 'phone', render: (text, record) => <div className="cursor-pointer" onClick={() => handleCoachClick(record)}>{text}</div> },
     { title: 'Âge', dataIndex: 'age', key: 'age', render: (text, record) => <div className="cursor-pointer" onClick={() => handleCoachClick(record)}>{text}</div> },
     { title: 'Sexe', dataIndex: 'sex', key: 'sex', render: (text, record) => <div className="cursor-pointer" onClick={() => handleCoachClick(record)}>{text}</div> },
@@ -286,6 +459,7 @@ const CoachList = () => {
         </div>
       ),
     },
+    
     {
       title: 'Commercial',
       key: 'commercial',
@@ -349,9 +523,19 @@ const CoachList = () => {
       </Breadcrumb>
       <h1 className="text-xl font-bold mb-4">Liste des Coachs</h1>
       <div className="flex justify-between mb-4">
-        {/* <Button type="primary" onClick={() => setIsModalVisible(true)} icon={<PlusOutlined />}>
-          Ajouter un Coach
-        </Button> */}
+      <div className="flex flex-col md:flex-row justify-between mb-4">
+        <div className="space-x-2">
+          {clientTypes?.map((type) => (
+            <Button
+              key={type.value}
+              type={filterType === type.value ? "primary" : "default"}
+              onClick={() => handleFilterClick(type.value)}
+            >
+              {type.label}
+            </Button>
+          ))}
+        </div>
+      </div>
       <div>
           {/* <Button type="primary" onClick={() => setIsAssignModalVisible(true)}>
             Affecter les Coachs au Commercial
@@ -362,15 +546,14 @@ const CoachList = () => {
         </div>
       </div>
       <Table
-        columns={columns}
-        dataSource={paginateData(coaches, pagination.current, pagination.pageSize).map(coach => ({ ...coach, key: coach._id }))}
-        rowKey="_id"
+         columns={columns}
+         dataSource={paginateData(filteredCoaches, pagination.current, pagination.pageSize).map(coach => ({ ...coach, key: coach._id }))}
         scroll={{ x: 600 }}
         rowSelection={rowSelection}
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: coaches.length,
+          total: filteredClients.length,
           showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} coachs`,
           onChange: (page, pageSize) => {
             setPagination({ current: page, pageSize });

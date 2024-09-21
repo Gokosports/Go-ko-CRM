@@ -95,7 +95,7 @@ const CoachDetailsPage = () => {
         if (key === "2") {
             navigate(`/coach/${id}/comments`);
         } else if (key === "3") {
-            navigate(`/coach/${id}/contrat`);
+            navigate(`/contrat/${id}`);
         } else {
             navigate(`/coach/${id}`);
         }

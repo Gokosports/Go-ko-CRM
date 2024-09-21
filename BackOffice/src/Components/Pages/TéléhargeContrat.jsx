@@ -8,7 +8,7 @@ const TéléhargeContrat = () => {
     // Fetch contracts data from your API
     const fetchContracts = async () => {
       try {
-        const response = await axios.get('https://go-ko.onrender.com/api/contracts');
+        const response = await axios.get('http://localhost:3000/api/contracts');
         setContracts(response.data);
       } catch (error) {
         console.error('Error fetching contracts:', error);

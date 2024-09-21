@@ -102,47 +102,6 @@ const ClientTable = () => {
 };
 
 
-//   const handleCategoryClick = async (id, categoryType) => {
-//     try {
-//       const token = localStorage.getItem("token");
-  
-//       // Update filter type on the backend
-//       const response = await axios.put(
-//         `http://localhost:3000/clients/${id}/filter`,
-//         { filterType: categoryType },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-  
-//       if (response.data) {
-//         // Get the updated list of clients from the server
-//         const updatedResponse = await axios.get("http://localhost:3000/clients", {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-  
-//         const updatedClients = updatedResponse.data;
-  
-//         // Update the client list and filter type
-//         setClients(updatedClients);
-//         setFilterType(categoryType);
-//         localStorage.setItem('filterType', categoryType);
-  
-//         // Apply the filter
-//         filterClients(categoryType, updatedClients);
-//       } else {
-//         message.error("Unable to update client type");
-//       }
-//     } catch (error) {
-//       console.error("Error updating client type:", error);
-//       message.error("Error updating client type");
-//     }
-//   };
-
   useEffect(() => {
     const fetchClients = async () => {
       try {
@@ -516,7 +475,8 @@ const ClientTable = () => {
       dataIndex: "type",
       key: "type",
       render: (type, record) => (
-        <div className="flex gap-2">
+        <div className="flex-1">
+            <div className="flex gap-2">
           <Button
             className={`btn ${
               type === "client_actif" ? "btn-active" : "btn-inactive"
@@ -541,6 +501,7 @@ const ClientTable = () => {
           >
             Prospect QLF
           </Button>
+        </div>
           <div className="mt-2">
                     <strong>Comment:</strong> {record.categoryComment || "N/A"}
                 </div>

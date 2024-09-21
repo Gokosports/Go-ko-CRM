@@ -251,7 +251,7 @@ function App() {
        />
       
       <Route
-          path="/coach/:id/contrat"
+          path="/contrat/:id"
           element={
             <MainLayout>
               <ContractPage/>

@@ -20,7 +20,7 @@ const AddCoach = () => {
 
     const fetchSpecialities = async () => {
         try {
-            const response = await axios.get('https://go-ko.onrender.com/speciality');
+            const response = await axios.get('http://localhost:3000/speciality');
             setSpecialities(response.data);
         } catch (error) {
             console.error('Error fetching specialities:', error);
@@ -32,7 +32,7 @@ const AddCoach = () => {
         console.log('Données envoyées pour ajout de coach:', values);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('https://go-ko.onrender.com/coaches', values, {
+            await axios.post('http://localhost:3000/coaches', values, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

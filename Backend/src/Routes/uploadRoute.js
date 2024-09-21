@@ -4,6 +4,7 @@ const path = require("path");
 const { bucket } = require("../../firebase-config");
 const Contract = require("../Models/ContractModel");
 const nodemailer = require("nodemailer");
+const Devis = require("../Models/DevisModel");
 
 
 const router = express.Router();
@@ -97,6 +98,32 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
   }
 });
 
+router.post("/uploads", upload.single("pdf"), async (req, res) => {
+
+  if (!req.file) {
+    return res.status(400).send("No file uploaded.");
+  }
+
+  try {
+    // Upload the file to your storage and get the URL
+    const fileUrl = await uploadFile(req.file);
+
+    // Save the contract metadata to the database
+    const newContract = new Devis({
+      fileName: req.file.originalname,
+      fileUrl: fileUrl,
+    });
+
+    // Save the contract details in the database
+    const savedContract = await newContract.save();
+
+    // Send a response back with the uploaded file URL
+    res.status(200).send({ fileUrl });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error uploading file.");
+  }
+});
 
 
 router.get("/contracts", async (req, res) => {
@@ -104,6 +131,17 @@ router.get("/contracts", async (req, res) => {
     const contracts = await Contract.find().sort({ createdAt: -1 });
 
     res.status(200).json(contracts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching contracts.");
+  }
+});
+
+router.get("/devis", async (req, res) => {
+  try {
+    const devis = await Devis.find().sort({ createdAt: -1 });
+
+    res.status(200).json(devis);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching contracts.");

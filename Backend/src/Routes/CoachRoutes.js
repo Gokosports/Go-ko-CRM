@@ -11,7 +11,7 @@ router.post('/', authenticateUser, authorize(['Admin']), createCoach);
 router.get('/', authenticateUser, getCoaches);
 
 // Route to get a coach by ID
-router.get('/:id', authenticateUser,  authorize(['Admin']), getCoachById);
+router.get('/:id', authenticateUser,  authorize(['Admin', 'Commercial']), getCoachById);
 
 // Route to update a coach by ID
 router.put('/:id', authenticateUser, authorize(['Admin']), updateCoach);

@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarCheck, faFileContract ,faUserTag, faTools, faPersonSnowboarding, faCalendar, faUserFriends, faHome, faUserTie, faUser, faUsers, faUserMd, faList, faPlus, faFileImport,faPlusCircle  } from '@fortawesome/free-solid-svg-icons';
+import { faFileContract ,faUserTag, faPersonSnowboarding,  faUserFriends, faHome, faUserTie, faUser, faUsers, faUserMd, faList, faPlus, faFileImport,faPlusCircle  } from '@fortawesome/free-solid-svg-icons';
 import { Layout, Menu } from 'antd';
 
 import { ToggleContext } from './store/ToggleContext';
-import { LoginContext } from './store/LoginContext';
+// import { LoginContext } from './store/LoginContext';
 import { jwtDecode } from 'jwt-decode';
 
 const { Sider } = Layout;
@@ -111,7 +111,7 @@ const SideBar = () => {
             children: [
                
                 {
-                    key: '/list-coachs',
+                    key: '/list-coaches',
                     label: 'Liste Coachs',
                     icon: <FontAwesomeIcon icon={faList} />,
                 },
@@ -134,6 +134,14 @@ const SideBar = () => {
             key: '/téléchargecontrat',
             icon: <FontAwesomeIcon icon={faFileContract} />,
             label: 'Contrat',
+            role:"Admin",
+
+        },
+        {
+            key: '/téléchargerdevis',
+            icon: <FontAwesomeIcon icon={faFileContract} />,
+            label: 'Devis',
+            
 
         },
         {

@@ -28,16 +28,13 @@ import Affectations from "./Components/Pages/Clients/AffectationClient"
 import AjoutCoach from "./Components/Pages/Coachs/AddCoachs";
 import AffectationCoach from "./Components/Pages/Coachs/AffectationCoach";
 
-
-
-
-
-
-
-
 import { LoginContext } from "./Components/store/LoginContext";
 import ContractPage from "./Components/Pages/ContratDetails";
 import TéléhargeContrat from "./Components/Pages/TéléhargeContrat";
+import ListCoaches from "./Components/Pages/Coachs/ListCoaches";
+import CoachesDetailsPage from "./Components/Pages/Coachs/CoachesDetailsPage";
+import DevisDetails from "./Components/Pages/DevisDetails";
+import TéléchargerDevis from "./Components/Pages/TéléchargerDevis";
 
 
 
@@ -82,7 +79,7 @@ const MainLayout = ({ children }) => {
 function App() {
   const { decodedToken } = useContext(LoginContext);
   const isDoc = () => {
-    return decodedToken  && decodedToken.role==="Commercial"
+    return decodedToken  && decodedToken.role === "Commercial"
   }
 
   return (
@@ -140,17 +137,7 @@ function App() {
           </MainLayout>
         }
       />
-      {/* {isDoc() && (
-        <Route
-          path="/calendar"
-          element={
-            <MainLayout>
-              <Calendar />
-            </MainLayout>
-          }
-        />
-      )}
-       */}
+     
       <Route
         path="/list-coachs"
         element={
@@ -159,11 +146,27 @@ function App() {
           </MainLayout>
         }
       />
+       <Route
+        path="/list-coaches"
+        element={
+          <MainLayout>
+            <ListCoaches />
+          </MainLayout>
+        }
+      />
       <Route
         path="/coach/:id"
         element={
           <MainLayout>
             <CoachsDetailsPage/>
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/coaches/:id"
+        element={
+          <MainLayout>
+            <CoachesDetailsPage/>
           </MainLayout>
         }
       />
@@ -258,11 +261,28 @@ function App() {
             </MainLayout>
           }
         />
+        <Route
+          path="/devis/:id"
+          element={
+            <MainLayout>
+              <DevisDetails/>
+            </MainLayout>
+          }
+        />
+       
        <Route
   path="/téléchargecontrat"
   element={
     <MainLayout>
       <TéléhargeContrat />
+    </MainLayout>
+  }
+/>
+<Route
+  path="/téléchargerdevis"
+  element={
+    <MainLayout>
+      <TéléchargerDevis />
     </MainLayout>
   }
 />

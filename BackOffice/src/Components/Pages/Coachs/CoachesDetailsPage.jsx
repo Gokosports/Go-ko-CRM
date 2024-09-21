@@ -13,7 +13,7 @@ const getInitials = (prenom, nom) => {
     return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase();
 };
 
-const CoachDetailsPage = () => {
+const CoachesDetailsPage = () => {
     const { id } = useParams();
     const [coach, setCoach] = useState(null);
     const [commercials, setCommercials] = useState([]);
@@ -30,7 +30,7 @@ const CoachDetailsPage = () => {
     const fetchCoach = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:3000/coaches/${id}`, {
+            const response = await axios.get(`https://go-ko.onrender.com/coaches/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -58,7 +58,7 @@ const CoachDetailsPage = () => {
     const fetchSpecialities = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:3000/speciality', {
+            const response = await axios.get('https://go-ko.onrender.com/speciality', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -95,7 +95,7 @@ const CoachDetailsPage = () => {
         if (key === "2") {
             navigate(`/coach/${id}/comments`);
         } else if (key === "3") {
-            navigate(`/contrat/${id}`);
+            navigate(`/devis/${id}`);
         } else {
             navigate(`/coach/${id}`);
         }
@@ -363,7 +363,7 @@ const CoachDetailsPage = () => {
                         scroll={{ x: 'max-content' }}
                     />
                 </TabPane>
-                <TabPane tab="Contrat" key="3">
+                <TabPane tab="Devis" key="3">
                     <Button type="primary" icon={<PlusOutlined />}>
                         Créer un contract
                     </Button>
@@ -489,4 +489,4 @@ const CoachDetailsPage = () => {
     );
 };
 
-export default CoachDetailsPage;
+export default CoachesDetailsPage;

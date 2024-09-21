@@ -3,6 +3,8 @@ const multer = require("multer");
 const path = require("path");
 const { bucket } = require("../../firebase-config");
 const Contract = require("../Models/ContractModel");
+const nodemailer = require("nodemailer");
+
 
 const router = express.Router();
 
@@ -12,7 +14,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 // Helper function to upload file to Firebase Storage
 const uploadFile = (file) => {
   return new Promise((resolve, reject) => {
-    const fileName = Date.now() + '-' + path.extname(file.originalname);
+    const fileName = Date.now() + "-" + path.extname(file.originalname);
     const fileUpload = bucket.file(fileName);
 
     const stream = fileUpload.createWriteStream({
@@ -43,47 +45,70 @@ const uploadFile = (file) => {
 
 
 
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
-// Handle file upload
 router.post("/upload", upload.single("pdf"), async (req, res) => {
-    if (!req.file) {
-      return res.status(400).send("No file uploaded.");
-    }
-  
-    try {
-      const fileUrl = await uploadFile(req.file);
-      
-      // Save the contract metadata to the database
-      const newContract = new Contract({
-        fileName: req.file.originalname,
-        fileUrl: fileUrl
-      });
-      console.log("New contract:", newContract); // Log the new contract
-      
-      const savedContract = await newContract.save();
-      console.log("Saved contract:", savedContract); // Log the saved contract
-      
-      res.status(200).send({ fileUrl });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error uploading file.");
-    }
-  });
-  
+
+  if (!req.file) {
+    return res.status(400).send("No file uploaded.");
+  }
+  if (!req.body.email) {
+    return res.status(400).send("Recipient email is required.");
+  }
+
+  try {
+    const fileUrl = await uploadFile(req.file);
+
+    // Save the contract metadata to the database
+    const newContract = new Contract({
+      fileName: req.file.originalname,
+      fileUrl: fileUrl,
+    });
+    const savedContract = await newContract.save();
+
+    // Send email with the contract PDF
+    const mailOptions = {
+      from: process.env.EMAIL_USER, // sender address
+      to: req.body.email, // receiver address (coach's email)
+      subject: 'Your Contract PDF',
+      text: 'Please find attached your contract.',
+      attachments: [
+        {
+          filename: req.file.originalname,
+          content: req.file.buffer,
+          contentType: req.file.mimetype,
+        },
+      ],
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + savedContract.fileUrl); // Log the email sent
+
+    res.status(200).send({ fileUrl });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error uploading file or sending email.");
+  }
+});
+
 
 
 router.get("/contracts", async (req, res) => {
-    try {
-        const contracts = await Contract.find().sort({ createdAt: -1 });
-      
-      res.status(200).json(contracts);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error fetching contracts.");
-    }
-  });
-  
-  
+  try {
+    const contracts = await Contract.find().sort({ createdAt: -1 });
+
+    res.status(200).json(contracts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching contracts.");
+  }
+});
 
 
 module.exports = router;

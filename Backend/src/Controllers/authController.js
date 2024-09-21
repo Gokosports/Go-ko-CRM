@@ -32,7 +32,7 @@ const loginClient = async (req, res) => {
             return res.status(401).send('Incorrect password');
         }
 
-        const token = jwt.sign({ userId: client._id, role: 'client' }, 'secret_key', { expiresIn: '24h' });
+        const token = jwt.sign({ userId: client._id, role: 'client' }, 'secret_key', { expiresIn: '72h' });
 
         res.json({ token });
     } catch (error) {
@@ -56,7 +56,7 @@ const adMed = async (req, res) => {
             const token = jwt.sign(
                 { userId: commercial._id, role: 'Commercial', name: commercial.nom + " " + commercial.prenom },
                 process.env.JWT_SECRET || 'default_secret_key',
-                { expiresIn: '24h' }
+                { expiresIn: '72h' }
             );
             // console.log('Commercial login successful:', token);
             return res.json({ token });

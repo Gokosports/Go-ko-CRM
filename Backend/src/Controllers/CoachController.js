@@ -33,6 +33,7 @@ exports.getCoaches = async (req, res) => {
 };
 // Get a coach by ID
 exports.getCoachById = async (req, res) => {
+    console.log('Request received with ID:', req.params.id);
     try {
         const coach = await Coach.findById(req.params.id).populate('speciality').populate('commercial');
         if (!coach) {
@@ -129,5 +130,40 @@ exports.unassignCoachFromCommercial = async (req, res) => {
     } catch (error) {
         console.error('Error unassigning coaches from commercial:', error.message);
         res.status(500).json({ message: 'Error unassigning coaches from commercial', error });
+    }
+};
+
+exports.updateCoachCategory = async (req, res) => {
+    const { id } = req.params;
+    const { filterType, categoryComment } = req.body;
+  
+    try {
+      const client = await Coach.findByIdAndUpdate(
+        id,
+        { type: filterType, categoryComment: categoryComment || "N/A" },
+        { new: true }
+      );
+      if (client) {
+        res.json({ message: 'Filter type and comment updated successfully', client });
+      } else {
+        res.status(404).json({ message: 'Client not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating client category', error });
+    }
+};
+
+exports.getChoachFilterPreference = async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const client = await Coach.findById(id);
+      if (client) {
+        res.json({ filterType: client.type, categoryComment: client.categoryComment || "N/A" });
+      } else {
+        res.status(404).json({ message: 'Client not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching client preference', error });
     }
 };

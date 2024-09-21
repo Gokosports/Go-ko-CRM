@@ -5,6 +5,8 @@ const CoachSchema = mongoose.Schema({
     nom: { type: String, required: false },
     prenom: { type: String, required: false },
     email: { type: String, required: false, unique: true },
+    type: { type: String, default: "all" },
+    categoryComment: { type: String, default: "N/A" },
     password: { type: String, required: false },
     phone :{type: String},
     image:{type: String},
@@ -21,6 +23,7 @@ const CoachSchema = mongoose.Schema({
     },
     commercial: { type: mongoose.Schema.Types.ObjectId, ref: 'Commercial' }, 
     commentaires: [CommentSchema],
+  
 
 
 },

@@ -96,6 +96,8 @@ const CoachesDetailsPage = () => {
             navigate(`/coach/${id}/comments`);
         } else if (key === "3") {
             navigate(`/devis/${id}`);
+        } else if (key === "4") {
+            navigate(`/coach/${id}/planning`);
         } else {
             navigate(`/coach/${id}`);
         }
@@ -364,6 +366,11 @@ const CoachesDetailsPage = () => {
                     />
                 </TabPane>
                 <TabPane tab="Devis" key="3">
+                    <Button type="primary" icon={<PlusOutlined />}>
+                        Créer un contract
+                    </Button>
+                </TabPane>
+                <TabPane tab="Planning" key="4">
                     <Button type="primary" icon={<PlusOutlined />}>
                         Créer un contract
                     </Button>

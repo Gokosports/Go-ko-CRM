@@ -35,6 +35,7 @@ import ListCoaches from "./Components/Pages/Coachs/ListCoaches";
 import CoachesDetailsPage from "./Components/Pages/Coachs/CoachesDetailsPage";
 import DevisDetails from "./Components/Pages/DevisDetails";
 import TéléchargerDevis from "./Components/Pages/TéléchargerDevis";
+import Planning from "./Components/Pages/Planning";
 
 
 
@@ -266,6 +267,14 @@ function App() {
           element={
             <MainLayout>
               <DevisDetails/>
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/coach/:id/planning"
+          element={
+            <MainLayout>
+              <Planning/>
             </MainLayout>
           }
         />

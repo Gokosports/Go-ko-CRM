@@ -38,8 +38,8 @@ const useFetch = (url, initialState = []) => {
 
 const ClientCommentsPage = () => {
     const { id: clientId } = useParams();
-    const { data: comments, loading: loadingComments, error: errorComments, setData: setComments } = useFetch(`http://localhost:5000/clients/${clientId}/comments`);
-    const { data: commercials, loading: loadingCommercials, error: errorCommercials } = useFetch('http://localhost:5000/commercials');
+    const { data: comments, loading: loadingComments, error: errorComments, setData: setComments } = useFetch(`https://go-ko.onrender.com/clients/${clientId}/comments`);
+    const { data: commercials, loading: loadingCommercials, error: errorCommercials } = useFetch('https://go-ko.onrender.com/commercials');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [currentComment, setCurrentComment] = useState(null);

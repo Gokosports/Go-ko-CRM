@@ -162,7 +162,7 @@ const ClientTable = () => {
             const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage
             console.log("Selected Clients:", selectedClients); // Log selected clients
             console.log("Commercial ID:", values.commercial); // Log commercial ID
-            await axios.post('http://localhost:3000/clients/assign-clients', {
+            await axios.post('https://go-ko.onrender.com/clients/assign-clients', {
                 clientIds: selectedClients,
                 commercialId: values.commercial,
             }, {

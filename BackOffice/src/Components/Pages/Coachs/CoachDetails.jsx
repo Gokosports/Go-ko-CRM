@@ -30,7 +30,7 @@ const CoachDetailsPage = () => {
     const fetchCoach = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:3000/coaches/${id}`, {
+            const response = await axios.get(`https://go-ko.onrender.com/coaches/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -58,7 +58,7 @@ const CoachDetailsPage = () => {
     const fetchSpecialities = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:3000/speciality', {
+            const response = await axios.get('https://go-ko.onrender.com/speciality', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

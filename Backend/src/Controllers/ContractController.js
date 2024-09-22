@@ -1,6 +1,7 @@
 const Contract = require('../Models/ContractModel');
 const fs = require('fs');
 const path = require('path');
+const Planning = require('../Models/PlanningModel');
 
 class ContractController {
   
@@ -68,6 +69,19 @@ class ContractController {
       });
     } catch (error) {
       console.error('Error creating contract:', error);
+      res.status(500).send({ message: 'Server error', error });
+    }
+  }
+
+  static async createPlanning(req, res) {
+    try {
+      const { coachId, time, callSituation, comment } = req.body;
+      const planning = new Planning({ coachId, time, callSituation, comment });
+      const savedPlanning = await planning.save();
+    
+      res.status(201).json({message: 'Planning created successfully', savedPlanning});
+    } catch (error) {
+      console.error('Error creating planning:', error);
       res.status(500).send({ message: 'Server error', error });
     }
   }

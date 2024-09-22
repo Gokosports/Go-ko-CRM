@@ -5,6 +5,7 @@ const { bucket } = require("../../firebase-config");
 const Contract = require("../Models/ContractModel");
 const nodemailer = require("nodemailer");
 const Devis = require("../Models/DevisModel");
+const Planning = require("../Models/PlanningModel");
 
 
 const router = express.Router();
@@ -145,6 +146,30 @@ router.get("/devis", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching contracts.");
+  }
+});
+
+router.post('/planning', async (req, res) => {
+  try {
+    const { coachId, time, callSituation, comment } = req.body;
+    // Save the planning details in the database
+    const newPlanning = new Planning({ coachId, time, callSituation, comment });
+    const savedPlanning = await newPlanning.save();
+
+    res.status(200).send({ message: 'Planning created', savedPlanning });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Error creating planning' });
+  }
+});
+// GET /api/planning
+router.get('/planning', async (req, res) => {
+  try {
+    const plannings = await Planning.find().populate('coachId'); // Populate if needed
+    res.status(200).json(plannings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching planning entries.' });
   }
 });
 

@@ -152,23 +152,23 @@ router.get("/devis", async (req, res) => {
 router.post('/planning', async (req, res) => {
   try {
     const { coachId, time, callSituation, comment } = req.body;
-    // Save the planning details in the database
     const newPlanning = new Planning({ coachId, time, callSituation, comment });
     const savedPlanning = await newPlanning.save();
-
     res.status(200).send({ message: 'Planning created', savedPlanning });
   } catch (error) {
-    console.error(error);
+    console.error('Error creating planning:', error);
     res.status(500).send({ message: 'Error creating planning' });
   }
 });
-// GET /api/planning
-router.get('/planning', async (req, res) => {
+
+// GET /planning/:coachId - Fetch all planning entries for a specific coach
+router.get('/planning/:coachId', async (req, res) => {
   try {
-    const plannings = await Planning.find().populate('coachId'); // Populate if needed
+    const { coachId } = req.params;
+    const plannings = await Planning.find({ coachId }).populate('coachId'); // Populating coach details if needed
     res.status(200).json(plannings);
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching planning entries for coach:', error);
     res.status(500).json({ message: 'Error fetching planning entries.' });
   }
 });

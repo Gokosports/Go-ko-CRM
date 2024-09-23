@@ -271,7 +271,7 @@ function App() {
           }
         />
         <Route
-          path="/coach/:id/planning"
+          path="/planning/:id"
           element={
             <MainLayout>
               <Planning/>

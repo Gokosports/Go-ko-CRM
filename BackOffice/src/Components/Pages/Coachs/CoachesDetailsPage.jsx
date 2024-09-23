@@ -97,7 +97,7 @@ const CoachesDetailsPage = () => {
         } else if (key === "3") {
             navigate(`/devis/${id}`);
         } else if (key === "4") {
-            navigate(`/coach/${id}/planning`);
+            navigate(`/planning/${id}`);
         } else {
             navigate(`/coach/${id}`);
         }

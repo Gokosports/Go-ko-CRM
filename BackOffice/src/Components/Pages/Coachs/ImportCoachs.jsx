@@ -162,7 +162,7 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
 
             const token = localStorage.getItem('token'); // Récupérer le token JWT
 
-            const response = await axios.post('http://localhost:5000/coaches/import', cleanedData, {
+            const response = await axios.post('https://go-ko.onrender.com/coaches/import', cleanedData, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Inclure le token JWT dans les en-têtes
                 }

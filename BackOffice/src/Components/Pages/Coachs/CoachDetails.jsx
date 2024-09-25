@@ -363,13 +363,13 @@ const CoachDetailsPage = () => {
                         scroll={{ x: 'max-content' }}
                     />
                 </TabPane>
-                <TabPane tab="Contrat" key="3">
+                {/* <TabPane tab="Contrat" key="3">
                     <Button type="primary" icon={<PlusOutlined />}>
                         Créer un contract
                     </Button>
                     
                  
-                </TabPane>
+                </TabPane> */}
                 
             </Tabs>
             <div className="flex justify-between items-center mt-4">

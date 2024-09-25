@@ -91,12 +91,12 @@ const Planning = () => {
 
   return (
     <div className="w-full p-6 bg-gray-100 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Create Planning for Coach</h2>
+      <h2 className="text-2xl font-bold mb-4">Créer un planning pour le coach</h2>
 
       {/* Display Coach's Name */}
       {coach && (
         <h3 className="text-lg font-semibold mb-4">
-          Planning for: {coach.prenom} {coach.nom}
+          Planning pour: {coach.prenom} {coach.nom}
         </h3>
       )}
 
@@ -104,7 +104,7 @@ const Planning = () => {
         {/* Date and Time Picker */}
         <div className="form-group">
           <label htmlFor="time" className="block text-sm font-medium text-gray-700">
-            Select Date and Time:
+          Sélectionner la date et l'heure :
           </label>
           <DatePicker
             selected={formData.time}
@@ -121,7 +121,7 @@ const Planning = () => {
         {/* Call Situation Input */}
         <div className="form-group">
           <label htmlFor="callSituation" className="block text-sm font-medium text-gray-700">
-            Call Situation:
+          Situation de l'appel :
           </label>
           <select
             id="callSituation"
@@ -132,9 +132,14 @@ const Planning = () => {
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
           >
             <option value="">Select Situation</option>
-            <option value="Scheduled">Scheduled</option>
-            <option value="Completed">Completed</option>
-            <option value="Canceled">Canceled</option>
+            <option value="Scheduled">Appel de vente</option>
+            <option value="Completed">Négociation devis</option>
+            <option value="Canceled">Conclusion vente</option>
+            <option value="Canceled">Vente</option>
+            <option value="Canceled">Appel de fidélisation</option>
+            <option value="Canceled">Ne répond pas</option>
+            <option value="Canceled">Faux numéro // Hors planning</option>
+            <option value="Canceled">Ne pas déranger</option>
           </select>
         </div>
 
@@ -159,13 +164,13 @@ const Planning = () => {
           type="submit"
           className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300"
         >
-          Submit Planning
+          Soumettre le planning
         </button>
       </form>
 
       {/* Full Calendar Display */}
       <div className="mt-6">
-        <h3 className="text-xl font-semibold mb-2">Coach's Calendar</h3>
+        <h3 className="text-xl font-semibold mb-2">Calendrier du coach</h3>
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"

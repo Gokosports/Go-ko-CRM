@@ -15,7 +15,7 @@ import "tailwindcss/tailwind.css";
 import logo from "../../assets/images/goko.png";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import SignaturePadComponent from "../SignaturePadComponent";
+// import SignaturePadComponent from "../SignaturePadComponent";
 
 const { Option } = Select;
 
@@ -23,15 +23,13 @@ const DevisDetails = () => {
   const { id } = useParams();
   const [form] = Form.useForm();
   const [totalPrice, setTotalPrice] = useState("€ 0");
-  const [selectedDuration, setSelectedDuration] = useState("1 an");
+  // const [selectedDuration, setSelectedDuration] = useState("1 an");
   const [coach, setCoach] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [ht, setHT] = useState(0); // State for HT (Hors Taxes)
   const [ttc, setTTC] = useState(0); // State for TTC (Toutes Taxes Comprises)
   const taxRate = 0.2; // Fixed tax rate (20%)
-  const [signature, setSignature] = useState(null);
-
-
+  // const [signature, setSignature] = useState(null);
 
   useEffect(() => {
     fetchCoach();
@@ -39,13 +37,20 @@ const DevisDetails = () => {
 
   const fetchCoach = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`https://go-ko.onrender.com/coaches/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `https://go-ko.onrender.com/coaches/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+ 
       setCoach(response.data);
+
+ // Accessing commercial name safely
+ const commercialName = response.data.commercial ? `${response.data.commercial.prenom} ${response.data.commercial.nom}` : '';
       form.setFieldsValue({
         nemuro: response.data._id,
         clientName: `${response.data.prenom} ${response.data.nom}`,
@@ -54,27 +59,30 @@ const DevisDetails = () => {
         age: response.data.age,
         sex: response.data.sex,
         address: response.data.ville,
+        commercialName: commercialName,
       });
     } catch (error) {
-      console.error('Error fetching coach:', error);
+      console.error("Error fetching coach:", error);
     }
   };
 
   const handleFinish = (values) => {
     const newContract = { ...values, id: new Date().getTime() };
     generateAndUploadPDF(newContract); // Call PDF generation and upload
-    message.success("Devis créé avec succès");
+    message.success("Contrat créé avec succès");
     form.resetFields();
   };
-    const showModal = () => {
+  const showModal = () => {
     setIsModalVisible(true);
   };
   const handleOk = () => {
     setIsModalVisible(false);
-};
+  };
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+
+  
 
   const handleDurationChange = (e) => {
     const duration = e.target.value;
@@ -96,14 +104,14 @@ const DevisDetails = () => {
     setHT(calculatedHT);
     setTTC(calculatedTTC);
   };
- 
 
   const generateAndUploadPDF = async (contract) => {
     const doc = new jsPDF("p", "pt", "a4");
     doc.addImage(logo, "PNG", 450, 16, 100, 40);
     doc.setFontSize(16);
-    doc.text("Devis d'Abonnement au Service de Coaching", 40, 40);
-    const supplementsList = contract.supplement.length > 0 ? contract.supplement.join(", ") : "Aucun";
+    doc.text("Contrat d'Abonnement au Service de Coaching", 40, 40);
+    const supplementsList =
+      contract.supplement.length > 0 ? contract.supplement.join(", ") : "Aucun";
 
     const tableData = [
       ["No de membre (référence du mandat)", contract.nemuro],
@@ -140,78 +148,113 @@ const DevisDetails = () => {
       headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
       styles: { cellPadding: 5, fontSize: 10 },
     });
-    // doc.text("Signature:", 400, doc.lastAutoTable.finalY + 50);
+    doc.text("Signature:", 400, doc.lastAutoTable.finalY + 50);
 
-    if (signature) {
-      doc.text("Signature:", 400, doc.lastAutoTable.finalY + 50);
-      doc.addImage(signature, "PNG", 400, doc.lastAutoTable.finalY + 70, 100, 50);
-    } else {
-      doc.text("Signature: (not provided)", 40, doc.lastAutoTable.finalY + 50);
-    }
-
-      // Convert the generated PDF to Blob format
-  const pdfBlob = doc.output('blob');
-  await uploadPDFToServer(pdfBlob, contract.id);
-
+    // Convert the generated PDF to Blob format
+    const pdfBlob = doc.output("blob");
+    const [recipientPrenom, recipientNom] = contract.clientName.split(" ");
+    await uploadPDFToServer(
+      pdfBlob,
+      contract.id,
+      contract.email,
+      recipientNom,
+      recipientPrenom,
+      contract.commercialName
+    );
   };
 
-  const uploadPDFToServer = async (pdfBlob, contractId, email) => {
+  const uploadPDFToServer = async (
+    pdfBlob,
+    contractId,
+    email,
+    recipientNom,
+    recipientPrenom,
+   commercialName
+  ) => {
+    const clientName = `${recipientPrenom} ${recipientNom}`;
     const formData = new FormData();
-    formData.append("pdf", new Blob([pdfBlob], { type: "application/pdf" }), `devis_${contractId}.pdf`);
-    
-  
+    formData.append(
+      "pdf",
+      new Blob([pdfBlob], { type: "application/pdf" }),
+      `contrat_${contractId}.pdf`
+    );
+    formData.append("email", email);
+    formData.append("clientName", clientName);
+    formData.append("commercialName", commercialName);
+
     try {
-      const response = await axios.post("https://go-ko.onrender.com/api/uploads", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "https://go-ko.onrender.com/api/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       console.log("PDF uploaded successfully:", response.data);
       message.success("PDF envoyé au serveur avec succès.");
-    
-    
     } catch (error) {
-      console.error("Erreur lors de l'envoi du PDF :", error.response?.data || error);
+      console.error(
+        "Erreur lors de l'envoi du PDF :",
+        error.response?.data || error
+      );
       message.error("Échec de l'envoi du PDF.");
     }
   };
 
- 
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-6">Créer un Devis pour Coach</h2>
+      <h2 className="text-2xl font-bold mb-6">Créer un Contrat pour Coach</h2>
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Form Items */}
           <Form.Item
             name="nemuro"
             label="No de membre (référence du mandat)"
-            rules={[{ required: true, message: "Veuillez entrer le numéro de membre" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez entrer le numéro de membre",
+              },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="clientName"
             label="Prénom + Nom"
-            rules={[{ required: true, message: "Veuillez entrer le nom du client" }]}
+            rules={[
+              { required: true, message: "Veuillez entrer le nom du client" },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="startDate"
             label="Date de Début"
-            rules={[{ required: true, message: "Veuillez sélectionner la date de début" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez sélectionner la date de début",
+              },
+            ]}
           >
             <DatePicker style={{ width: "100%" }} className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="endDate"
             label="Date de Fin"
-            rules={[{ required: true, message: "Veuillez sélectionner la date de fin" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez sélectionner la date de fin",
+              },
+            ]}
           >
             <DatePicker style={{ width: "100%" }} className="rounded-md" />
           </Form.Item>
-      <Form.Item
+          <Form.Item
             name="address"
             label="Adresse"
             rules={[{ required: true, message: "Veuillez entrer l’adresse" }]}
@@ -221,7 +264,9 @@ const DevisDetails = () => {
           <Form.Item
             name="zipCode"
             label="Code Postal"
-            rules={[{ required: true, message: "Veuillez entrer le code postal" }]}
+            rules={[
+              { required: true, message: "Veuillez entrer le code postal" },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
@@ -242,35 +287,67 @@ const DevisDetails = () => {
           <Form.Item
             name="phone"
             label="Téléphone"
-            rules={[{ required: true, message: "Veuillez entrer le numéro de téléphone" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez entrer le numéro de téléphone",
+              },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
+  name="commercialName"
+  label="Nom Commercial"
+  rules={[
+    {
+      required: false, // Not mandatory
+      message: "Veuillez entrer le nom commercial",
+    },
+  ]}
+>
+  <Input className="rounded-md" />
+</Form.Item>
+
+          <Form.Item
             name="email"
             label="Adresse e-mail"
-            rules={[{ required: true, message: "Veuillez entrer l’adresse e-mail" }]}
+            rules={[
+              { required: true, message: "Veuillez entrer l’adresse e-mail" },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="affiliationType"
             label="Type d’affiliation"
-            rules={[{ required: true, message: "Veuillez entrer le type d’affiliation" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez entrer le type d’affiliation",
+              },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="clubAddress"
             label="Adresse du Club"
-            rules={[{ required: true, message: "Veuillez entrer l’adresse du club" }]}
+            rules={[
+              { required: true, message: "Veuillez entrer l’adresse du club" },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="contractDuration"
             label="Durée du contrat"
-            rules={[{ required: true, message: "Veuillez sélectionner la durée du contrat" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez sélectionner la durée du contrat",
+              },
+            ]}
           >
             <Radio.Group onChange={handleDurationChange}>
               <Radio value="12 mois - 64,90 € par mois">
@@ -285,20 +362,20 @@ const DevisDetails = () => {
             </Radio.Group>
           </Form.Item>
           <Form.Item label="Montant Total HT">
-          <Input
-            value={`€ ${ht.toFixed(2)}`}
-            readOnly
-            className="rounded-md"
-          />
-        </Form.Item>
+            <Input
+              value={`€ ${ht.toFixed(2)}`}
+              readOnly
+              className="rounded-md"
+            />
+          </Form.Item>
 
-        <Form.Item label="Montant Total TTC">
-          <Input
-            value={`€ ${ttc.toFixed(2)}`}
-            readOnly
-            className="rounded-md"
-          />
-        </Form.Item>
+          <Form.Item label="Montant Total TTC">
+            <Input
+              value={`€ ${ttc.toFixed(2)}`}
+              readOnly
+              className="rounded-md"
+            />
+          </Form.Item>
           <Form.Item
             name="supplement"
             label="Suppléments"
@@ -309,13 +386,13 @@ const DevisDetails = () => {
               },
             ]}
           >
-            <Select 
-                placeholder="Choisissez un supplément" 
-                className="rounded-md"
-                mode="multiple"
-                allowClear
+            <Select
+              placeholder="Choisissez un supplément"
+              className="rounded-md"
+              mode="multiple"
+              allowClear
             >
-            <Option value="Football">Football</Option>
+              <Option value="Football">Football</Option>
               <Option value="Course à pied">Course à pied</Option>
               <Option value="Fitness">Fitness</Option>
               <Option value="Musculation">Musculation</Option>
@@ -371,96 +448,20 @@ const DevisDetails = () => {
           <Form.Item
             name="rib"
             label="RIB"
-            rules={[{ required: true, message: "Veuillez entrer le RIB" }]}
+            rules={[{ required: false, message: "Veuillez entrer le RIB" }]}
           >
             <Input className="rounded-md" />
-          </Form.Item> 
-          <p className="text-lg mt-10 font-semibold">Montant total : {totalPrice}</p>
-        </div>
-        <Form.Item
-         
-        >
-        <Button type="primary" htmlType="submit" className="mr-4">
-          Créer et Envoyer le Devis
-        </Button>
-             
-          <Button type="dashed" onClick={showModal} className="mb-4">
-  Add Signature
-</Button>
           </Form.Item>
- 
-
+          <p className="text-lg mt-10 font-semibold">
+            Montant total : {totalPrice}
+          </p>
+        </div>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" className="mr-4">
+            Créer et Envoyer le Contrat
+          </Button>
+        </Form.Item>
       </Form>
-    
-      <Modal
-        title="Aperçu du Contrat"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        
-        <ul
-          className="list-disc list-inside"
-          style={{
-            marginLeft: "0px",
-            padding: "10px",
-            backgroundColor: "#f9f9f9",
-            borderRadius: "8px",
-            lineHeight: "1.8",
-            color: "#333",
-            fontSize: "16px",
-          }}
-        >
-          <li>
-            Le coach s'engage à fournir des séances d'entraînement selon
-            l'horaire convenu.
-          </li>
-          <li>
-            Le client s'engage à participer aux séances programmées et à
-            respecter les horaires.
-          </li>
-          <li>
-            Le paiement doit être effectué en totalité avant le début des
-            séances.
-          </li>
-          <li>
-            Le coach n'est pas responsable des blessures subies en dehors des
-            séances d'entraînement.
-          </li>
-          <li>
-            Le client doit informer le coach de tout problème de santé ou
-            blessure pouvant affecter la participation.
-          </li>
-          <li>
-            Le contrat peut être résilié par l'une ou l'autre des parties avec
-            un préavis de deux semaines.
-          </li>
-          <li>
-            En cas d'annulation de séance, un préavis de 24 heures est requis
-            pour éviter des frais supplémentaires.
-          </li>
-          <li>
-            Les séances non annulées dans les délais seront facturées au plein
-            tarif.
-          </li>
-          <li>
-            Le client doit respecter les horaires de début et de fin des
-            séances.
-          </li>
-          <li>
-            Tout retard de plus de 15 minutes sera considéré comme une séance
-            annulée sans préavis et sera facturé au plein tarif.
-          </li>
-          <li>
-            Le coach se réserve le droit de terminer la séance à l'heure prévue
-            même si le client est en retard.
-          </li>
-        </ul>
-        <SignaturePadComponent onSignatureComplete={setSignature} />
-  <Button type="primary" onClick={handleOk}>
-    Save
-  </Button>
-      </Modal>
     </div>
   );
 };

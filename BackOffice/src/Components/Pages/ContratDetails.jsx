@@ -140,25 +140,23 @@ const ContractPage = () => {
       headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
       styles: { cellPadding: 5, fontSize: 10 },
     });
-    // doc.text("Signature:", 400, doc.lastAutoTable.finalY + 50);
-
-    if (signature) {
-      doc.text("Signature:", 400, doc.lastAutoTable.finalY + 50);
-      doc.addImage(signature, "PNG", 400, doc.lastAutoTable.finalY + 70, 100, 50);
-    } else {
-      doc.text("Signature: (not provided)", 40, doc.lastAutoTable.finalY + 50);
-    }
+    doc.text("Signature:", 400, doc.lastAutoTable.finalY + 50);
 
       // Convert the generated PDF to Blob format
   const pdfBlob = doc.output('blob');
-  await uploadPDFToServer(pdfBlob, contract.id, contract.email);
+  const [recipientPrenom, recipientNom] = contract.clientName.split(" ");
+  await uploadPDFToServer(pdfBlob, contract.id, contract.email, recipientNom, recipientPrenom);
 
   };
 
-  const uploadPDFToServer = async (pdfBlob, contractId, email) => {
+  const uploadPDFToServer = async (pdfBlob, contractId, email, recipientNom, recipientPrenom) => {
+    const clientName = `${recipientPrenom} ${recipientNom}`;
+    console.log("Client Name:", clientName);
     const formData = new FormData();
     formData.append("pdf", new Blob([pdfBlob], { type: "application/pdf" }), `contrat_${contractId}.pdf`);
     formData.append("email", email);
+    formData.append("clientName", clientName);
+   
   
     try {
       const response = await axios.post("https://go-ko.onrender.com/api/upload", formData, {
@@ -168,15 +166,15 @@ const ContractPage = () => {
       });
       console.log("PDF uploaded successfully:", response.data);
       message.success("PDF envoyé au serveur avec succès.");
-    
-    
+
     } catch (error) {
       console.error("Erreur lors de l'envoi du PDF :", error.response?.data || error);
       message.error("Échec de l'envoi du PDF.");
+
     }
   };
 
- 
+  
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-6">Créer un Contrat pour Coach</h2>
@@ -371,7 +369,7 @@ const ContractPage = () => {
           <Form.Item
             name="rib"
             label="RIB"
-            rules={[{ required: true, message: "Veuillez entrer le RIB" }]}
+            rules={[{ required: false, message: "Veuillez entrer le RIB" }]}
           >
             <Input className="rounded-md" />
           </Form.Item> 
@@ -384,9 +382,9 @@ const ContractPage = () => {
           Créer et Envoyer le Contrat
         </Button>
              
-          <Button type="dashed" onClick={showModal} className="mb-4">
+          {/* <Button type="dashed" onClick={showModal} className="mb-4">
   Add Signature
-</Button>
+</Button> */}
           </Form.Item>
  
 

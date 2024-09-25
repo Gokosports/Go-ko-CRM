@@ -20,13 +20,13 @@ const MyTable = () => {
       decodedUser.role === "Admin" ? (
         async () => {
           try {
-            const response = await axios.get('http://localhost:3000/consultation');
+            const response = await axios.get('https://go-ko.onrender.com/consultation');
             const appointmentData = response.data;
   
             // Fetch doctor names for each appointment
             const updatedAppointments = await Promise.all(appointmentData.map(async (appointment) => {
               try {
-                const docPatiResponse = await axios.get(`http://localhost:3000/patient/${appointment.doctor_id}/${appointment.patient_id}`, {
+                const docPatiResponse = await axios.get(`https://go-ko.onrender.com/patient/${appointment.doctor_id}/${appointment.patient_id}`, {
                   headers: {
                     'Authorization': `Bearer ${token}`
                   }

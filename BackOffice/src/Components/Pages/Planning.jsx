@@ -1,19 +1,19 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
 
 const Planning = () => {
   const { id: coachId } = useParams(); // Assuming coachId comes from URL params
   const [formData, setFormData] = useState({
     time: new Date(),
-    callSituation: '',
-    comment: '',
+    callSituation: "",
+    comment: "",
   });
   const [coach, setCoach] = useState(null);
   const [plannings, setPlannings] = useState([]);
@@ -22,15 +22,18 @@ const Planning = () => {
   // Fetch coach details
   const fetchCoach = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`https://go-ko.onrender.com/coaches/${coachId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `https://go-ko-9qul.onrender.com/coaches/${coachId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setCoach(response.data);
     } catch (error) {
-      console.error('Error fetching coach:', error);
+      console.error("Error fetching coach:", error);
     }
   };
 
@@ -38,21 +41,24 @@ const Planning = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://go-ko.onrender.com/api/planning', {
-        coachId,
-        time: formData.time,
-        callSituation: formData.callSituation,
-        comment: formData.comment,
-      });
-      console.log('Form Submitted:', response);
+      const response = await axios.post(
+        "https://go-ko-9qul.onrender.com/api/planning",
+        {
+          coachId,
+          time: formData.time,
+          callSituation: formData.callSituation,
+          comment: formData.comment,
+        }
+      );
+      console.log("Form Submitted:", response);
       fetchPlannings(); // Refresh the planning list
       setFormData({
         time: new Date(),
-        callSituation: '',
-        comment: '',
+        callSituation: "",
+        comment: "",
       });
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -60,10 +66,12 @@ const Planning = () => {
   const fetchPlannings = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://go-ko.onrender.com/api/planning/${coachId}`);
+      const response = await axios.get(
+        `https://go-ko-9qul.onrender.com/api/planning/${coachId}`
+      );
       setPlannings(response.data);
     } catch (error) {
-      console.error('Error fetching plannings:', error);
+      console.error("Error fetching plannings:", error);
     } finally {
       setLoading(false);
     }
@@ -91,7 +99,9 @@ const Planning = () => {
 
   return (
     <div className="w-full p-6 bg-gray-100 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Créer un planning pour le coach</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        Créer un planning pour le coach
+      </h2>
 
       {/* Display Coach's Name */}
       {coach && (
@@ -103,8 +113,11 @@ const Planning = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Date and Time Picker */}
         <div className="form-group">
-          <label htmlFor="time" className="block text-sm font-medium text-gray-700">
-          Sélectionner la date et l'heure :
+          <label
+            htmlFor="time"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Sélectionner la date et l'heure :
           </label>
           <DatePicker
             selected={formData.time}
@@ -120,14 +133,19 @@ const Planning = () => {
 
         {/* Call Situation Input */}
         <div className="form-group">
-          <label htmlFor="callSituation" className="block text-sm font-medium text-gray-700">
-          Situation de l'appel :
+          <label
+            htmlFor="callSituation"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Situation de l'appel :
           </label>
           <select
             id="callSituation"
             name="callSituation"
             value={formData.callSituation}
-            onChange={(e) => setFormData({ ...formData, callSituation: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, callSituation: e.target.value })
+            }
             required
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
           >
@@ -145,14 +163,19 @@ const Planning = () => {
 
         {/* Comment Input */}
         <div className="w-full">
-          <label htmlFor="comment" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="comment"
+            className="block text-sm font-medium text-gray-700"
+          >
             Comment:
           </label>
           <textarea
             id="comment"
             name="comment"
             value={formData.comment}
-            onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, comment: e.target.value })
+            }
             placeholder="Add any comments here..."
             required
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
@@ -175,9 +198,9 @@ const Planning = () => {
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay',
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
           events={formatEventsForCalendar()}
           editable={true}

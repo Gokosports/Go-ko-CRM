@@ -31,20 +31,21 @@ const ContractPage = () => {
   const taxRate = 0.2; // Fixed tax rate (20%)
   const [signature, setSignature] = useState(null);
 
-
-
   useEffect(() => {
     fetchCoach();
   }, []);
 
   const fetchCoach = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`https://go-ko.onrender.com/coaches/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `https://go-ko-9qul.onrender.com/coaches/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setCoach(response.data);
       form.setFieldsValue({
         nemuro: response.data._id,
@@ -56,7 +57,7 @@ const ContractPage = () => {
         address: response.data.ville,
       });
     } catch (error) {
-      console.error('Error fetching coach:', error);
+      console.error("Error fetching coach:", error);
     }
   };
 
@@ -66,12 +67,12 @@ const ContractPage = () => {
     message.success("Contrat créé avec succès");
     form.resetFields();
   };
-    const showModal = () => {
+  const showModal = () => {
     setIsModalVisible(true);
   };
   const handleOk = () => {
     setIsModalVisible(false);
-};
+  };
   const handleCancel = () => {
     setIsModalVisible(false);
   };
@@ -96,14 +97,14 @@ const ContractPage = () => {
     setHT(calculatedHT);
     setTTC(calculatedTTC);
   };
- 
 
   const generateAndUploadPDF = async (contract) => {
     const doc = new jsPDF("p", "pt", "a4");
     doc.addImage(logo, "PNG", 450, 16, 100, 40);
     doc.setFontSize(16);
     doc.text("Contrat d'Abonnement au Service de Coaching", 40, 40);
-    const supplementsList = contract.supplement.length > 0 ? contract.supplement.join(", ") : "Aucun";
+    const supplementsList =
+      contract.supplement.length > 0 ? contract.supplement.join(", ") : "Aucun";
 
     const tableData = [
       ["No de membre (référence du mandat)", contract.nemuro],
@@ -142,39 +143,57 @@ const ContractPage = () => {
     });
     doc.text("Signature:", 400, doc.lastAutoTable.finalY + 50);
 
-      // Convert the generated PDF to Blob format
-  const pdfBlob = doc.output('blob');
-  const [recipientPrenom, recipientNom] = contract.clientName.split(" ");
-  await uploadPDFToServer(pdfBlob, contract.id, contract.email, recipientNom, recipientPrenom);
-
+    // Convert the generated PDF to Blob format
+    const pdfBlob = doc.output("blob");
+    const [recipientPrenom, recipientNom] = contract.clientName.split(" ");
+    await uploadPDFToServer(
+      pdfBlob,
+      contract.id,
+      contract.email,
+      recipientNom,
+      recipientPrenom
+    );
   };
 
-  const uploadPDFToServer = async (pdfBlob, contractId, email, recipientNom, recipientPrenom) => {
+  const uploadPDFToServer = async (
+    pdfBlob,
+    contractId,
+    email,
+    recipientNom,
+    recipientPrenom
+  ) => {
     const clientName = `${recipientPrenom} ${recipientNom}`;
     console.log("Client Name:", clientName);
     const formData = new FormData();
-    formData.append("pdf", new Blob([pdfBlob], { type: "application/pdf" }), `contrat_${contractId}.pdf`);
+    formData.append(
+      "pdf",
+      new Blob([pdfBlob], { type: "application/pdf" }),
+      `contrat_${contractId}.pdf`
+    );
     formData.append("email", email);
     formData.append("clientName", clientName);
-   
-  
+
     try {
-      const response = await axios.post("https://go-ko.onrender.com/api/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "https://go-ko-9qul.onrender.com/api/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       console.log("PDF uploaded successfully:", response.data);
       message.success("PDF envoyé au serveur avec succès.");
-
     } catch (error) {
-      console.error("Erreur lors de l'envoi du PDF :", error.response?.data || error);
+      console.error(
+        "Erreur lors de l'envoi du PDF :",
+        error.response?.data || error
+      );
       message.error("Échec de l'envoi du PDF.");
-
     }
   };
 
-  
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
       <h2 className="text-2xl font-bold mb-6">Créer un Contrat pour Coach</h2>
@@ -184,32 +203,49 @@ const ContractPage = () => {
           <Form.Item
             name="nemuro"
             label="No de membre (référence du mandat)"
-            rules={[{ required: true, message: "Veuillez entrer le numéro de membre" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez entrer le numéro de membre",
+              },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="clientName"
             label="Prénom + Nom"
-            rules={[{ required: true, message: "Veuillez entrer le nom du client" }]}
+            rules={[
+              { required: true, message: "Veuillez entrer le nom du client" },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="startDate"
             label="Date de Début"
-            rules={[{ required: true, message: "Veuillez sélectionner la date de début" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez sélectionner la date de début",
+              },
+            ]}
           >
             <DatePicker style={{ width: "100%" }} className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="endDate"
             label="Date de Fin"
-            rules={[{ required: true, message: "Veuillez sélectionner la date de fin" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez sélectionner la date de fin",
+              },
+            ]}
           >
             <DatePicker style={{ width: "100%" }} className="rounded-md" />
           </Form.Item>
-      <Form.Item
+          <Form.Item
             name="address"
             label="Adresse"
             rules={[{ required: true, message: "Veuillez entrer l’adresse" }]}
@@ -219,7 +255,9 @@ const ContractPage = () => {
           <Form.Item
             name="zipCode"
             label="Code Postal"
-            rules={[{ required: true, message: "Veuillez entrer le code postal" }]}
+            rules={[
+              { required: true, message: "Veuillez entrer le code postal" },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
@@ -240,35 +278,54 @@ const ContractPage = () => {
           <Form.Item
             name="phone"
             label="Téléphone"
-            rules={[{ required: true, message: "Veuillez entrer le numéro de téléphone" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez entrer le numéro de téléphone",
+              },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="email"
             label="Adresse e-mail"
-            rules={[{ required: true, message: "Veuillez entrer l’adresse e-mail" }]}
+            rules={[
+              { required: true, message: "Veuillez entrer l’adresse e-mail" },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="affiliationType"
             label="Type d’affiliation"
-            rules={[{ required: true, message: "Veuillez entrer le type d’affiliation" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez entrer le type d’affiliation",
+              },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="clubAddress"
             label="Adresse du Club"
-            rules={[{ required: true, message: "Veuillez entrer l’adresse du club" }]}
+            rules={[
+              { required: true, message: "Veuillez entrer l’adresse du club" },
+            ]}
           >
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
             name="contractDuration"
             label="Durée du contrat"
-            rules={[{ required: true, message: "Veuillez sélectionner la durée du contrat" }]}
+            rules={[
+              {
+                required: true,
+                message: "Veuillez sélectionner la durée du contrat",
+              },
+            ]}
           >
             <Radio.Group onChange={handleDurationChange}>
               <Radio value="12 mois - 64,90 € par mois">
@@ -283,20 +340,20 @@ const ContractPage = () => {
             </Radio.Group>
           </Form.Item>
           <Form.Item label="Montant Total HT">
-          <Input
-            value={`€ ${ht.toFixed(2)}`}
-            readOnly
-            className="rounded-md"
-          />
-        </Form.Item>
+            <Input
+              value={`€ ${ht.toFixed(2)}`}
+              readOnly
+              className="rounded-md"
+            />
+          </Form.Item>
 
-        <Form.Item label="Montant Total TTC">
-          <Input
-            value={`€ ${ttc.toFixed(2)}`}
-            readOnly
-            className="rounded-md"
-          />
-        </Form.Item>
+          <Form.Item label="Montant Total TTC">
+            <Input
+              value={`€ ${ttc.toFixed(2)}`}
+              readOnly
+              className="rounded-md"
+            />
+          </Form.Item>
           <Form.Item
             name="supplement"
             label="Suppléments"
@@ -307,13 +364,13 @@ const ContractPage = () => {
               },
             ]}
           >
-            <Select 
-                placeholder="Choisissez un supplément" 
-                className="rounded-md"
-                mode="multiple"
-                allowClear
+            <Select
+              placeholder="Choisissez un supplément"
+              className="rounded-md"
+              mode="multiple"
+              allowClear
             >
-            <Option value="Football">Football</Option>
+              <Option value="Football">Football</Option>
               <Option value="Course à pied">Course à pied</Option>
               <Option value="Fitness">Fitness</Option>
               <Option value="Musculation">Musculation</Option>
@@ -372,31 +429,28 @@ const ContractPage = () => {
             rules={[{ required: false, message: "Veuillez entrer le RIB" }]}
           >
             <Input className="rounded-md" />
-          </Form.Item> 
-          <p className="text-lg mt-10 font-semibold">Montant total : {totalPrice}</p>
+          </Form.Item>
+          <p className="text-lg mt-10 font-semibold">
+            Montant total : {totalPrice}
+          </p>
         </div>
-        <Form.Item
-         
-        >
-        <Button type="primary" htmlType="submit" className="mr-4">
-          Créer et Envoyer le Contrat
-        </Button>
-             
+        <Form.Item>
+          <Button type="primary" htmlType="submit" className="mr-4">
+            Créer et Envoyer le Contrat
+          </Button>
+
           {/* <Button type="dashed" onClick={showModal} className="mb-4">
   Add Signature
 </Button> */}
-          </Form.Item>
- 
-
+        </Form.Item>
       </Form>
-    
+
       <Modal
         title="Aperçu du Contrat"
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        
         <ul
           className="list-disc list-inside"
           style={{
@@ -455,9 +509,9 @@ const ContractPage = () => {
           </li>
         </ul>
         <SignaturePadComponent onSignatureComplete={setSignature} />
-  <Button type="primary" onClick={handleOk}>
-    Save
-  </Button>
+        <Button type="primary" onClick={handleOk}>
+          Save
+        </Button>
       </Modal>
     </div>
   );

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Upload, message, Avatar } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTrash } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+import React, { useEffect, useState } from "react";
+import { Form, Input, Button, Upload, message, Avatar } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const Profile = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const [form] = Form.useForm();
   const [userData, setUserData] = useState({
@@ -15,7 +15,7 @@ const Profile = () => {
     prenom: "",
     nom: "",
     email: "",
-    imageUrl: ""
+    imageUrl: "",
   });
   const [fileList, setFileList] = useState([]);
 
@@ -23,13 +23,15 @@ const Profile = () => {
     const fetchUserData = async () => {
       const role = decodedToken.role;
       const userId = decodedToken.userId;
-      const url = `https://go-ko.onrender.com/${role === 'Admin' ? 'admin' : 'commercials'}/${userId}`;
+      const url = `https://go-ko-9qul.onrender.com/${
+        role === "Admin" ? "admin" : "commercials"
+      }/${userId}`;
 
-      console.log('Fetching data from URL:', url); // Debug log
+      console.log("Fetching data from URL:", url); // Debug log
 
       try {
         const response = await axios.get(url, {
-          headers: { authorization: `Bearer ${token}` }
+          headers: { authorization: `Bearer ${token}` },
         });
         const data = response.data;
         setUserData(data);
@@ -37,16 +39,16 @@ const Profile = () => {
         if (data.imageUrl) {
           setFileList([
             {
-              uid: '-1',
-              name: 'image.png',
-              status: 'done',
+              uid: "-1",
+              name: "image.png",
+              status: "done",
               url: data.imageUrl,
             },
           ]);
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération du profil:', error);
-        message.error('Échec de la récupération du profil.');
+        console.error("Erreur lors de la récupération du profil:", error);
+        message.error("Échec de la récupération du profil.");
       }
     };
 
@@ -56,21 +58,27 @@ const Profile = () => {
   const onFinish = async (values) => {
     const role = decodedToken.role;
     const id = userData._id;
-    const url = `https://go-ko.onrender.com/${role === 'Admin' ? 'admin' : 'commercials'}/${id}`;
+    const url = `https://go-ko-9qul.onrender.com/${
+      role === "Admin" ? "admin" : "commercials"
+    }/${id}`;
 
     try {
-      const response = await axios.put(url, {
-        ...values,
-        imageUrl: userData.imageUrl,
-      }, {
-        headers: { authorization: `Bearer ${token}` }
-      });
-      message.success('Informations mises à jour avec succès !');
+      const response = await axios.put(
+        url,
+        {
+          ...values,
+          imageUrl: userData.imageUrl,
+        },
+        {
+          headers: { authorization: `Bearer ${token}` },
+        }
+      );
+      message.success("Informations mises à jour avec succès !");
       setUserData(response.data);
       form.setFieldsValue(response.data);
     } catch (error) {
-      console.error('Erreur lors de la mise à jour:', error);
-      message.error('Échec de la mise à jour des informations.');
+      console.error("Erreur lors de la mise à jour:", error);
+      message.error("Échec de la mise à jour des informations.");
     }
   };
 
@@ -80,47 +88,60 @@ const Profile = () => {
   };
 
   const uploadProps = {
-    name: 'file',
-    action: 'https://api.cloudinary.com/v1_1/doagzivng/image/upload',
+    name: "file",
+    action: "https://api.cloudinary.com/v1_1/doagzivng/image/upload",
     data: {
-      upload_preset: 'kj1jodbh',
+      upload_preset: "kj1jodbh",
     },
-    listType: 'picture',
+    listType: "picture",
     fileList,
     onChange(info) {
       const { fileList } = info;
       setFileList(fileList);
 
-      if (info.file.status === 'done') {
-        console.log('Fichier téléchargé:', info.file.response);
+      if (info.file.status === "done") {
+        console.log("Fichier téléchargé:", info.file.response);
         const newImageUrl = info.file.response.secure_url;
-        setUserData(prevUserData => ({
+        setUserData((prevUserData) => ({
           ...prevUserData,
-          imageUrl: newImageUrl
+          imageUrl: newImageUrl,
         }));
         form.setFieldsValue({ imageUrl: newImageUrl });
 
         // Updating the backend immediately after the image is uploaded
         const role = decodedToken.role;
         const id = userData._id;
-        const url = `https://go-ko.onrender.com/${role === 'Admin' ? 'admin' : 'commercials'}/${id}`;
-        axios.put(url, {
-          ...userData,
-          imageUrl: newImageUrl
-        }, {
-          headers: { authorization: `Bearer ${token}` }
-        }).then(response => {
-          message.success('Image mise à jour avec succès !');
-          setUserData(response.data);
-        }).catch(error => {
-          console.error('Erreur lors de la mise à jour de l\'image:', error);
-          message.error('Échec de la mise à jour de l\'image.');
-        });
-      } else if (info.file.status === 'error') {
-        console.error('Erreur de téléchargement:', info.file.error, info.file.response);
-        message.error('Échec du téléchargement de l\'image.');
+        const url = `https://go-ko-9qul.onrender.com/${
+          role === "Admin" ? "admin" : "commercials"
+        }/${id}`;
+        axios
+          .put(
+            url,
+            {
+              ...userData,
+              imageUrl: newImageUrl,
+            },
+            {
+              headers: { authorization: `Bearer ${token}` },
+            }
+          )
+          .then((response) => {
+            message.success("Image mise à jour avec succès !");
+            setUserData(response.data);
+          })
+          .catch((error) => {
+            console.error("Erreur lors de la mise à jour de l'image:", error);
+            message.error("Échec de la mise à jour de l'image.");
+          });
+      } else if (info.file.status === "error") {
+        console.error(
+          "Erreur de téléchargement:",
+          info.file.error,
+          info.file.response
+        );
+        message.error("Échec du téléchargement de l'image.");
       }
-    }
+    },
   };
 
   const handleCancel = () => {
@@ -129,9 +150,9 @@ const Profile = () => {
     if (userData.imageUrl) {
       setFileList([
         {
-          uid: '-1',
-          name: 'image.png',
-          status: 'done',
+          uid: "-1",
+          name: "image.png",
+          status: "done",
           url: userData.imageUrl,
         },
       ]);
@@ -143,22 +164,28 @@ const Profile = () => {
   const handleDeleteImage = async () => {
     const role = decodedToken.role;
     const id = userData._id;
-    const url = `https://go-ko.onrender.com/${role === 'Admin' ? 'admin' : 'commercials'}/${id}`;
+    const url = `https://go-ko-9qul.onrender.com/${
+      role === "Admin" ? "admin" : "commercials"
+    }/${id}`;
 
     try {
-      const response = await axios.put(url, {
-        ...userData,
-        imageUrl: ""
-      }, {
-        headers: { authorization: `Bearer ${token}` }
-      });
+      const response = await axios.put(
+        url,
+        {
+          ...userData,
+          imageUrl: "",
+        },
+        {
+          headers: { authorization: `Bearer ${token}` },
+        }
+      );
       setUserData({ ...userData, imageUrl: "" });
       form.setFieldsValue({ imageUrl: "" });
       setFileList([]);
-      message.success('Image supprimée avec succès !');
+      message.success("Image supprimée avec succès !");
     } catch (error) {
-      console.error('Erreur lors de la suppression de l\'image:', error);
-      message.error('Échec de la suppression de l\'image.');
+      console.error("Erreur lors de la suppression de l'image:", error);
+      message.error("Échec de la suppression de l'image.");
     }
   };
 
@@ -195,19 +222,43 @@ const Profile = () => {
               />
             </>
           ) : (
-            <Avatar size={80} className="rounded-full bg-blue-900" style={{ fontSize: '36px' }}>
+            <Avatar
+              size={80}
+              className="rounded-full bg-blue-900"
+              style={{ fontSize: "36px" }}
+            >
               {getAvatarText(userData.prenom, userData.nom)}
             </Avatar>
           )}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <Form.Item label="Prénom" name="prenom" rules={[{ required: true, message: 'Veuillez entrer votre prénom !' }]}>
+          <Form.Item
+            label="Prénom"
+            name="prenom"
+            rules={[
+              { required: true, message: "Veuillez entrer votre prénom !" },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Nom" name="nom" rules={[{ required: true, message: 'Veuillez entrer votre nom !' }]}>
+          <Form.Item
+            label="Nom"
+            name="nom"
+            rules={[{ required: true, message: "Veuillez entrer votre nom !" }]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email', message: 'Veuillez entrer votre email !' }]}>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              {
+                required: true,
+                type: "email",
+                message: "Veuillez entrer votre email !",
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
           <Form.Item label="Image" name="imageUrl">
@@ -217,10 +268,19 @@ const Profile = () => {
           </Form.Item>
         </div>
         <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
-          <Button type="primary" htmlType="submit" icon={<FontAwesomeIcon icon={faSave} />}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<FontAwesomeIcon icon={faSave} />}
+          >
             Enregistrer
           </Button>
-          <Button type="default" htmlType="button" className="ml-2" onClick={handleCancel}>
+          <Button
+            type="default"
+            htmlType="button"
+            className="ml-2"
+            onClick={handleCancel}
+          >
             Annuler
           </Button>
         </Form.Item>

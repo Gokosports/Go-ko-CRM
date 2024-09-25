@@ -39,18 +39,20 @@ const DevisDetails = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `https://go-ko.onrender.com/coaches/${id}`,
+        `https://go-ko-9qul.onrender.com/coaches/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
- 
+
       setCoach(response.data);
 
- // Accessing commercial name safely
- const commercialName = response.data.commercial ? `${response.data.commercial.prenom} ${response.data.commercial.nom}` : '';
+      // Accessing commercial name safely
+      const commercialName = response.data.commercial
+        ? `${response.data.commercial.prenom} ${response.data.commercial.nom}`
+        : "";
       form.setFieldsValue({
         nemuro: response.data._id,
         clientName: `${response.data.prenom} ${response.data.nom}`,
@@ -81,8 +83,6 @@ const DevisDetails = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
-  
 
   const handleDurationChange = (e) => {
     const duration = e.target.value;
@@ -169,7 +169,7 @@ const DevisDetails = () => {
     email,
     recipientNom,
     recipientPrenom,
-   commercialName
+    commercialName
   ) => {
     const clientName = `${recipientPrenom} ${recipientNom}`;
     const formData = new FormData();
@@ -184,7 +184,7 @@ const DevisDetails = () => {
 
     try {
       const response = await axios.post(
-        "https://go-ko.onrender.com/api/upload",
+        "https://go-ko-9qul.onrender.com/api/upload",
         formData,
         {
           headers: {
@@ -297,17 +297,17 @@ const DevisDetails = () => {
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
-  name="commercialName"
-  label="Nom Commercial"
-  rules={[
-    {
-      required: false, // Not mandatory
-      message: "Veuillez entrer le nom commercial",
-    },
-  ]}
->
-  <Input className="rounded-md" />
-</Form.Item>
+            name="commercialName"
+            label="Nom Commercial"
+            rules={[
+              {
+                required: false, // Not mandatory
+                message: "Veuillez entrer le nom commercial",
+              },
+            ]}
+          >
+            <Input className="rounded-md" />
+          </Form.Item>
 
           <Form.Item
             name="email"

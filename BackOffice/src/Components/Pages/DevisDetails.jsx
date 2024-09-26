@@ -8,16 +8,20 @@ import {
   Radio,
   Select,
   Modal,
+  Tabs,
+
 } from "antd";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import "tailwindcss/tailwind.css";
 import logo from "../../assets/images/goko.png";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 // import SignaturePadComponent from "../SignaturePadComponent";
 
+
 const { Option } = Select;
+const { TabPane } = Tabs;
 
 const DevisDetails = () => {
   const { id } = useParams();
@@ -267,7 +271,24 @@ const DevisDetails = () => {
 
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
+      <Tabs defaultActiveKey="3">
+        <TabPane tab={<Link to={`/coach/${id}`}>Informations</Link>} key="1">
+          {/* Add information tab content here */}
+        </TabPane>
+       
+    
+        <TabPane  tab={<Link to={`/coach/${id}/comments`}>Commentaires</Link>} key="2">
+          
+        </TabPane>
+        <TabPane tab={<Link to={`/devis/${id}`}>Contrat</Link>} key="3">
+          {/* Add information tab content here */}
+        </TabPane>
+        <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="4">
+          {/* Add information tab content here */}
+        </TabPane>
+      </Tabs>
       <h2 className="text-2xl font-bold mb-6">Créer un Contrat pour Coach</h2>
+      
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Form Items */}

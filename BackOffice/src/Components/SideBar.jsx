@@ -137,13 +137,14 @@ const SideBar = () => {
             role:"Admin",
 
         },
-        // {
-        //     key: '/téléchargerdevis',
-        //     icon: <FontAwesomeIcon icon={faFileContract} />,
-        //     label: 'Devis',
+        {
+            key: '/téléchargerdevis',
+            icon: <FontAwesomeIcon icon={faFileContract} />,
+            label: 'Contrats',
+            role:"Commercial",
             
 
-        // },
+        },
         {
             key: '/admin',
             icon: <FontAwesomeIcon icon={faUser} />,

@@ -119,12 +119,24 @@ const CoachDetailsPage = () => {
   //     }
   // };
 
+  // const handleTabChange = (key) => {
+  //   setActiveTab(key);
+  //   if (key === "2") {
+  //     navigate(`/coach/${id}/comments`);
+  //   } else if (key === "3") {
+  //     navigate(`/contrat/${id}`);
+  //   } else {
+  //     navigate(`/coach/${id}`);
+  //   }
+  // };
   const handleTabChange = (key) => {
     setActiveTab(key);
     if (key === "2") {
       navigate(`/coach/${id}/comments`);
     } else if (key === "3") {
-      navigate(`/contrat/${id}`);
+      navigate(`/devis/${id}`);
+    } else if (key === "4") {
+      navigate(`/planning/${id}`);
     } else {
       navigate(`/coach/${id}`);
     }
@@ -465,13 +477,20 @@ const CoachDetailsPage = () => {
             scroll={{ x: "max-content" }}
           />
         </TabPane>
-        {/* <TabPane tab="Contrat" key="3">
+        <TabPane tab="Contrat" key="3">
                     <Button type="primary" icon={<PlusOutlined />}>
                         Créer un contract
                     </Button>
                     
                  
-                </TabPane> */}
+                </TabPane>
+                <TabPane tab="Planning" key="4">
+                    <Button type="primary" icon={<PlusOutlined />}>
+                        Créer un contract
+                    </Button>
+                    
+                 
+                </TabPane>
       </Tabs>
       <div className="flex justify-between items-center mt-4">
         <Link to="/list-coachs" className="text-blue-500 hover:underline">

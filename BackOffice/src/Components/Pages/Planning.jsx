@@ -1,15 +1,22 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import {
+
+  Tabs,
+} from "antd";
+
+const { TabPane } = Tabs;
 
 const Planning = () => {
-  const { id: coachId } = useParams(); // Assuming coachId comes from URL params
+  
+  const { id: coachId, id } = useParams(); // Assuming coachId comes from URL params
   const [formData, setFormData] = useState({
     time: new Date(),
     callSituation: "",
@@ -36,6 +43,19 @@ const Planning = () => {
       console.error("Error fetching coach:", error);
     }
   };
+
+  // const handleTabChange = (key) => {
+  //   setActiveTab(key);
+  //   if (key === "2") {
+  //     navigate(`/coach/${id}/comments`);
+  //   } else if (key === "3") {
+  //     navigate(`/devis/${id}`);
+  //   } else if (key === "4") {
+  //     navigate(`/planning/${id}`);
+  //   } else {
+  //     navigate(`/coach/${id}`);
+  //   }
+  // };
 
   // Submit new planning entry
   const handleSubmit = async (e) => {
@@ -99,11 +119,27 @@ const Planning = () => {
 
   return (
     <div className="w-full p-6 bg-gray-100 rounded-lg shadow-md">
+      <Tabs defaultActiveKey="4">
+        <TabPane tab={<Link to={`/coach/${id}`}>Informations</Link>} key="1">
+          {/* Add information tab content here */}
+        </TabPane>
+       
+    
+        <TabPane  tab={<Link to={`/coach/${id}/comments`}>Commentaires</Link>} key="2">
+          
+        </TabPane>
+        <TabPane tab={<Link to={`/devis/${id}`}>Contrat</Link>} key="3">
+          {/* Add information tab content here */}
+        </TabPane>
+        <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="4">
+          {/* Add information tab content here */}
+        </TabPane>
+      </Tabs>
       <h2 className="text-2xl font-bold mb-4">
         Créer un planning pour le coach
       </h2>
-
-      {/* Display Coach's Name */}
+      
+      
       {coach && (
         <h3 className="text-lg font-semibold mb-4">
           Planning pour: {coach.prenom} {coach.nom}

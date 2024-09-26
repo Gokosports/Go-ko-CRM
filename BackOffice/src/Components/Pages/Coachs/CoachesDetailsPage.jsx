@@ -108,17 +108,6 @@ const CoachesDetailsPage = () => {
     }
   }, [id, location]);
 
-  // const handleTabChange = (key) => {
-  //     setActiveTab(key);
-  //     if (key === "2") {
-  //         navigate(`/coach/${id}/comments`);
-  //     } else if {
-  //         navigate(`/coach/${id}`);
-  //     } else {
-  //         navigate(`/coach/${id}/contract`);
-  //     }
-  // };
-
   const handleTabChange = (key) => {
     setActiveTab(key);
     if (key === "2") {
@@ -471,6 +460,7 @@ const CoachesDetailsPage = () => {
           <Button type="primary" icon={<PlusOutlined />}>
             Créer un contract
           </Button>
+          
         </TabPane>
         <TabPane tab="Planning" key="4">
           <Button type="primary" icon={<PlusOutlined />}>

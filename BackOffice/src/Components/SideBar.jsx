@@ -124,12 +124,12 @@ const SideBar = () => {
             ],
         },
         
-        {
-            key: '/speciality',
-            icon: <FontAwesomeIcon icon={faPersonSnowboarding} />,
-            label: 'Spécialités',
+        // {
+        //     key: '/speciality',
+        //     icon: <FontAwesomeIcon icon={faPersonSnowboarding} />,
+        //     label: 'Spécialités',
 
-        },
+        // },
         {
             key: '/téléchargecontrat',
             icon: <FontAwesomeIcon icon={faFileContract} />,

@@ -265,7 +265,7 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
 
 router.get("/contracts", async (req, res) => {
   try {
-    const contracts = await Contract.find().sort({ createdAt: -1 });
+    const contracts = await Contract.find();
 
     res.status(200).json(contracts);
   } catch (error) {
@@ -273,9 +273,6 @@ router.get("/contracts", async (req, res) => {
     res.status(500).send("Error fetching contracts.");
   }
 });
-
-
-
 // router.post("/uploads", upload.single("pdf"), async (req, res) => {
 
 //   if (!req.file) {

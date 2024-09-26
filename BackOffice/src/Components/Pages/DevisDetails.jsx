@@ -22,15 +22,67 @@ const { Option } = Select;
 const DevisDetails = () => {
   const { id } = useParams();
   const [form] = Form.useForm();
-  const [totalPrice, setTotalPrice] = useState("€ 0");
-  // const [selectedDuration, setSelectedDuration] = useState("1 an");
   const [coach, setCoach] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [totalPrice, setTotalPrice] = useState("€ 0");
   const [ht, setHT] = useState(0); // State for HT (Hors Taxes)
   const [ttc, setTTC] = useState(0); // State for TTC (Toutes Taxes Comprises)
   const taxRate = 0.2; // Fixed tax rate (20%)
+  const [discountedPrice, setDiscountedPrice] = useState(0);
   // const [signature, setSignature] = useState(null);
 
+  // const handleDurationChange = (e) => {
+  //   const duration = e.target.value;
+
+  //   // Mapping of durations to price values
+  //   const priceMap = {
+  //     "12 mois - 64,90 € par mois": 64.9,
+  //     "18 mois - 59,90 € par mois": 59.9,
+  //     "24 mois - 54,90 € par mois": 54.9,
+  //   };
+
+  //   const selectedPrice = priceMap[duration] || 0;
+  //   setTotalPrice(`€ ${selectedPrice.toFixed(2)} par mois`);
+
+  //   // Calculate HT and TTC based on the selected price
+  //   const calculatedHT = selectedPrice / (1 + taxRate);
+  //   const calculatedTTC = selectedPrice;
+
+  //   setHT(calculatedHT);
+  //   setTTC(calculatedTTC);
+  // };
+  const handleDurationChange = (e) => {
+    const duration = e.target.value;
+  
+    // Mapping of durations to price values for 12, 18, and 24 months
+    const priceMap = {
+      "12 mois - 64,90 € par mois": 64.9,
+      "18 mois - 59,90 € par mois": 59.9,
+      "24 mois - 54,90 € par mois": 54.9,
+    };
+  
+    let selectedPrice = priceMap[duration] || 0;
+    let discountedPrice = selectedPrice;
+  
+    // Additional logic for bonus durations (1 year, 1.5 years, 2 years)
+    if (duration === "1 an complet") {
+      discountedPrice = (64.9 * 12) / 13; // 1-year with 1 month bonus
+    } else if (duration === "1.5 ans complet") {
+      discountedPrice = (59.9 * 18) / 19; // 1.5 years with 1 month bonus
+    } else if (duration === "2 ans complet") {
+      discountedPrice = (54.9 * 24) / 25; // 2 years with 1 month bonus
+    }
+  
+    setTotalPrice(`€ ${discountedPrice.toFixed(2)} par mois`);
+  
+    // Calculate HT and TTC based on the discounted price
+    const calculatedHT = discountedPrice / (1 + taxRate);
+    const calculatedTTC = discountedPrice;
+  
+    setHT(calculatedHT);
+    setTTC(calculatedTTC);
+  };
+  
   useEffect(() => {
     fetchCoach();
   }, []);
@@ -84,35 +136,41 @@ const DevisDetails = () => {
     setIsModalVisible(false);
   };
 
-  const handleDurationChange = (e) => {
-    const duration = e.target.value;
-
-    // Mapping of durations to price values
-    const priceMap = {
-      "12 mois - 64,90 € par mois": 64.9,
-      "18 mois - 59,90 € par mois": 59.9,
-      "24 mois - 54,90 € par mois": 54.9,
-    };
-
-    const selectedPrice = priceMap[duration] || 0;
-    setTotalPrice(`€ ${selectedPrice.toFixed(2)} par mois`);
-
-    // Calculate HT and TTC based on the selected price
-    const calculatedHT = selectedPrice / (1 + taxRate);
-    const calculatedTTC = selectedPrice;
-
-    setHT(calculatedHT);
-    setTTC(calculatedTTC);
-  };
+  
 
   const generateAndUploadPDF = async (contract) => {
     const doc = new jsPDF("p", "pt", "a4");
-    doc.addImage(logo, "PNG", 450, 16, 100, 40);
+    doc.addImage(logo, "PNG", 470, 16, 60, 40);
     doc.setFontSize(16);
     doc.text("Contrat d'Abonnement au Service de Coaching", 40, 40);
     const supplementsList =
       contract.supplement.length > 0 ? contract.supplement.join(", ") : "Aucun";
 
+    // const tableData = [
+    //   ["No de membre (référence du mandat)", contract.nemuro],
+    //   ["Adresse club", contract.clubAddress],
+    //   ["Date d’inscription", contract.startDate.format("DD-MM-YYYY")],
+    //   ["Date de début du contrat", contract.startDate.format("DD-MM-YYYY")],
+    //   ["Date de fin du contrat", contract.endDate.format("DD-MM-YYYY")],
+    //   ["Prénom + Nom", contract.clientName],
+    //   ["Montant total", totalPrice],
+    //   ["Adresse", `${contract.address}`],
+    //   ["Code postal", contract.zipCode],
+    //   ["Localité", contract.city],
+    //   ["Pays", contract.country],
+    //   ["Téléphone", contract.phone],
+    //   ["Adresse e-mail", contract.email],
+    //   // ["Type d’affiliation", contract.affiliationType],
+    //   ["Durée du contrat", contract.contractDuration],
+    //   ["Montant Total HT", `${ht.toFixed(2)} €`],
+    //   ["Montant Total TTC", `${ttc.toFixed(2)} €`],
+    //   ["Suppléments", supplementsList],
+    //   ["RIB", contract.rib],
+    //   [
+    //     "MANDAT DE PRÉLÈVEMENT SEPA",
+    //     "En signant ce mandat, vous autorisez GOKO à transmettre des instructions à votre banque afin de débiter votre compte. Par ailleurs, vous autorisez votre banque à débiter votre compte conformément aux instructions transmises par GOKO.",
+    //   ],
+    // ];
     const tableData = [
       ["No de membre (référence du mandat)", contract.nemuro],
       ["Adresse club", contract.clubAddress],
@@ -120,25 +178,29 @@ const DevisDetails = () => {
       ["Date de début du contrat", contract.startDate.format("DD-MM-YYYY")],
       ["Date de fin du contrat", contract.endDate.format("DD-MM-YYYY")],
       ["Prénom + Nom", contract.clientName],
-      ["Montant total", totalPrice],
+      
+      // If yearly contract selected, show the calculated total price for 1 year, 1.5 years, or 2 years.
+      ["Montant total", contractDuration === "1 an complet" || contractDuration === "1.5 ans complet" || contractDuration === "2 ans complet" 
+          ? `${(discountedPrice * 12).toFixed(2)} €` // Use discounted price
+          : totalPrice],
+      
       ["Adresse", `${contract.address}`],
       ["Code postal", contract.zipCode],
       ["Localité", contract.city],
       ["Pays", contract.country],
       ["Téléphone", contract.phone],
       ["Adresse e-mail", contract.email],
-      ["Type d’affiliation", contract.affiliationType],
-      ["Durée du contrat", contract.contractDuration],
+      ["Durée du contrat", contract.contractDuration], // This will reflect either 12 months, 1 year, 1.5 years, or 2 years
       ["Montant Total HT", `${ht.toFixed(2)} €`],
       ["Montant Total TTC", `${ttc.toFixed(2)} €`],
       ["Suppléments", supplementsList],
       ["RIB", contract.rib],
       [
         "MANDAT DE PRÉLÈVEMENT SEPA",
-        "En signant ce mandat, vous donnez l’autorisation (A) à [Nom de l'Application] d’envoyer des instructions à votre banque pour débiter votre compte et (B) votre banque à débiter votre compte conformément aux instructions de [Nom de l'Application].",
+        "En signant ce mandat, vous autorisez GOKO à transmettre des instructions à votre banque afin de débiter votre compte. Par ailleurs, vous autorisez votre banque à débiter votre compte conformément aux instructions transmises par GOKO.",
       ],
     ];
-
+    
     doc.autoTable({
       head: [["Champ", "Information"]],
       body: tableData,
@@ -318,7 +380,7 @@ const DevisDetails = () => {
           >
             <Input className="rounded-md" />
           </Form.Item>
-          <Form.Item
+          {/* <Form.Item
             name="affiliationType"
             label="Type d’affiliation"
             rules={[
@@ -329,7 +391,7 @@ const DevisDetails = () => {
             ]}
           >
             <Input className="rounded-md" />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             name="clubAddress"
             label="Adresse du Club"
@@ -359,6 +421,9 @@ const DevisDetails = () => {
               <Radio value="24 mois - 54,90 € par mois">
                 24 mois - 54,90 € par mois
               </Radio>
+              <Radio value="1 an complet">1 an complet</Radio>
+    <Radio value="1.5 ans complet">1.5 ans complet</Radio>
+    <Radio value="2 ans complet">2 ans complet</Radio>
             </Radio.Group>
           </Form.Item>
           <Form.Item label="Montant Total HT">
@@ -376,6 +441,9 @@ const DevisDetails = () => {
               className="rounded-md"
             />
           </Form.Item>
+          {/* <Form.Item label="Montant Total avec Bonus">
+  <Input value={`€ ${discountedPrice.toFixed(2)}`} readOnly className="rounded-md" />
+</Form.Item> */}
           <Form.Item
             name="supplement"
             label="Suppléments"

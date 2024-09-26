@@ -115,12 +115,12 @@ const Header = () => {
         }}
       />
       <Link to="/">
-        <div className="logo flex items-center">
+        <div className="logo flex items-end">
           {/* <span className="font-bold text-white text-2xl">GOKO</span> */}
-          <img src={logo} alt="logo" className="w-12 h-full ml-2" />
+          <img src={logo} alt="logo" className="w-12 h-10 ml-12" />
         </div>
       </Link>
-      <div className="flex items-center ml-14 mr-auto">
+      <div className="flex items-center ml-4 mr-auto">
         <Input
           placeholder="Rechercher..."
           prefix={<SearchOutlined />}

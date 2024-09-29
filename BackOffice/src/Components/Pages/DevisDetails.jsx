@@ -352,7 +352,7 @@ Fait à Roubaix, le 23 septembre 2024.
 
     try {
       const response = await axios.post(
-        "https://go-ko-9qul.onrender.comapi/upload",
+        "https://go-ko-9qul.onrender.com/upload",
         formData,
         {
           headers: {

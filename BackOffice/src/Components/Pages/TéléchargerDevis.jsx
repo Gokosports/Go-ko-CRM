@@ -12,7 +12,7 @@ const TéléchargerDevis = () => {
       try {
         // Fetch all contracts
         const response = await axios.get(
-          "https://go-ko-9qul.onrender.comapi/contracts"
+          "https://go-ko-9qul.onrender.com/contracts"
         );
         const allContracts = response.data;
 

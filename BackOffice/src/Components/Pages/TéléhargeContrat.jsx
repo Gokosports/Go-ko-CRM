@@ -218,7 +218,7 @@ const TéléhargeContrat = () => {
       {/* Month Filter */}
       <div className="mb-4 flex justify-center">
         <label htmlFor="month" className="mr-2">
-          Filter by Month:
+        Filtrer par Mois
         </label>
         <select
           id="month"

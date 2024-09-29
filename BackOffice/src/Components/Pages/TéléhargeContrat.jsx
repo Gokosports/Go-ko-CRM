@@ -150,7 +150,7 @@ const TéléhargeContrat = () => {
     const fetchContracts = async () => {
       try {
         const response = await axios.get(
-          "https://go-ko-9qul.onrender.com/contracts"
+          "https://go-ko-9qul.onrender.com/api/contracts"
         );
         console.log("All Contracts:", response.data);
         setContracts(response.data);

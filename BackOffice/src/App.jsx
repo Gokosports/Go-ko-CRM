@@ -263,7 +263,7 @@ function App() {
           }
         />
         <Route
-          path="/devis/:id"
+          path="/CréerContrat/:id"
           element={
             <MainLayout>
               <DevisDetails/>
@@ -280,7 +280,7 @@ function App() {
         />
        
        <Route
-  path="/téléchargecontrat"
+  path="/téléchargerContrat"
   element={
     <MainLayout>
       <TéléhargeContrat />
@@ -288,7 +288,7 @@ function App() {
   }
 />
 <Route
-  path="/téléchargerdevis"
+  path="/téléchargerDevis"
   element={
     <MainLayout>
       <TéléchargerDevis />

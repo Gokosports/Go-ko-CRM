@@ -11,7 +11,9 @@ const TéléchargerDevis = () => {
     const fetchContracts = async () => {
       try {
         // Fetch all contracts
-        const response = await axios.get("https://go-ko-9qul.onrender.com/api/contracts");
+        const response = await axios.get(
+          "https://go-ko-9qul.onrender.comapi/contracts"
+        );
         const allContracts = response.data;
 
         const commercialName = user?.decodedToken?.name; // "Danguir Laila"
@@ -39,6 +41,17 @@ const TéléchargerDevis = () => {
     window.location.href = url;
   };
 
+  const extractPrice = (contractDuration) => {
+    // Example contractDuration format: "24 mois - 54,90 € par mois"
+    const priceMatch = contractDuration.match(/(\d+,\d+) €/);
+    return priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : 0;
+  };
+
+  // Calculate the total price for all contracts
+  const totalPrice = contracts.reduce((total, contract) => {
+    return total + extractPrice(contract.contractDuration);
+  }, 0);
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold text-center mb-6">
@@ -48,16 +61,28 @@ const TéléchargerDevis = () => {
       {/* Display the counter for contracts */}
       <h2 className="text-xl text-center mb-4">
         Nombre de contrats créés: {contracts.length}
+        <br />
+        Prix total TTC: {totalPrice.toFixed(2)} €
       </h2>
 
       <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
         <thead>
           <tr className="bg-gray-100">
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Nom</th>
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Commercial</th>
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Télécharger</th>
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Créé le</th>
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Mis à jour le</th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Nom
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Commercial
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Télécharger
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Créé le
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Prix TTC
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -80,9 +105,7 @@ const TéléchargerDevis = () => {
                 <td className="py-3 px-6">
                   {new Date(contract.createdAt).toLocaleString()}
                 </td>
-                <td className="py-3 px-6">
-                  {new Date(contract.updatedAt).toLocaleString()}
-                </td>
+                <td className="py-3 px-6">{contract.contractDuration}</td>
               </tr>
             ))
           ) : (

@@ -113,7 +113,7 @@ const CoachesDetailsPage = () => {
     if (key === "2") {
       navigate(`/coach/${id}/comments`);
     } else if (key === "3") {
-      navigate(`/devis/${id}`);
+      navigate(`/CréerContrat/${id}`);
     } else if (key === "4") {
       navigate(`/planning/${id}`);
     } else {

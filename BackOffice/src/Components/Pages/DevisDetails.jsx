@@ -9,7 +9,6 @@ import {
   Select,
   Modal,
   Tabs,
-
 } from "antd";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
@@ -18,7 +17,6 @@ import logo from "../../assets/images/goko.png";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 // import SignaturePadComponent from "../SignaturePadComponent";
-
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -33,41 +31,20 @@ const DevisDetails = () => {
   const [ttc, setTTC] = useState(0); // State for TTC (Toutes Taxes Comprises)
   const taxRate = 0.2; // Fixed tax rate (20%)
   const [discountedPrice, setDiscountedPrice] = useState(0);
-  // const [signature, setSignature] = useState(null);
 
-  // const handleDurationChange = (e) => {
-  //   const duration = e.target.value;
-
-  //   // Mapping of durations to price values
-  //   const priceMap = {
-  //     "12 mois - 64,90 € par mois": 64.9,
-  //     "18 mois - 59,90 € par mois": 59.9,
-  //     "24 mois - 54,90 € par mois": 54.9,
-  //   };
-
-  //   const selectedPrice = priceMap[duration] || 0;
-  //   setTotalPrice(`€ ${selectedPrice.toFixed(2)} par mois`);
-
-  //   // Calculate HT and TTC based on the selected price
-  //   const calculatedHT = selectedPrice / (1 + taxRate);
-  //   const calculatedTTC = selectedPrice;
-
-  //   setHT(calculatedHT);
-  //   setTTC(calculatedTTC);
-  // };
   const handleDurationChange = (e) => {
     const duration = e.target.value;
-  
+
     // Mapping of durations to price values for 12, 18, and 24 months
     const priceMap = {
       "12 mois - 64,90 € par mois": 64.9,
       "18 mois - 59,90 € par mois": 59.9,
       "24 mois - 54,90 € par mois": 54.9,
     };
-  
+
     let selectedPrice = priceMap[duration] || 0;
     let discountedPrice = selectedPrice;
-  
+
     // Additional logic for bonus durations (1 year, 1.5 years, 2 years)
     if (duration === "1 an complet") {
       discountedPrice = (64.9 * 12) / 13; // 1-year with 1 month bonus
@@ -76,17 +53,17 @@ const DevisDetails = () => {
     } else if (duration === "2 ans complet") {
       discountedPrice = (54.9 * 24) / 25; // 2 years with 1 month bonus
     }
-  
+
     setTotalPrice(`€ ${discountedPrice.toFixed(2)} par mois`);
-  
+
     // Calculate HT and TTC based on the discounted price
     const calculatedHT = discountedPrice / (1 + taxRate);
     const calculatedTTC = discountedPrice;
-  
+
     setHT(calculatedHT);
     setTTC(calculatedTTC);
   };
-  
+
   useEffect(() => {
     fetchCoach();
   }, []);
@@ -140,41 +117,30 @@ const DevisDetails = () => {
     setIsModalVisible(false);
   };
 
-  
-
   const generateAndUploadPDF = async (contract) => {
     const doc = new jsPDF("p", "pt", "a4");
-    doc.addImage(logo, "PNG", 470, 16, 60, 40);
-    doc.setFontSize(16);
-    doc.text("Contrat d'Abonnement au Service de Coaching", 40, 40);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginLeft = 40;
+    const marginRight = 40;
+    const marginTop = 40;
+    const pageContentWidth = pageWidth - marginLeft - marginRight;
+    let currentY = marginTop;
+
+    doc.addImage(logo, "PNG", pageWidth - 110, 20, 60, 30);
+
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      "Contrat d'Abonnement au Service de Coaching",
+      marginLeft,
+      currentY
+    );
+    currentY += 40;
+
+    // Contract details
     const supplementsList =
       contract.supplement.length > 0 ? contract.supplement.join(", ") : "Aucun";
-
-    // const tableData = [
-    //   ["No de membre (référence du mandat)", contract.nemuro],
-    //   ["Adresse club", contract.clubAddress],
-    //   ["Date d’inscription", contract.startDate.format("DD-MM-YYYY")],
-    //   ["Date de début du contrat", contract.startDate.format("DD-MM-YYYY")],
-    //   ["Date de fin du contrat", contract.endDate.format("DD-MM-YYYY")],
-    //   ["Prénom + Nom", contract.clientName],
-    //   ["Montant total", totalPrice],
-    //   ["Adresse", `${contract.address}`],
-    //   ["Code postal", contract.zipCode],
-    //   ["Localité", contract.city],
-    //   ["Pays", contract.country],
-    //   ["Téléphone", contract.phone],
-    //   ["Adresse e-mail", contract.email],
-    //   // ["Type d’affiliation", contract.affiliationType],
-    //   ["Durée du contrat", contract.contractDuration],
-    //   ["Montant Total HT", `${ht.toFixed(2)} €`],
-    //   ["Montant Total TTC", `${ttc.toFixed(2)} €`],
-    //   ["Suppléments", supplementsList],
-    //   ["RIB", contract.rib],
-    //   [
-    //     "MANDAT DE PRÉLÈVEMENT SEPA",
-    //     "En signant ce mandat, vous autorisez GOKO à transmettre des instructions à votre banque afin de débiter votre compte. Par ailleurs, vous autorisez votre banque à débiter votre compte conformément aux instructions transmises par GOKO.",
-    //   ],
-    // ];
     const tableData = [
       ["No de membre (référence du mandat)", contract.nemuro],
       ["Adresse club", contract.clubAddress],
@@ -182,19 +148,21 @@ const DevisDetails = () => {
       ["Date de début du contrat", contract.startDate.format("DD-MM-YYYY")],
       ["Date de fin du contrat", contract.endDate.format("DD-MM-YYYY")],
       ["Prénom + Nom", contract.clientName],
-      
-      // If yearly contract selected, show the calculated total price for 1 year, 1.5 years, or 2 years.
-      ["Montant total", contractDuration === "1 an complet" || contractDuration === "1.5 ans complet" || contractDuration === "2 ans complet" 
-          ? `${(discountedPrice * 12).toFixed(2)} €` // Use discounted price
-          : totalPrice],
-      
+      [
+        "Montant total",
+        contract.contractDuration === "1 an complet" ||
+        contract.contractDuration === "1.5 ans complet" ||
+        contract.contractDuration === "2 ans complet"
+          ? `${(discountedPrice * 12).toFixed(2)} €`
+          : totalPrice,
+      ],
       ["Adresse", `${contract.address}`],
       ["Code postal", contract.zipCode],
       ["Localité", contract.city],
       ["Pays", contract.country],
       ["Téléphone", contract.phone],
       ["Adresse e-mail", contract.email],
-      ["Durée du contrat", contract.contractDuration], // This will reflect either 12 months, 1 year, 1.5 years, or 2 years
+      ["Durée du contrat", contract.contractDuration],
       ["Montant Total HT", `${ht.toFixed(2)} €`],
       ["Montant Total TTC", `${ttc.toFixed(2)} €`],
       ["Suppléments", supplementsList],
@@ -204,7 +172,7 @@ const DevisDetails = () => {
         "En signant ce mandat, vous autorisez GOKO à transmettre des instructions à votre banque afin de débiter votre compte. Par ailleurs, vous autorisez votre banque à débiter votre compte conformément aux instructions transmises par GOKO.",
       ],
     ];
-    
+
     doc.autoTable({
       head: [["Champ", "Information"]],
       body: tableData,
@@ -214,7 +182,138 @@ const DevisDetails = () => {
       headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
       styles: { cellPadding: 5, fontSize: 10 },
     });
-    doc.text("Signature:", 400, doc.lastAutoTable.finalY + 50);
+
+    currentY = doc.lastAutoTable.finalY + 50;
+    currentY += 40;
+
+    if (currentY > pageHeight - marginTop) {
+      doc.addPage();
+      currentY = marginTop;
+    }
+    doc.setFontSize(12);
+    doc.text("Signature:", pageWidth - 160, currentY);
+
+    doc.addPage();
+    currentY = marginTop;
+
+    const logoWidth = 100;
+    const logoHeight = 50;
+
+    const xCenter = (pageWidth - logoWidth) / 2;
+
+    const yPosition = 20;
+
+    doc.addImage(logo, "PNG", xCenter, yPosition, logoWidth, logoHeight);
+    currentY = 30 + logoHeight + 30;
+
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      "CONDITIONS GÉNÉRALES DE VENTE ET D'UTILISATION",
+      pageWidth / 2,
+      currentY,
+      { align: "center" }
+    );
+    currentY += 40;
+    doc.text("DE L'APPLICATION GOKO", pageWidth / 2, currentY, {
+      align: "center",
+    });
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+
+    const CGVUContent = `
+  Version en vigueur au 23 septembre 2024  
+  Préambule
+  La société GOKO (ci-après "GOKO") propose une application mobile (ci-après "l’Application") mettant en relation des coachs sportifs indépendants ou entités sportives (ci-après "les Coachs") avec des utilisateurs de tout niveau sportif (ci-après "les Utilisateurs"). Les présentes conditions générales de vente et d'utilisation (ci-après "CGV/CGU") régissent les modalités d’accès et d’utilisation de l’Application. GOKO n'intervient qu'en tant que plateforme facilitant la mise en relation et ne prend aucune responsabilité sur les prestations proposées par les Coachs. 
+  1. Objet
+  Les CGV/CGU ont pour objet de définir les droits et obligations de GOKO, des Coachs abonnés à l’Application et des Utilisateurs dans le cadre de l’utilisation de l’Application. Seuls les Coachs ou entités sportives paient un abonnement pour figurer sur l’Application, tandis que l'accès pour les Utilisateurs est gratuit.
+  2. Accès et inscription à l’Application
+      2.1. Inscription des Coachs
+      Les Coachs souhaitant être présents sur l’Application doivent s'inscrire en fournissant les informations demandées (nom, qualifications, services offerts, etc.). L’inscription est conditionnée au paiement d’un abonnement mensuel ou annuel.
+      2.2. Inscription des Utilisateurs
+      Les Utilisateurs peuvent s’inscrire gratuitement sur l’Application pour accéder aux services proposés et contacter les Coachs. Ils doivent créer un compte et fournir les informations nécessaires à la création de leur profil.
+  3. Abonnement des Coachs
+      3.1. Offre d’abonnement
+      Les Coachs doivent souscrire un abonnement payant pour être référencés sur l’Application. Les détails des tarifs et des options d’abonnement sont précisés lors de la souscription.
+      3.2. Engagement du Coach
+      Le Coach s’engage à fournir des informations exactes, à jour et conformes à la réalité concernant ses qualifications et services. Le non-respect de cette obligation pourra entraîner la suspension ou la résiliation de son compte sans remboursement.
+      3.3. Offre "Rentabilisé ou remboursé"
+      Si, à l’issue de la période d’abonnement, le Coach n’a pas atteint le nombre de clients escompté (indiqué au moment de la souscription), GOKO propose une garantie "Rentabilisé ou remboursé". Le Coach pourra demander un remboursement partiel ou total de son abonnement, sous réserve de prouver qu’il a utilisé activement l’Application et respecté les conditions d’utilisation. Le nombre de clients attendu doit avoir été précisé lors de l'activation de l'offre.
+  4. Utilisation de l’Application 
+      4.1. Fonctionnement de l’Application 
+L’Application permet aux Utilisateurs de rechercher des Coachs selon leurs besoins sportifs (niveau, spécialité, localisation, etc.) et de les contacter directement via l’interface. Les Coachs peuvent proposer des sessions, consultations ou programmes sportifs via l'Application.
+      4.2. Engagements des Utilisateurs 
+Les Utilisateurs s’engagent à utiliser l’Application de manière loyale et respectueuse. Toute tentative de fraude, comportement injurieux ou non-respect des conditions peut entraîner la suspension ou la résiliation de leur compte.
+  5. Responsabilité de GOKO 
+      5.1. Non-responsabilité 
+GOKO agit uniquement comme une plateforme de mise en relation entre Coachs et Utilisateurs et ne peut être tenue responsable des litiges, accidents, ou incidents survenant entre eux. GOKO ne garantit en aucun cas la qualité, la compétence ou les résultats des prestations fournies par les Coachs.
+      5.2. Interruption de service 
+GOKO ne pourra être tenue responsable de toute interruption de l’Application pour des raisons de maintenance, mise à jour ou cas de force majeure. Des efforts seront cependant faits pour informer les Utilisateurs et Coachs en cas d’interruption prolongée.
+  6. Protection des données personnelles (RGPD) 
+Conformément au Règlement Général sur la Protection des Données (RGPD) n°2016/679 du 27 avril 2016, GOKO s’engage à protéger les données personnelles de ses Utilisateurs et Coachs.
+      6.1. Collecte des données 
+Les données personnelles collectées sont strictement nécessaires à l’utilisation de l’Application (inscription, gestion des abonnements, mises en relation). Ces données ne sont pas vendues à des tiers et sont conservées pour la durée nécessaire à la gestion des comptes.
+      6.2. Droits des utilisateurs 
+Les Coachs et Utilisateurs disposent d’un droit d’accès, de rectification, de suppression et de portabilité de leurs données personnelles, qu’ils peuvent exercer en contactant GOKO à l’adresse suivante : [adresse e-mail].
+      6.3. Sécurité des données 
+GOKO met en place des mesures techniques et organisationnelles pour garantir la sécurité des données collectées. En cas de violation des données, les utilisateurs concernés seront informés dans les meilleurs délais conformément à la réglementation en vigueur.
+  7. Respect des principes de non-discrimination 
+GOKO s’engage à lutter contre toutes formes de discriminations et promeut l’inclusion de toutes les personnes, y compris celles en situation de handicap. Toute pratique discriminatoire, qu’elle soit basée sur le sexe, l’âge, la religion, l’origine, l’orientation sexuelle ou toute autre caractéristique protégée par la loi, est strictement interdite sur l’Application.
+      7.1. Accessibilité aux personnes handicapées 
+GOKO s’engage à favoriser l’accès à des Coachs qualifiés pour accompagner les personnes en situation de handicap. Les Coachs s’engagent également à adapter leurs prestations pour répondre aux besoins spécifiques des personnes en situation de handicap.
+  8. Résiliation 
+      8.1. Résiliation par le Coach 
+Le Coach peut résilier son abonnement en respectant un préavis de 30 jours avant la fin de la période d’abonnement . Toute demande de résiliation doit être effectuée via l’Application ou en contactant le support de GOKO.
+      8.2. Résiliation par GOKO 
+GOKO se réserve le droit de résilier immédiatement l'abonnement d'un Coach ou le compte d'un Utilisateur en cas de violation des présentes CGV/CGU ou en cas de comportement jugé inapproprié.
+  9. Droit applicable et juridiction compétente 
+Les présentes CGV/CGU sont régies par la loi française. En cas de litige, les parties s'engagent à rechercher une solution amiable avant d’engager toute procédure judiciaire. À défaut d'accord amiable, les tribunaux compétents seront ceux du ressort du siège social de GOKO.
+  10. Modification des conditions générales 
+GOKO se réserve le droit de modifier les présentes CGV/CGU à tout moment. Les modifications seront notifiées aux Coachs et Utilisateurs et seront applicables immédiatement après leur publication sur l’Application.
+
+
+Fait à Roubaix, le 23 septembre 2024.
+                                                                            GOKO -
+                                                              75 bis Boulevard D’Armentières
+                                                                        59100 Roubaix
+    `;
+
+    function addJustifiedText(doc, text, startY) {
+      const paragraphs = text.split("\n");
+      let currentY = startY;
+      paragraphs.forEach((paragraph) => {
+        const lines = doc.splitTextToSize(paragraph, pageContentWidth);
+        lines.forEach((line, index) => {
+          if (currentY > pageHeight - marginTop) {
+            doc.addPage();
+            currentY = marginTop;
+          }
+
+          if (index < lines.length - 1) {
+            const words = line.split(" ");
+            const spaceWidth =
+              (pageContentWidth -
+                doc.getStringUnitWidth(line) * doc.internal.getFontSize()) /
+              (words.length - 1);
+            let currentX = marginLeft;
+            words.forEach((word) => {
+              doc.text(word, currentX, currentY);
+              currentX +=
+                doc.getStringUnitWidth(word) * doc.internal.getFontSize() +
+                spaceWidth;
+            });
+          } else {
+            doc.text(line, marginLeft, currentY); // Left-align the last line
+          }
+          currentY += 15; // Adjust line height
+        });
+        currentY += 10; // Extra spacing between paragraphs
+      });
+      return currentY;
+    }
+
+    currentY = addJustifiedText(doc, CGVUContent, currentY);
 
     // Convert the generated PDF to Blob format
     const pdfBlob = doc.output("blob");
@@ -225,7 +324,8 @@ const DevisDetails = () => {
       contract.email,
       recipientNom,
       recipientPrenom,
-      contract.commercialName
+      contract.commercialName,
+      contract.contractDuration
     );
   };
 
@@ -235,7 +335,8 @@ const DevisDetails = () => {
     email,
     recipientNom,
     recipientPrenom,
-    commercialName
+    commercialName,
+    contractDuration
   ) => {
     const clientName = `${recipientPrenom} ${recipientNom}`;
     const formData = new FormData();
@@ -247,10 +348,11 @@ const DevisDetails = () => {
     formData.append("email", email);
     formData.append("clientName", clientName);
     formData.append("commercialName", commercialName);
+    formData.append("contractDuration", contractDuration);
 
     try {
       const response = await axios.post(
-        "https://go-ko-9qul.onrender.com/api/upload",
+        "https://go-ko-9qul.onrender.comapi/upload",
         formData,
         {
           headers: {
@@ -275,11 +377,11 @@ const DevisDetails = () => {
         <TabPane tab={<Link to={`/coach/${id}`}>Informations</Link>} key="1">
           {/* Add information tab content here */}
         </TabPane>
-       
-    
-        <TabPane  tab={<Link to={`/coach/${id}/comments`}>Commentaires</Link>} key="2">
-          
-        </TabPane>
+
+        <TabPane
+          tab={<Link to={`/coach/${id}/comments`}>Commentaires</Link>}
+          key="2"
+        ></TabPane>
         <TabPane tab={<Link to={`/devis/${id}`}>Contrat</Link>} key="3">
           {/* Add information tab content here */}
         </TabPane>
@@ -288,7 +390,7 @@ const DevisDetails = () => {
         </TabPane>
       </Tabs>
       <h2 className="text-2xl font-bold mb-6">Créer un Contrat pour Coach</h2>
-      
+
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Form Items */}
@@ -443,8 +545,8 @@ const DevisDetails = () => {
                 24 mois - 54,90 € par mois
               </Radio>
               <Radio value="1 an complet">1 an complet</Radio>
-    <Radio value="1.5 ans complet">1.5 ans complet</Radio>
-    <Radio value="2 ans complet">2 ans complet</Radio>
+              <Radio value="1.5 ans complet">1.5 ans complet</Radio>
+              <Radio value="2 ans complet">2 ans complet</Radio>
             </Radio.Group>
           </Form.Item>
           <Form.Item label="Montant Total HT">

@@ -131,14 +131,14 @@ const SideBar = () => {
 
         // },
         {
-            key: '/téléchargecontrat',
+            key: '/téléchargerContrat',
             icon: <FontAwesomeIcon icon={faFileContract} />,
             label: 'Contrat',
             role:"Admin",
 
         },
         {
-            key: '/téléchargerdevis',
+            key: '/téléchargerDevis',
             icon: <FontAwesomeIcon icon={faFileContract} />,
             label: 'Contrats',
             role:"Commercial",

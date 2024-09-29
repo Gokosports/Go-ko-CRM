@@ -108,33 +108,12 @@ const CoachDetailsPage = () => {
     }
   }, [id, location]);
 
-  // const handleTabChange = (key) => {
-  //     setActiveTab(key);
-  //     if (key === "2") {
-  //         navigate(`/coach/${id}/comments`);
-  //     } else if {
-  //         navigate(`/coach/${id}`);
-  //     } else {
-  //         navigate(`/coach/${id}/contract`);
-  //     }
-  // };
-
-  // const handleTabChange = (key) => {
-  //   setActiveTab(key);
-  //   if (key === "2") {
-  //     navigate(`/coach/${id}/comments`);
-  //   } else if (key === "3") {
-  //     navigate(`/contrat/${id}`);
-  //   } else {
-  //     navigate(`/coach/${id}`);
-  //   }
-  // };
   const handleTabChange = (key) => {
     setActiveTab(key);
     if (key === "2") {
       navigate(`/coach/${id}/comments`);
     } else if (key === "3") {
-      navigate(`/devis/${id}`);
+      navigate(`/CréerContrat/${id}`);
     } else if (key === "4") {
       navigate(`/planning/${id}`);
     } else {

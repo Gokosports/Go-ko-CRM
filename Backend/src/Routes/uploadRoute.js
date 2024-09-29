@@ -87,7 +87,7 @@ const uploadPDFToPandaDoc = async (fileUrl, contractId, recipientEmail, clientNa
     await pollDocumentStatus(documentId);
 
     // Send the document for signing once the status is 'document.draft'
-    await sendDocumentForSigning(documentId, recipientEmail, clientName);
+    // await sendDocumentForSigning(documentId, recipientEmail, clientName);
   } catch (error) {
     console.error(
       "Error uploading or sending the document to PandaDoc:",
@@ -96,7 +96,7 @@ const uploadPDFToPandaDoc = async (fileUrl, contractId, recipientEmail, clientNa
   }
 };
 
-// Function to poll the document status until it reaches 'document.draft'
+// // Function to poll the document status until it reaches 'document.draft'
 const pollDocumentStatus = async (documentId) => {
   let status = "document.uploaded";
   const MAX_RETRIES = 10; // Max attempts to check status
@@ -166,50 +166,50 @@ const pollDocumentStatus = async (documentId) => {
 //   }
 // };
 
-const sendDocumentForSigning = async (documentId, recipientEmail, clientName) => {
-  const sendPayload = {
-    message: "Please review and sign the contract.",
-    recipients: [
-      {
-        email: recipientEmail,
-        first_name: clientName.split(" ")[0],
-        last_name: clientName.split(" ")[1],
-        recipient_type: "signer", // Ensure this is "signer"
-        signing_order: 1
-      }
-    ],
-    fields: {
-      signature_1: {
-        type: "signature", // Type of field
-        assignee: recipientEmail, // Assign the signature field to the recipient
-        required: true,
-        page: 1, // Page number in the document
-        x: 200, // X-coordinate for placement of the field
-        y: 500, // Y-coordinate for placement of the field
-        width: 200, // Width of the signature field
-        height: 40 // Height of the signature field
-      }
-    }
-  };
-  console.log("Sending document for signing with payload:", sendPayload);
+// const sendDocumentForSigning = async (documentId, recipientEmail, clientName) => {
+//   const sendPayload = {
+//     message: "Please review and sign the contract.",
+//     recipients: [
+//       {
+//         email: recipientEmail,
+//         first_name: clientName.split(" ")[0],
+//         last_name: clientName.split(" ")[1],
+//         recipient_type: "signer", // Ensure this is "signer"
+//         signing_order: 1
+//       }
+//     ],
+//     fields: {
+//       signature_1: {
+//         type: "signature", // Type of field
+//         assignee: recipientEmail, // Assign the signature field to the recipient
+//         required: true,
+//         page: 1, // Page number in the document
+//         x: 200, // X-coordinate for placement of the field
+//         y: 500, // Y-coordinate for placement of the field
+//         width: 200, // Width of the signature field
+//         height: 40 // Height of the signature field
+//       }
+//     }
+//   };
+//   console.log("Sending document for signing with payload:", sendPayload);
 
-  try {
-    const response = await axios.post(
-      `https://api.pandadoc.com/public/v1/documents/${documentId}/send`,
-      sendPayload,
-      {
-        headers: {
-          Authorization: `API-Key ${PANDA_DOC_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+//   try {
+//     const response = await axios.post(
+//       `https://api.pandadoc.com/public/v1/documents/${documentId}/send`,
+//       sendPayload,
+//       {
+//         headers: {
+//           Authorization: `API-Key ${PANDA_DOC_API_KEY}`,
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
 
-    console.log("Document sent for signing:", response.data);
-  } catch (error) {
-    console.error("Error sending the document for signing:", error.response?.data || error);
-  }
-};
+//     console.log("Document sent for signing:", response.data);
+//   } catch (error) {
+//     console.error("Error sending the document for signing:", error.response?.data || error);
+//   }
+// };
 
 
 

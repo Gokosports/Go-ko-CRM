@@ -228,6 +228,11 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
   if (!req.body.commercialName) {
     return res.status(400).send("Recipient commercialName is required.");
   }
+
+  if (!req.body.contractDuration) {
+    return res.status(400).send("Recipient contractDuration is required.");
+  }
+
   console.log("Commercial Name:", req.body.commercialName);
 
   console.log("Client Name:", req.body.clientName);
@@ -242,6 +247,7 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
       email: req.body.email,
       clientName: req.body.clientName,
       commercialName: req.body.commercialName,
+      contractDuration: req.body.contractDuration,
     });
     const savedContract = await newContract.save();
     console.log("Contract saved to database:", savedContract);
@@ -265,7 +271,7 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
 
 router.get("/contracts", async (req, res) => {
   try {
-    const contracts = await Contract.find();
+    const contracts = await Contract.find().sort({ createdAt: -1 });
 
     res.status(200).json(contracts);
   } catch (error) {

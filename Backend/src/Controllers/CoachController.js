@@ -79,7 +79,6 @@ exports.deleteCoach = async (req, res) => {
 // Import coaches
 exports.importCoaches = async (req, res) => {
     const coaches = req.body;
-
     try {
         console.log('Importing coaches:', coaches);
         const savedCoaches = await Coach.insertMany(coaches);

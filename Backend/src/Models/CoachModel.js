@@ -13,6 +13,10 @@ const CoachSchema = mongoose.Schema({
     age:{type: String},
     sex: { type: String, enum: ['homme', 'femme']},
     ville: {type: String},
+    raisonsociale: {type: String},
+    siret: {type: String},
+    adresse: {type: String},
+    codepostal: {type: Number},
     speciality: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Speciality', required: true }],
     role: { type: String,required: false },
     socialNetworks: {

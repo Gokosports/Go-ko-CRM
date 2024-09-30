@@ -5,14 +5,14 @@ const {GetAllSpecialities, GetSpecialityByName,	CreateSpeciality, UpdateSpeciali
 const {authorize} = require('../Middlewares/adminMiddleware');
 
 
-router.get('/',GetAllSpecialities);
+router.get('/', GetAllSpecialities);
 
-router.post('/',CreateSpeciality);
+router.post('/', CreateSpeciality);
 
 router.get('/:nom', GetSpecialityByName);
 
-router.put('/:id',UpdateSpeciality);
+router.put('/:id', UpdateSpeciality);
 
-router.delete('/:id',DeleteSpeciality);
+router.delete('/:id', DeleteSpeciality);
 
 module.exports = router;

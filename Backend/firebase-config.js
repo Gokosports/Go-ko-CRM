@@ -18,7 +18,7 @@ const serviceAccount = {
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: "goko-bcf4f.appspot.com"
+  storageBucket: "goko-app.appspot.com"
 });
 
 const bucket = admin.storage().bucket();

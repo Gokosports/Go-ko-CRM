@@ -7,15 +7,11 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import {
-
-  Tabs,
-} from "antd";
+import { Tabs } from "antd";
 
 const { TabPane } = Tabs;
 
 const Planning = () => {
-  
   const { id: coachId, id } = useParams(); // Assuming coachId comes from URL params
   const [formData, setFormData] = useState({
     time: new Date(),
@@ -123,11 +119,11 @@ const Planning = () => {
         <TabPane tab={<Link to={`/coach/${id}`}>Informations</Link>} key="1">
           {/* Add information tab content here */}
         </TabPane>
-       
-    
-        <TabPane  tab={<Link to={`/coach/${id}/comments`}>Commentaires</Link>} key="2">
-          
-        </TabPane>
+
+        <TabPane
+          tab={<Link to={`/coach/${id}/comments`}>Commentaires</Link>}
+          key="2"
+        ></TabPane>
         <TabPane tab={<Link to={`/devis/${id}`}>Contrat</Link>} key="3">
           {/* Add information tab content here */}
         </TabPane>
@@ -138,8 +134,7 @@ const Planning = () => {
       <h2 className="text-2xl font-bold mb-4">
         Créer un planning pour le coach
       </h2>
-      
-      
+
       {coach && (
         <h3 className="text-lg font-semibold mb-4">
           Planning pour: {coach.prenom} {coach.nom}

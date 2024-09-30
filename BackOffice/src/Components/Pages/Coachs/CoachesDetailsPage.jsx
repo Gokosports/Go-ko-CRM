@@ -460,7 +460,6 @@ const CoachesDetailsPage = () => {
           <Button type="primary" icon={<PlusOutlined />}>
             Créer un contract
           </Button>
-          
         </TabPane>
         <TabPane tab="Planning" key="4">
           <Button type="primary" icon={<PlusOutlined />}>

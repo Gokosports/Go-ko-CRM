@@ -55,25 +55,25 @@ const SideBar = () => {
                 }
             ],
         },
-        {
-            key: '/clients',
-            icon: <FontAwesomeIcon icon={faUserFriends} />,
-            label: 'Clients',
-            role:"Commercial",
+        // {
+        //     key: '/clients',
+        //     icon: <FontAwesomeIcon icon={faUserFriends} />,
+        //     label: 'Clients',
+        //     role:"Commercial",
 
-            children: [
-                {
-                    key: '/list-clients',
-                    label: 'Liste Clients',
-                    icon: <FontAwesomeIcon icon={faList} />,
-                },
-                {
-                    key: '/import-clients',
-                    label: 'Importer Clients',
-                    icon: <FontAwesomeIcon icon={faFileImport} />,
-                },
-            ],
-        },
+        //     children: [
+        //         {
+        //             key: '/list-clients',
+        //             label: 'Liste Clients',
+        //             icon: <FontAwesomeIcon icon={faList} />,
+        //         },
+        //         {
+        //             key: '/import-clients',
+        //             label: 'Importer Clients',
+        //             icon: <FontAwesomeIcon icon={faFileImport} />,
+        //         },
+        //     ],
+        // },
         {
             key: '/coach',
             icon: <FontAwesomeIcon icon={faUsers} />,
@@ -139,6 +139,12 @@ const SideBar = () => {
             
 
         },
+        // {
+        //     key: '/Specialité',
+        //     icon: <FontAwesomeIcon icon={faPersonSnowboarding} />,
+        //     label: 'Specialité',
+        //     role:"Admin",
+        // },
         {
             key: '/admin',
             icon: <FontAwesomeIcon icon={faUser} />,

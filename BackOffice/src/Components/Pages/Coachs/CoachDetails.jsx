@@ -163,6 +163,7 @@ const CoachDetailsPage = () => {
           values.speciality.includes(s._id)
         ),
       };
+      console.log("Updated Coach:", updatedCoach);
       setCoach(updatedCoach);
     } catch (error) {
       console.error(
@@ -231,6 +232,7 @@ const CoachDetailsPage = () => {
   }
 
   const isString = (value) => typeof value === "string";
+  const isNumber = (value) => typeof value === "number";
 
   const data = [
     { key: "1", field: "Nom", value: isString(coach.nom) ? coach.nom : "N/A" },
@@ -249,6 +251,7 @@ const CoachDetailsPage = () => {
       field: "Téléphone",
       value: isString(coach.phone) ? coach.phone : "N/A",
     },
+
     { key: "5", field: "Âge", value: isString(coach.age) ? coach.age : "N/A" },
     { key: "6", field: "Sexe", value: isString(coach.sex) ? coach.sex : "N/A" },
     {
@@ -269,6 +272,26 @@ const CoachDetailsPage = () => {
       value: coach.commercial
         ? `${coach.commercial.prenom} ${coach.commercial.nom}`
         : "Non affecté",
+    },
+    {
+      key: "11",
+      field: "SIRET",
+      value: isString(coach.siret) ? coach.siret : "N/A",
+    },
+    {
+      key: "12",
+      field: "Raison sociale",
+      value: isString(coach.raisonsociale) ? coach.raisonsociale : "N/A",
+    },
+    {
+      key: "13",
+      field: "Adresse",
+      value: isString(coach.adresse) ? coach.adresse : "N/A",
+    },
+    {
+      key: "14",
+      field: "Code postal",
+      value: isNumber(coach.codepostal) ? coach.codepostal : "N/A",
     },
   ];
 
@@ -457,19 +480,15 @@ const CoachDetailsPage = () => {
           />
         </TabPane>
         <TabPane tab="Contrat" key="3">
-                    <Button type="primary" icon={<PlusOutlined />}>
-                        Créer un contract
-                    </Button>
-                    
-                 
-                </TabPane>
-                <TabPane tab="Planning" key="4">
-                    <Button type="primary" icon={<PlusOutlined />}>
-                        Créer un contract
-                    </Button>
-                    
-                 
-                </TabPane>
+          <Button type="primary" icon={<PlusOutlined />}>
+            Créer un contract
+          </Button>
+        </TabPane>
+        <TabPane tab="Planning" key="4">
+          <Button type="primary" icon={<PlusOutlined />}>
+            Créer un contract
+          </Button>
+        </TabPane>
       </Tabs>
       <div className="flex justify-between items-center mt-4">
         <Link to="/list-coachs" className="text-blue-500 hover:underline">
@@ -489,12 +508,14 @@ const CoachDetailsPage = () => {
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={null}
-        width={500}
+        width={800}
         centered
-        className="fixed-modal"
+        // className="fixed-modal"
+
+        className="fixed-modal rounded-lg shadow-lg p-4 bg-white"
       >
         <Form form={form} layout="vertical" onFinish={handleSave}>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 overflow-y-auto p-4 max-h-96 gap-2">
             <Form.Item
               name="prenom"
               label="Prénom"
@@ -566,6 +587,41 @@ const CoachDetailsPage = () => {
               name="ville"
               label="Ville"
               rules={[{ required: true, message: "Veuillez entrer la ville" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="siret"
+              label="Siret"
+              rules={[{ required: true, message: "Veuillez entrer le siret" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="raisonsociale"
+              label="Raison sociale"
+              rules={[
+                {
+                  required: true,
+                  message: "Veuillez entrer la raison sociale",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="adresse"
+              label="Adresse"
+              rules={[{ required: true, message: "Veuillez entrer l'adresse" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="codepostal"
+              label="Code postal"
+              rules={[
+                { required: true, message: "Veuillez entrer le code postal" },
+              ]}
             >
               <Input />
             </Form.Item>

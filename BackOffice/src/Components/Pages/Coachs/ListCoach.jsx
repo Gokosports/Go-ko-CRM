@@ -143,10 +143,10 @@ const CoachList = () => {
   };
 
   const handleCategoryClick = async (id, categoryType) => {
-    console.log("Attempting to update category with type:", categoryType);
-
     // Prompt the user for a comment
-    const comment = prompt("Enter a comment for this category:") || "N/A";
+    const comment =
+      prompt("Entrez un commentaire pour le coach:") ||
+      "Ajouter un commentaire";
 
     try {
       // Get token from localStorage
@@ -180,7 +180,7 @@ const CoachList = () => {
         setFilteredCoaches(filtered);
 
         // Show a success message or update UI as needed
-        message.success("Coach type and comment updated successfully");
+        // message.success("Coach type and comment updated successfully");
       } else {
         message.error("Unable to update coach type");
       }
@@ -493,7 +493,7 @@ const CoachList = () => {
               }`}
               onClick={() => handleCategoryClick(record._id, "client_actif")}
             >
-              Client Actif
+              Actif
             </Button>
             <Button
               className={`btn ${
@@ -501,7 +501,7 @@ const CoachList = () => {
               }`}
               onClick={() => handleCategoryClick(record._id, "prospect_vr")}
             >
-              Prospect VRG
+              VRG
             </Button>
             <Button
               className={`btn ${
@@ -509,11 +509,11 @@ const CoachList = () => {
               }`}
               onClick={() => handleCategoryClick(record._id, "prospect_qlf")}
             >
-              Prospect QLF
+              QLF
             </Button>
           </div>
           <div className="mt-2">
-            <strong>Comment:</strong> {record.categoryComment || "N/A"}
+            <strong>Commentaire:</strong> {record.categoryComment || "N/A"}
           </div>
         </div>
       ),
@@ -571,6 +571,58 @@ const CoachList = () => {
       ),
     },
     {
+      title: "SIRET",
+      dataIndex: "siret",
+      key: "siret",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "Adresse",
+      dataIndex: "adresse",
+      key: "adresse",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "Code Postal",
+      dataIndex: "codepostal",
+      key: "codepostal",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "Raison Sociale",
+      dataIndex: "raisonsociale",
+      key: "raisonsociale",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
       title: "Spécialité",
       dataIndex: "speciality",
       key: "speciality",
@@ -578,7 +630,10 @@ const CoachList = () => {
         <div>
           {Array.isArray(specialities) &&
             specialities.map((item, index) => (
-              <div key={index}>{item.nom}</div>
+              <span key={index}>
+                {item.nom}
+                {index < specialities.length - 1 && ", "}
+              </span>
             ))}
         </div>
       ),
@@ -704,16 +759,17 @@ const CoachList = () => {
         onChange={handleTableChange}
       />
       <Modal
-        className="fixed-modal"
+        // className="fixed-modal"
         title={currentCoach ? "Modifier Coach" : "Ajouter Coach"}
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={null}
         width={500}
         centered
+        className="fixed-modal rounded-lg shadow-lg  bg-white"
       >
         <Form form={form} layout="vertical" onFinish={handleFinish}>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 overflow-y-auto p-4 max-h-96 gap-2">
             <Form.Item
               name="prenom"
               label="Prénom"
@@ -767,6 +823,41 @@ const CoachList = () => {
               name="ville"
               label="Ville"
               rules={[{ required: true, message: "Veuillez entrer la ville" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="siret"
+              label="Siret"
+              rules={[{ required: true, message: "Veuillez entrer le siret" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="raisonsociale"
+              label="Raison sociale"
+              rules={[
+                {
+                  required: true,
+                  message: "Veuillez entrer la raison sociale",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="adresse"
+              label="Adresse"
+              rules={[{ required: true, message: "Veuillez entrer l'adresse" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="codepostal"
+              label="Code postal"
+              rules={[
+                { required: true, message: "Veuillez entrer le code postal" },
+              ]}
             >
               <Input />
             </Form.Item>

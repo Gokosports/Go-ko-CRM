@@ -121,7 +121,11 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
           coach.sex &&
           coach.ville &&
           coach.age &&
-          coach.speciality
+          coach.speciality &&
+          coach.raisonsociale &&
+          coach.siret &&
+          coach.adresse &&
+          coach.codepostal
       );
 
       console.log("Données valides:", validData);
@@ -188,7 +192,7 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
       const token = localStorage.getItem("token"); // Récupérer le token JWT
 
       const response = await axios.post(
-        "https://go-ko-9qul.onrender.com/coaches/import",
+        "https://go-ko-9qul.onrender.comcoaches/import",
         cleanedData,
         {
           headers: {

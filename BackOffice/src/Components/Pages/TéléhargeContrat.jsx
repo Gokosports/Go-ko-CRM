@@ -220,7 +220,7 @@ const TéléhargeContrat = () => {
   }, []);
 
   const handleRedirect = (url) => {
-    window.location.href = url;
+    window.open(url, "_blank");
   };
 
   const extractPrice = (contractDuration) => {
@@ -267,7 +267,10 @@ const TéléhargeContrat = () => {
       </h1>
 
       <div className="mb-6 flex justify-center items-center">
-        <label htmlFor="month" className="mr-2 text-lg font-medium text-gray-700">
+        <label
+          htmlFor="month"
+          className="mr-2 text-lg font-medium text-gray-700"
+        >
           Filtrer par Mois
         </label>
         <select
@@ -279,7 +282,7 @@ const TéléhargeContrat = () => {
           <option value="">Tous les mois</option>
           {[...Array(12)].map((_, i) => (
             <option key={i + 1} value={i + 1}>
-              {new Date(0, i).toLocaleString('default', { month: 'long' })}
+              {new Date(0, i).toLocaleString("default", { month: "long" })}
             </option>
           ))}
         </select>
@@ -288,14 +291,25 @@ const TéléhargeContrat = () => {
       <h2 className="text-xl text-center mb-6 text-gray-800">
         Nombre de contrats créés: {filteredContracts.length}
         <br />
-        Prix total TTC: <span className="font-bold">{totalPrice.toFixed(2)} €</span>
+        Prix total TTC:{" "}
+        <span className="font-bold">{totalPrice.toFixed(2)} €</span>
       </h2>
 
       <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">
         <thead>
           <tr className="bg-blue-100">
-            {["ID", "Commercial", "Client Nom", "Télécharger", "Créé le", "Prix TTC"].map((header) => (
-              <th key={header} className="py-4 px-6 text-left font-medium text-gray-700">
+            {[
+              "ID",
+              "Commercial",
+              "Client Nom",
+              "Télécharger",
+              "Créé le",
+              "Prix TTC",
+            ].map((header) => (
+              <th
+                key={header}
+                className="py-4 px-6 text-left font-medium text-gray-700"
+              >
                 {header}
               </th>
             ))}
@@ -303,7 +317,10 @@ const TéléhargeContrat = () => {
         </thead>
         <tbody>
           {filteredContracts.map((contract) => (
-            <tr key={contract._id} className="border-t border-gray-200 hover:bg-gray-50">
+            <tr
+              key={contract._id}
+              className="border-t border-gray-200 hover:bg-gray-50"
+            >
               <td className="py-3 px-6">{contract.fileName}</td>
               <td className="py-3 px-6">{contract.commercialName}</td>
               <td className="py-3 px-6">{contract.clientName}</td>
@@ -326,18 +343,27 @@ const TéléhargeContrat = () => {
         </tbody>
       </table>
 
-      <h2 className="text-xl text-center mt-8 mb-4 text-gray-800">Total par Commercial</h2>
+      <h2 className="text-xl text-center mt-8 mb-4 text-gray-800">
+        Total par Commercial
+      </h2>
       <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">
         <thead>
           <tr className="bg-blue-100">
-            <th className="py-4 px-6 text-left font-medium text-gray-700">Commercial</th>
-            <th className="py-4 px-6 text-left font-medium text-gray-700">Prix total TTC</th>
+            <th className="py-4 px-6 text-left font-medium text-gray-700">
+              Commercial
+            </th>
+            <th className="py-4 px-6 text-left font-medium text-gray-700">
+              Prix total TTC
+            </th>
           </tr>
         </thead>
         <tbody>
           {Object.entries(commercialTotalPrice).map(
             ([commercialName, price]) => (
-              <tr key={commercialName} className="border-t border-gray-200 hover:bg-gray-50">
+              <tr
+                key={commercialName}
+                className="border-t border-gray-200 hover:bg-gray-50"
+              >
                 <td className="py-3 px-6">{commercialName}</td>
                 <td className="py-3 px-6">{price.toFixed(2)} €</td>
               </tr>

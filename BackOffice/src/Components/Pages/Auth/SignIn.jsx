@@ -36,7 +36,10 @@ const SignIn = () => {
       // mouchkil hna yaak ??
       const response = await axios.post(
         "https://go-ko-9qul.onrender.com/admin/login",
-        { email, password }
+        {
+          email,
+          password,
+        }
       );
       const token = response.data.token; // Assurez-vous que c'est bien la clé que vous utilisez
       localStorage.setItem("token", token);

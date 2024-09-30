@@ -143,10 +143,10 @@ const ListCoaches = () => {
   };
 
   const handleCategoryClick = async (id, categoryType) => {
-    console.log("Attempting to update category with type:", categoryType);
-
     // Prompt the user for a comment
-    const comment = prompt("Enter a comment for this category:") || "N/A";
+    const comment =
+      prompt("Entrez un commentaire pour le coach:") ||
+      "Ajouter un commentaire";
 
     try {
       // Get token from localStorage
@@ -493,7 +493,7 @@ const ListCoaches = () => {
               }`}
               onClick={() => handleCategoryClick(record._id, "client_actif")}
             >
-              Client Actif
+              Actif
             </Button>
             <Button
               className={`btn ${
@@ -501,7 +501,7 @@ const ListCoaches = () => {
               }`}
               onClick={() => handleCategoryClick(record._id, "prospect_vr")}
             >
-              Prospect VRG
+              VRG
             </Button>
             <Button
               className={`btn ${
@@ -509,11 +509,11 @@ const ListCoaches = () => {
               }`}
               onClick={() => handleCategoryClick(record._id, "prospect_qlf")}
             >
-              Prospect QLF
+              QLF
             </Button>
           </div>
           <div className="mt-2">
-            <strong>Comment:</strong> {record.categoryComment || "N/A"}
+            <strong>Commentaire:</strong> {record.categoryComment || "N/A"}
           </div>
         </div>
       ),
@@ -599,30 +599,82 @@ const ListCoaches = () => {
       ),
     },
     {
-      title: "Action",
-      key: "action",
+      title: "SIRET",
+      dataIndex: "siret",
+      key: "siret",
       render: (text, record) => (
-        <Space size="middle">
-          <Button
-            icon={<EditOutlined />}
-            style={{ backgroundColor: "green", color: "white" }}
-            onClick={() => showEditModal(record)}
-          />
-          <Popconfirm
-            title="Are you sure you want to delete this coach?"
-            onConfirm={() => handleDelete(record._id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button
-              icon={<DeleteOutlined />}
-              style={{ backgroundColor: "red", color: "white" }}
-              danger
-            />
-          </Popconfirm>
-        </Space>
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
       ),
     },
+    {
+      title: "Adresse",
+      dataIndex: "adresse",
+      key: "adresse",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "Code Postal",
+      dataIndex: "codepostal",
+      key: "codepostal",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "Raison Sociale",
+      dataIndex: "raisonsociale",
+      key: "raisonsociale",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (text, record) => (
+    //     <Space size="middle">
+    //       <Button
+    //         icon={<EditOutlined />}
+    //         style={{ backgroundColor: "green", color: "white" }}
+    //         onClick={() => showEditModal(record)}
+    //       />
+    //       {/* <Popconfirm
+    //         title="Are you sure you want to delete this coach?"
+    //         onConfirm={() => handleDelete(record._id)}
+    //         okText="Yes"
+    //         cancelText="No"
+    //       >
+    //         <Button
+    //           icon={<DeleteOutlined />}
+    //           style={{ backgroundColor: "red", color: "white" }}
+    //           danger
+    //         />
+    //       </Popconfirm> */}
+    //     </Space>
+    //   ),
+    // },
   ];
 
   const rowSelection = {

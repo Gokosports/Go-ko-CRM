@@ -161,7 +161,7 @@ const TéléchargerDevis = () => {
   }, [user]);
 
   const handleRedirect = (url) => {
-    window.location.href = url;
+    window.open(url, "_blank");
   };
 
   const extractPrice = (contractDuration) => {
@@ -180,20 +180,34 @@ const TéléchargerDevis = () => {
       </h1>
 
       <h2 className="text-xl text-center text-gray-700 mb-4">
-        Nombre de contrats créés: <span className="font-semibold">{contracts.length}</span>
+        Nombre de contrats créés:{" "}
+        <span className="font-semibold">{contracts.length}</span>
         <br />
-        Prix total TTC: <span className="font-semibold">{totalPrice.toFixed(2)} €</span>
+        Prix total TTC:{" "}
+        <span className="font-semibold">{totalPrice.toFixed(2)} €</span>
       </h2>
 
       <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">
         <thead>
           <tr className="bg-gray-100">
-            <th className="py-3 px-6 text-left font-medium text-gray-700">ID</th>
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Commercial</th>
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Client Nom</th>
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Télécharger</th>
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Créé le</th>
-            <th className="py-3 px-6 text-left font-medium text-gray-700">Prix TTC</th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              ID
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Commercial
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Client Nom
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Télécharger
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Créé le
+            </th>
+            <th className="py-3 px-6 text-left font-medium text-gray-700">
+              Prix TTC
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -234,4 +248,3 @@ const TéléchargerDevis = () => {
 };
 
 export default TéléchargerDevis;
-

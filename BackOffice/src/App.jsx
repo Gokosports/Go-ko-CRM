@@ -108,14 +108,14 @@ function App() {
         }
       />
       {/* {!isDoc()&&(  */}
-        <Route
-        path="/speciality"
+        {/* <Route
+        path="/Specialité"
         element={
           <MainLayout>
             <Speciality />
           </MainLayout>
         }
-      />
+      /> */}
       {/* )}  */}
 
     

@@ -258,7 +258,6 @@ const CoachCommentsPage = () => {
         <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="1">
           {/* Add information tab content here */}
         </TabPane>
-       
       </Tabs>
       <Modal
         title={isEdit ? "Modifier le Commentaire" : "Ajouter un Commentaire"}

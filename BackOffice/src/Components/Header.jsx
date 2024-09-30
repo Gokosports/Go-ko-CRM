@@ -61,7 +61,9 @@ const Header = () => {
       try {
         const response = await axios.get(
           "https://go-ko-9qul.onrender.com/admin",
-          { headers: { authorization: `Bearer ${token}` } }
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
         );
         const data = response.data;
         setProfileImage(data.imageUrl);

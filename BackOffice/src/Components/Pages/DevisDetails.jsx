@@ -93,8 +93,12 @@ const DevisDetails = () => {
         email: response.data.email,
         age: response.data.age,
         sex: response.data.sex,
-        address: response.data.ville,
+        ville: response.data.ville,
         commercialName: commercialName,
+        codepostal: response.data.codepostal,
+        siret: response.data.siret,
+        raisonsociale: response.data.raisonsociale,
+        address: response.data.adresse,
       });
     } catch (error) {
       console.error("Error fetching coach:", error);
@@ -143,11 +147,11 @@ const DevisDetails = () => {
       contract.supplement.length > 0 ? contract.supplement.join(", ") : "Aucun";
     const tableData = [
       ["No de membre (référence du mandat)", contract.nemuro],
-      ["Adresse club", contract.clubAddress],
-      ["Date d’inscription", contract.startDate.format("DD-MM-YYYY")],
+      ["Prénom + Nom", contract.clientName],
+      ["SIRET", contract.siret],
       ["Date de début du contrat", contract.startDate.format("DD-MM-YYYY")],
       ["Date de fin du contrat", contract.endDate.format("DD-MM-YYYY")],
-      ["Prénom + Nom", contract.clientName],
+      ["Adresse club", contract.clubAddress],
       [
         "Montant total",
         contract.contractDuration === "1 an complet" ||
@@ -157,10 +161,13 @@ const DevisDetails = () => {
           : totalPrice,
       ],
       ["Adresse", `${contract.address}`],
-      ["Code postal", contract.zipCode],
-      ["Localité", contract.city],
+      ["Code postal", contract.codepostal],
+      ["Localité", contract.ville],
       ["Pays", contract.country],
       ["Téléphone", contract.phone],
+      ["Raison Sociale", contract.raisonsociale],
+      ["Code postal", contract.codepostal],
+
       ["Adresse e-mail", contract.email],
       ["Durée du contrat", contract.contractDuration],
       ["Montant Total HT", `${ht.toFixed(2)} €`],
@@ -230,16 +237,16 @@ const DevisDetails = () => {
   Les CGV/CGU ont pour objet de définir les droits et obligations de GOKO, des Coachs abonnés à l’Application et des Utilisateurs dans le cadre de l’utilisation de l’Application. Seuls les Coachs ou entités sportives paient un abonnement pour figurer sur l’Application, tandis que l'accès pour les Utilisateurs est gratuit.
   2. Accès et inscription à l’Application
       2.1. Inscription des Coachs
-      Les Coachs souhaitant être présents sur l’Application doivent s'inscrire en fournissant les informations demandées (nom, qualifications, services offerts, etc.). L’inscription est conditionnée au paiement d’un abonnement mensuel ou annuel.
+Les Coachs souhaitant être présents sur l’Application doivent s'inscrire en fournissant les informations demandées (nom, qualifications, services offerts, etc.). L’inscription est conditionnée au paiement d’un abonnement mensuel ou annuel.
       2.2. Inscription des Utilisateurs
-      Les Utilisateurs peuvent s’inscrire gratuitement sur l’Application pour accéder aux services proposés et contacter les Coachs. Ils doivent créer un compte et fournir les informations nécessaires à la création de leur profil.
+Les Utilisateurs peuvent s’inscrire gratuitement sur l’Application pour accéder aux services proposés et contacter les Coachs. Ils doivent créer un compte et fournir les informations nécessaires à la création de leur profil.
   3. Abonnement des Coachs
       3.1. Offre d’abonnement
-      Les Coachs doivent souscrire un abonnement payant pour être référencés sur l’Application. Les détails des tarifs et des options d’abonnement sont précisés lors de la souscription.
+Les Coachs doivent souscrire un abonnement payant pour être référencés sur l’Application. Les détails des tarifs et des options d’abonnement sont précisés lors de la souscription.
       3.2. Engagement du Coach
-      Le Coach s’engage à fournir des informations exactes, à jour et conformes à la réalité concernant ses qualifications et services. Le non-respect de cette obligation pourra entraîner la suspension ou la résiliation de son compte sans remboursement.
+Le Coach s’engage à fournir des informations exactes, à jour et conformes à la réalité concernant ses qualifications et services. Le non-respect de cette obligation pourra entraîner la suspension ou la résiliation de son compte sans remboursement.
       3.3. Offre "Rentabilisé ou remboursé"
-      Si, à l’issue de la période d’abonnement, le Coach n’a pas atteint le nombre de clients escompté (indiqué au moment de la souscription), GOKO propose une garantie "Rentabilisé ou remboursé". Le Coach pourra demander un remboursement partiel ou total de son abonnement, sous réserve de prouver qu’il a utilisé activement l’Application et respecté les conditions d’utilisation. Le nombre de clients attendu doit avoir été précisé lors de l'activation de l'offre.
+Si, à l’issue de la période d’abonnement, le Coach n’a pas atteint le nombre de clients escompté (indiqué au moment de la souscription), GOKO propose une garantie "Rentabilisé ou remboursé". Le Coach pourra demander un remboursement partiel ou total de son abonnement, sous réserve de prouver qu’il a utilisé activement l’Application et respecté les conditions d’utilisation. Le nombre de clients attendu doit avoir été précisé lors de l'activation de l'offre.
   4. Utilisation de l’Application 
       4.1. Fonctionnement de l’Application 
 L’Application permet aux Utilisateurs de rechercher des Coachs selon leurs besoins sportifs (niveau, spécialité, localisation, etc.) et de les contacter directement via l’interface. Les Coachs peuvent proposer des sessions, consultations ou programmes sportifs via l'Application.
@@ -440,6 +447,13 @@ Fait à Roubaix, le 23 septembre 2024.
             <DatePicker style={{ width: "100%" }} className="rounded-md" />
           </Form.Item>
           <Form.Item
+            name="siret"
+            label="SIRET"
+            rules={[{ required: true, message: "Veuillez entrer le SIRET" }]}
+          >
+            <Input className="rounded-md" />
+          </Form.Item>
+          <Form.Item
             name="address"
             label="Adresse"
             rules={[{ required: true, message: "Veuillez entrer l’adresse" }]}
@@ -447,7 +461,19 @@ Fait à Roubaix, le 23 septembre 2024.
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
-            name="zipCode"
+            name="raisonsociale"
+            label="Raison Sociale"
+            rules={[
+              {
+                required: true,
+                message: "Veuillez entrer la raison sociale",
+              },
+            ]}
+          >
+            <Input className="rounded-md p-4" />
+          </Form.Item>
+          <Form.Item
+            name="codepostal"
             label="Code Postal"
             rules={[
               { required: true, message: "Veuillez entrer le code postal" },
@@ -456,8 +482,8 @@ Fait à Roubaix, le 23 septembre 2024.
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
-            name="city"
-            label="Localité"
+            name="ville"
+            label="Ville"
             rules={[{ required: true, message: "Veuillez entrer la localité" }]}
           >
             <Input className="rounded-md" />
@@ -525,6 +551,19 @@ Fait à Roubaix, le 23 septembre 2024.
             <Input className="rounded-md" />
           </Form.Item>
           <Form.Item
+            name="raisonsociale"
+            label="Raison Sociale"
+            rules={[
+              {
+                required: true,
+                message: "Veuillez entrer la raison sociale",
+              },
+            ]}
+          >
+            <Input.TextArea className="rounded-md py-4" rows={2} />
+          </Form.Item>
+
+          <Form.Item
             name="contractDuration"
             label="Durée du contrat"
             rules={[
@@ -534,7 +573,10 @@ Fait à Roubaix, le 23 septembre 2024.
               },
             ]}
           >
-            <Radio.Group onChange={handleDurationChange}>
+            <Radio.Group
+              onChange={handleDurationChange}
+              className="flex flex-col"
+            >
               <Radio value="12 mois - 64,90 € par mois">
                 12 mois - 64,90 € par mois
               </Radio>

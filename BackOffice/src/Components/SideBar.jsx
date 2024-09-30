@@ -123,13 +123,7 @@ const SideBar = () => {
                
             ],
         },
-        
-        // {
-        //     key: '/speciality',
-        //     icon: <FontAwesomeIcon icon={faPersonSnowboarding} />,
-        //     label: 'Spécialités',
-
-        // },
+   
         {
             key: '/téléchargerContrat',
             icon: <FontAwesomeIcon icon={faFileContract} />,
@@ -138,7 +132,7 @@ const SideBar = () => {
 
         },
         {
-            key: '/téléchargerDevis',
+            key: '/téléchargerContrat',
             icon: <FontAwesomeIcon icon={faFileContract} />,
             label: 'Contrats',
             role:"Commercial",

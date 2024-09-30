@@ -288,7 +288,7 @@ function App() {
   }
 />
 <Route
-  path="/téléchargerDevis"
+  path="/téléchargerContrat"
   element={
     <MainLayout>
       <TéléchargerDevis />

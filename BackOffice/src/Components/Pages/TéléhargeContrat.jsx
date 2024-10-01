@@ -228,7 +228,7 @@ const TéléhargeContrat = () => {
     return priceMatch ? parseFloat(priceMatch[1].replace(",", ".")) : 0;
   };
 
-  const totalPrice = filteredContracts.reduce((total, contract) => {
+  const totalPrice = filteredContracts?.reduce((total, contract) => {
     return total + extractPrice(contract.contractDuration);
   }, 0);
 

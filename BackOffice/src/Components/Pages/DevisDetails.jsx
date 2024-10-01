@@ -331,8 +331,8 @@ Fait à Roubaix, le 23 septembre 2024.
       contract.email,
       recipientNom,
       recipientPrenom,
-      // contract.commercialName,
-      // contract.contractDuration
+      contract.commercialName,
+      contract.contractDuration
     );
   };
 
@@ -342,8 +342,8 @@ Fait à Roubaix, le 23 septembre 2024.
     email,
     recipientNom,
     recipientPrenom,
-    // commercialName,
-    // contractDuration
+    commercialName,
+    contractDuration
   ) => {
     const clientName = `${recipientPrenom} ${recipientNom}`;
     const formData = new FormData();
@@ -354,8 +354,8 @@ Fait à Roubaix, le 23 septembre 2024.
     );
     formData.append("email", email);
     formData.append("clientName", clientName);
-    // formData.append("commercialName", commercialName);
-    // formData.append("contractDuration", contractDuration);
+    formData.append("commercialName", commercialName);
+    formData.append("contractDuration", contractDuration);
 
     try {
       const response = await axios.post(

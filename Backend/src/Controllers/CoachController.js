@@ -79,6 +79,7 @@ exports.deleteCoach = async (req, res) => {
 // Import coaches
 exports.importCoaches = async (req, res) => {
     const coaches = req.body;
+
     try {
         console.log('Importing coaches:', coaches);
         const savedCoaches = await Coach.insertMany(coaches);
@@ -110,6 +111,23 @@ exports.assignCoachToCommercial = async (req, res) => {
         res.status(500).json({ message: 'Error assigning coaches to commercial', error });
     }
 };
+
+// Récupérer les coachs assignés à un commercial
+exports.getCoachesByCommercial = async (req, res) => {
+    const { commercialId } = req.params;
+
+    try {
+        const assignedCoaches = await Coach.find({ commercial: commercialId })
+            .populate('speciality')
+            .populate('commercial');
+
+        res.status(200).json(assignedCoaches);
+    } catch (error) {
+        console.error('Error fetching assigned coaches:', error.message);
+        res.status(500).json({ message: 'Error fetching assigned coaches', error });
+    }
+};
+
 
 exports.unassignCoachFromCommercial = async (req, res) => {
     const { coachIds } = req.body;

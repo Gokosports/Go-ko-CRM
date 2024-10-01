@@ -175,6 +175,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
 import { LoginContext } from "../store/LoginContext";
+import ListCoaches from "./Coachs/ListCoaches";
 
 function Dashboard() {
   const [counts, setCounts] = useState({
@@ -231,7 +232,9 @@ function Dashboard() {
   };
 
   const isAdmin =
-    decodedToken.role && decodedToken.role.toLowerCase() === "admin"; // Ensure case-insensitivity
+    decodedToken.role && decodedToken.role.toLowerCase() === "admin";
+    
+    // Ensure case-insensitivity
 
   return (
     <>
@@ -335,8 +338,12 @@ function Dashboard() {
           style={{ height: "440px", width: "100%", overflowY: "auto" }}
         >
           <div className="">
-            <ListCoach coaches={coaches} />{" "}
-            {/* Pass assigned coaches to ListCoach */}
+          {decodedToken.role === "Admin" ? (
+        <ListCoach coaches={coaches} />
+      ) : decodedToken.role === "Commercial" ? (
+        <ListCoaches coaches={coaches} />
+      ) : null}
+       
           </div>
         </div>
       </div>

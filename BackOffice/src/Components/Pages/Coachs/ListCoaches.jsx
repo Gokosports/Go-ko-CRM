@@ -233,7 +233,7 @@ const ListCoaches = () => {
   };
 
   const handleCoachClick = (coach) => {
-    navigate(`/coach/${coach._id}`);
+    navigate(`/coaches/${coach._id}`);
   };
 
   const showEditModal = async (coach) => {
@@ -501,7 +501,7 @@ const ListCoaches = () => {
               }`}
               onClick={() => handleCategoryClick(record._id, "prospect_vr")}
             >
-              VRG 
+              VRG
             </Button>
             {/* <Button
               className={`btn ${
@@ -699,16 +699,16 @@ const ListCoaches = () => {
     // First, filter and sort the data
     const sortedData = data.sort((a, b) => {
       if (!a.commercial) return -1; // Coaches without commercial come first
-      if (!b.commercial) return 1;  // Coaches without commercial come first
+      if (!b.commercial) return 1; // Coaches without commercial come first
       return 0; // Keep original order
     });
-  
+
     // Then, slice the data for pagination
     const startIndex = (current - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     return sortedData.slice(startIndex, endIndex);
   };
-  
+
   return (
     <div className="p-4">
       <Breadcrumb>

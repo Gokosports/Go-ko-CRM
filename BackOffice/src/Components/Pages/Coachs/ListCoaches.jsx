@@ -233,7 +233,7 @@ const ListCoaches = () => {
   };
 
   const handleCoachClick = (coach) => {
-    navigate(`/coaches/${coach._id}`);
+    navigate(`/coach/${coach._id}`);
   };
 
   const showEditModal = async (coach) => {

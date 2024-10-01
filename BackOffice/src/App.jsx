@@ -36,6 +36,7 @@ import CoachesDetailsPage from "./Components/Pages/Coachs/CoachesDetailsPage";
 import DevisDetails from "./Components/Pages/DevisDetails";
 import TéléchargerDevis from "./Components/Pages/TéléchargerDevis";
 import Planning from "./Components/Pages/Planning";
+import PlanningCommerciale from "./Components/Pages/PlanningCommerciale";
 
 
 
@@ -278,6 +279,15 @@ function App() {
             </MainLayout>
           }
         />
+         <Route
+          path="/CalendarCommerciale"
+          element={
+            <MainLayout>
+              <PlanningCommerciale/>
+            </MainLayout>
+          }
+        />
+       
        
        <Route
   path="/téléchargerContrat"

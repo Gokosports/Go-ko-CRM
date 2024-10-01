@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
@@ -22,8 +22,10 @@ import {
   DeleteOutlined,
   UserSwitchOutlined,
   PlusOutlined,
+  MailOutlined,
 } from "@ant-design/icons";
 import "tailwindcss/tailwind.css";
+import SignaturePadComponent from "../../SignaturePadComponent";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -46,6 +48,11 @@ const CoachDetailsPage = () => {
   const [assignForm] = Form.useForm();
   const navigate = useNavigate();
   const location = useLocation();
+  const signaturePadRef = useRef(null);
+
+  const handleSignatureComplete = (dataURL) => {
+    setSignature(dataURL); // Save the signature data URL
+  };
 
   const fetchCoach = async () => {
     try {
@@ -121,14 +128,6 @@ const CoachDetailsPage = () => {
     }
   };
 
-  const handleEdit = () => {
-    form.setFieldsValue({
-      ...coach,
-      speciality: coach.speciality.map((speciality) => speciality._id),
-    });
-    setIsModalVisible(true);
-  };
-
   const handleCancel = () => {
     setIsModalVisible(false);
     form.resetFields();
@@ -139,63 +138,65 @@ const CoachDetailsPage = () => {
     assignForm.resetFields();
   };
 
+  // const handleSave = async (values) => {
+  //   try {
+  //     const emailData = {
+  //       email: values.email,
+  //       signature: signature, // Include the signature here
+  //     };
+
+  //     console.log("Email Data:", emailData);
+  //     await axios.post("https://go-ko-9qul.onrender.com/api/send-email", emailData); // POST request to send the email
+  //     message.success("Email envoyé avec succès !");
+  //     form.resetFields();
+  //     setIsModalVisible(false);
+  //     setSignature(null); // Clear the signature after sending
+  //   } catch (error) {
+  //     message.error("Erreur lors de l'envoi de l'email.");
+  //     console.error(error);
+  //   }
+  // };
+
   const handleSave = async (values) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.put(
-        `https://go-ko-9qul.onrender.com/coaches/${id}`,
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      message.success("Coach mis à jour avec succès");
-      setIsModalVisible(false);
-      form.resetFields();
+      const signatureData = signaturePadRef.current.getSignature(); // Get the signature data
 
-      // Update the coach state with the new specialties
-      const updatedCoach = {
-        ...coach,
-        ...values,
-        speciality: specialities.filter((s) =>
-          values.speciality.includes(s._id)
-        ),
+      const emailData = {
+        email: values.email,
+        signature: signatureData, // Use the captured signature
+        prenom: values.prenom, // Include the first name if needed
       };
-      console.log("Updated Coach:", updatedCoach);
-      setCoach(updatedCoach);
+
+      console.log("Email Data:", emailData);
+      await axios.post(
+        "https://go-ko-9qul.onrender.com/api/send-email",
+        emailData
+      ); // POST request to send the email
+      message.success("Email envoyé avec succès !");
+      form.resetFields();
+      setIsModalVisible(false);
+      signaturePadRef.current.clearSignature(); // Clear the signature after sending
     } catch (error) {
-      console.error(
-        "Error saving coach:",
-        error.response ? error.response.data : error.message
-      );
-      message.error("Erreur lors de la sauvegarde du coach");
+      message.error("Erreur lors de l'envoi de l'email.");
+      console.error(error);
     }
   };
+  const handleSaveC = () => {};
 
-  const handleAssign = async (values) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `https://go-ko-9qul.onrender.com/coaches/${id}`,
-        { commercial: values.commercial },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      message.success("Commercial assigné avec succès");
-      setIsAssignModalVisible(false);
-      setCoach({
-        ...coach,
-        commercial: commercials.find((c) => c._id === values.commercial),
-      });
-    } catch (error) {
-      console.error("Erreur lors de l'affectation du commercial:", error);
-      message.error("Erreur lors de l'affectation du commercial");
-    }
+  const handleSendContact = () => {
+    form.setFieldsValue({
+      email: coach.email,
+      prenom: coach.prenom,
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleSendCommande = () => {
+    form.setFieldsValue({
+      email: coach.email,
+      prenom: coach.prenom,
+    });
+    setIsModalVisible(true);
   };
 
   const handleDeleteComment = async (commentId) => {
@@ -215,16 +216,6 @@ const CoachDetailsPage = () => {
       console.error("Error deleting comment:", error);
       message.error("Erreur lors de la suppression du commentaire");
     }
-  };
-
-  const confirmDelete = (commentId) => {
-    Modal.confirm({
-      title: "Êtes-vous sûr de vouloir supprimer ce commentaire ?",
-      onOk: () => handleDeleteComment(commentId),
-      onCancel() {
-        console.log("Annulation de la suppression");
-      },
-    });
   };
 
   if (!coach) {
@@ -310,15 +301,15 @@ const CoachDetailsPage = () => {
       render: (text, record) => (
         <div className="flex justify-between items-center">
           <span>{text}</span>
-          {record.field === "Commercial" && (
+          {/* {record.field === "Commercial" && (
             <Button
               icon={<UserSwitchOutlined />}
               onClick={() => setIsAssignModalVisible(true)}
               size="small"
             >
-              Changer
+              Email de commande
             </Button>
-          )}
+          )} */}
         </div>
       ),
     },
@@ -490,170 +481,58 @@ const CoachDetailsPage = () => {
           </Button>
         </TabPane>
       </Tabs>
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex gap-6 items-center mt-4">
         <Link to="/list-coachs" className="text-blue-500 hover:underline">
           &lt; Retour
         </Link>
         <Button
           type="primary"
-          style={{ backgroundColor: "green", borderColor: "green" }}
-          icon={<EditOutlined />}
-          onClick={handleEdit}
+          style={{ backgroundColor: "blue", borderColor: "blue" }}
+          icon={<MailOutlined />}
+          onClick={handleSendContact}
         >
-          Modifier Coach
+          Email de contact
+        </Button>
+
+        <Button
+          type="primary"
+          style={{ backgroundColor: "blue", borderColor: "blue" }}
+          icon={<MailOutlined />}
+          onClick={handleSendCommande}
+        >
+          Email de commande
         </Button>
       </div>
       <Modal
-        title="Modifier Coach"
+        title="Enoyer email de contact"
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={null}
         width={800}
         centered
-        // className="fixed-modal"
-
         className="fixed-modal rounded-lg shadow-lg p-4 bg-white"
       >
         <Form form={form} layout="vertical" onFinish={handleSave}>
-          <div className="grid grid-cols-2 overflow-y-auto p-4 max-h-96 gap-2">
+          <div className="flex-1 overflow-y-auto p-2 max-h-96 gap-2">
             <Form.Item
               name="prenom"
-              label="Prénom"
-              rules={[{ required: true, message: "Veuillez entrer le prénom" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="nom"
-              label="Nom"
-              rules={[{ required: true, message: "Veuillez entrer le nom" }]}
+              label="Prenom"
+              rules={[{ required: true, message: "Veuillez entrer le prenom" }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="email"
-              label="Email"
-              rules={[{ required: true, message: "Veuillez entrer l'email" }]}
-            >
-              <Input type="email" />
-            </Form.Item>
-            <Form.Item
-              name="phone"
-              label="Téléphone"
-              rules={[
-                { required: true, message: "Veuillez entrer le téléphone" },
-              ]}
+              label="Email de coach"
+              rules={[{ required: true, message: "Veuillez entrer le email" }]}
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              name="age"
-              label="Âge"
-              rules={[{ required: true, message: "Veuillez entrer l'âge" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="sex"
-              label="Sexe"
-              rules={[
-                { required: true, message: "Veuillez sélectionner le sexe" },
-              ]}
-            >
-              <Select>
-                <Option value="homme">Homme</Option>
-                <Option value="femme">Femme</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="speciality"
-              label="Spécialité"
-              rules={[
-                {
-                  required: true,
-                  message: "Veuillez sélectionner la spécialité",
-                },
-              ]}
-            >
-              <Select mode="multiple">
-                {specialities.map((speciality) => (
-                  <Option key={speciality._id} value={speciality._id}>
-                    {speciality.nom}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="ville"
-              label="Ville"
-              rules={[{ required: true, message: "Veuillez entrer la ville" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="siret"
-              label="Siret"
-              rules={[{ required: true, message: "Veuillez entrer le siret" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="raisonsociale"
-              label="Raison sociale"
-              rules={[
-                {
-                  required: true,
-                  message: "Veuillez entrer la raison sociale",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="adresse"
-              label="Adresse"
-              rules={[{ required: true, message: "Veuillez entrer l'adresse" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="codepostal"
-              label="Code postal"
-              rules={[
-                { required: true, message: "Veuillez entrer le code postal" },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item label="Image">
-              <Upload {...uploadProps}>
-                <Button icon={<UploadOutlined />}>Télécharger</Button>
-              </Upload>
-              {coach.imageUrl && (
-                <div className="flex items-center mt-2">
-                  <Image
-                    src={coach.imageUrl}
-                    alt="Uploaded Image"
-                    width={50}
-                    height={50}
-                    className="mr-2"
-                  />
-                  <span>{coach.imageUrl.split("/").pop()}</span>
-                  <Button
-                    type="link"
-                    icon={<DeleteOutlined />}
-                    onClick={() => {
-                      form.setFieldsValue({ imageUrl: "" });
-                      setCoach({ ...coach, imageUrl: "" });
-                    }}
-                  />
-                </div>
-              )}
-            </Form.Item>
+            <SignaturePadComponent ref={signaturePadRef} />
           </div>
           <Form.Item className="mt-2">
             <Button type="primary" htmlType="submit">
-              Enregistrer les modifications
+              Envoyer
             </Button>
             <Button onClick={handleCancel} className="ml-2">
               Annuler
@@ -662,35 +541,37 @@ const CoachDetailsPage = () => {
         </Form>
       </Modal>
       <Modal
-        title="Affecter un nouveau Commercial"
+        title="Enoyer email de commande"
         visible={isAssignModalVisible}
         onCancel={handleAssignCancel}
         footer={null}
         centered
         className="fixed-modal"
       >
-        <Form form={assignForm} layout="vertical" onFinish={handleAssign}>
-          <Form.Item
-            name="commercial"
-            label="Commercial"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez sélectionner un commercial",
-              },
-            ]}
-          >
-            <Select placeholder="Sélectionnez un commercial">
-              {commercials.map((commercial) => (
-                <Option key={commercial._id} value={commercial._id}>
-                  {commercial.prenom} {commercial.nom}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
+        <Form form={assignForm} layout="vertical" onFinish={handleSaveC}>
+          <div className="flex-1 overflow-y-auto p-2 max-h-96 gap-2">
+            <Form.Item
+              name="prenom"
+              label="Prenom"
+              rules={[{ required: true, message: "Veuillez entrer le prenom" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="Email de coach"
+              rules={[{ required: true, message: "Veuillez entrer le email" }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <SignaturePadComponent
+              onSignatureComplete={handleSignatureComplete}
+            />
+          </div>
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Affecter
+              Envoyer
             </Button>
             <Button onClick={handleAssignCancel} className="ml-2">
               Annuler

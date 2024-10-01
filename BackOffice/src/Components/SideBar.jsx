@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileContract ,faUserTag, faPersonSnowboarding,  faUserFriends, faHome, faUserTie, faUser, faUsers, faUserMd, faList, faPlus, faFileImport,faPlusCircle  } from '@fortawesome/free-solid-svg-icons';
+import { faFileContract ,faUserTag, faCalendarAlt,  faUserFriends, faHome, faUserTie, faUser, faUsers, faUserMd, faList, faPlus, faFileImport,faPlusCircle  } from '@fortawesome/free-solid-svg-icons';
 import { Layout, Menu } from 'antd';
 
 import { ToggleContext } from './store/ToggleContext';
@@ -115,11 +115,11 @@ const SideBar = () => {
                     label: 'Liste Coachs',
                     icon: <FontAwesomeIcon icon={faList} />,
                 },
-                {
-                    key: '/import-coachs',
-                    label: 'Importer Coachs',
-                    icon: <FontAwesomeIcon icon={faFileImport} />,
-                },
+                // {
+                //     key: '/import-coachs',
+                //     label: 'Importer Coachs',
+                //     icon: <FontAwesomeIcon icon={faFileImport} />,
+                // },
                
             ],
         },
@@ -139,12 +139,13 @@ const SideBar = () => {
             
 
         },
-        // {
-        //     key: '/Specialité',
-        //     icon: <FontAwesomeIcon icon={faPersonSnowboarding} />,
-        //     label: 'Specialité',
-        //     role:"Admin",
-        // },
+        {
+            key: '/CalendarCommerciale',
+            icon: <FontAwesomeIcon icon={faCalendarAlt} />, 
+            label: 'Calendar',
+            role: "Commercial",
+        },
+          
         {
             key: '/admin',
             icon: <FontAwesomeIcon icon={faUser} />,

@@ -68,7 +68,13 @@ app.use('/api', contractRoutes);
 app.use(fileUpload());
 
 
+// Serve static files from the React app (your frontend)
+app.use(express.static(path.join(__dirname, 'client/build')));
 
+// Handle special route for React Router to serve the `index.html` file for unmatched routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 
 app.get('/specialities', async (req, res) => {
     try {

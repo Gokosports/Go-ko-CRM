@@ -699,10 +699,19 @@ const CoachList = () => {
 
   // Paginate data for the current page
   const paginateData = (data, current, pageSize) => {
+    // First, filter and sort the data
+    const sortedData = data.sort((a, b) => {
+      if (!a.commercial) return -1; // Coaches without commercial come first
+      if (!b.commercial) return 1;  // Coaches without commercial come first
+      return 0; // Keep original order
+    });
+  
+    // Then, slice the data for pagination
     const startIndex = (current - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return data.slice(startIndex, endIndex);
+    return sortedData.slice(startIndex, endIndex);
   };
+  
 
   return (
     <div className="p-4">
@@ -737,7 +746,7 @@ const CoachList = () => {
           </Button> */}
         </div>
       </div>
-      <Table
+      {/* <Table
         columns={columns}
         dataSource={paginateData(
           filteredCoaches,
@@ -757,7 +766,26 @@ const CoachList = () => {
           },
         }}
         onChange={handleTableChange}
-      />
+      /> */}
+      <Table
+  columns={columns}
+  dataSource={paginateData(coaches, pagination.current, pagination.pageSize).map((coach) => ({ ...coach, key: coach._id }))}
+  rowKey="_id"
+  scroll={{ x: 600 }}
+  rowSelection={rowSelection}
+  pagination={{
+    current: pagination.current,
+    pageSize: pagination.pageSize,
+    total: coaches.length,
+    showTotal: (total, range) =>
+      `${range[0]}-${range[1]} de ${total} coachs`,
+    onChange: (page, pageSize) => {
+      setPagination({ current: page, pageSize });
+    },
+  }}
+  onChange={handleTableChange}
+/>
+
       <Modal
         // className="fixed-modal"
         title={currentCoach ? "Modifier Coach" : "Ajouter Coach"}

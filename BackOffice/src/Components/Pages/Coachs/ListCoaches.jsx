@@ -696,11 +696,19 @@ const ListCoaches = () => {
 
   // Paginate data for the current page
   const paginateData = (data, current, pageSize) => {
+    // First, filter and sort the data
+    const sortedData = data.sort((a, b) => {
+      if (!a.commercial) return -1; // Coaches without commercial come first
+      if (!b.commercial) return 1;  // Coaches without commercial come first
+      return 0; // Keep original order
+    });
+  
+    // Then, slice the data for pagination
     const startIndex = (current - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return data.slice(startIndex, endIndex);
+    return sortedData.slice(startIndex, endIndex);
   };
-
+  
   return (
     <div className="p-4">
       <Breadcrumb>

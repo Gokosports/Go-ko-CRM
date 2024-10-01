@@ -67,6 +67,12 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
   if (!req.body.clientName) {
     return res.status(400).send("Recipient clientName is required.");
   }
+  if (!req.body.commercialName) {
+    return res.status(400).send("Recipient commercial is required.");
+  }
+  if (!req.body.contractDuration) {
+    return res.status(400).send("Recipient contractDuration is required.");
+  }
 
   try {
     const fileUrl = await uploadFile(req.file); // Upload file to Firebase
@@ -77,6 +83,8 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
       fileUrl: fileUrl,
       email: req.body.email,
       clientName: req.body.clientName,
+      commercialName: req.body.commercialName,
+      contractDuration: req.body.contractDuration
     });
     const savedContract = await newContract.save();
     console.log("Contract saved to database:", savedContract);

@@ -5,8 +5,8 @@ const contractSchema = new mongoose.Schema({
   fileUrl: { type: String, required: true },
   clientName: { type: String, required: true },
   email: { type: String, required: true },
-  // commercialName: { type: String, required: true },
-  // contractDuration: { type: String, required: true },
+  commercialName: { type: String, required: true },
+  contractDuration: { type: String, required: true },
 }, { timestamps: true });
 
 const Contract = mongoose.model('Contract', contractSchema);

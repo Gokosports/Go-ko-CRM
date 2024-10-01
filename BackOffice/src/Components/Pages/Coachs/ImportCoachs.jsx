@@ -112,21 +112,17 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
     }
 
     try {
-      const validData = fileData.filter(
-        (coach) =>
-          coach.nom &&
-          coach.prenom &&
+      const validData = fileData.filter((coach) => {
+        return (
           coach.email &&
           coach.phone &&
-          coach.sex &&
           coach.ville &&
-          coach.age &&
-          coach.speciality &&
           coach.raisonsociale &&
           coach.siret &&
           coach.adresse &&
           coach.codepostal
-      );
+        );
+      });
 
       console.log("Données valides:", validData);
 

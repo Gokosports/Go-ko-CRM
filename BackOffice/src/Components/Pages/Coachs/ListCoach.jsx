@@ -446,7 +446,7 @@ const CoachList = () => {
           className="flex items-center cursor-pointer"
           onClick={() => handleCoachClick(record)}
         >
-          {record.image ? (
+          {/* {record.image ? (
             <img
               src={record.image}
               alt="Coach"
@@ -460,7 +460,7 @@ const CoachList = () => {
             >
               {getInitials(record.prenom, record.nom)}
             </Avatar>
-          )}
+          )} */}
           <span>
             {record.prenom} {record.nom}
           </span>

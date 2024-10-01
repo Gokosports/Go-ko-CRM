@@ -27,7 +27,7 @@ const clientTypes = [
   { label: "Tous", value: "all" },
   { label: "Client Actif", value: "client_actif" },
   { label: "Prospect VRG", value: "prospect_vr" },
-  { label: "Prospect Qlf", value: "prospect_qlf" },
+  // { label: "Prospect Qlf", value: "prospect_qlf" },
 ];
 
 const getInitials = (prenom, nom) => {
@@ -501,16 +501,16 @@ const ListCoaches = () => {
               }`}
               onClick={() => handleCategoryClick(record._id, "prospect_vr")}
             >
-              VRG
+              VRG 
             </Button>
-            <Button
+            {/* <Button
               className={`btn ${
                 type === "prospect_qlf" ? "btn-active" : "btn-inactive"
               }`}
               onClick={() => handleCategoryClick(record._id, "prospect_qlf")}
             >
               QLF
-            </Button>
+            </Button> */}
           </div>
           <div className="mt-2">
             <strong>Commentaire:</strong> {record.categoryComment || "N/A"}

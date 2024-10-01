@@ -27,7 +27,7 @@ const clientTypes = [
   { label: "Tous", value: "all" },
   { label: "Client Actif", value: "client_actif" },
   { label: "Prospect VRG", value: "prospect_vr" },
-  { label: "Prospect Qlf", value: "prospect_qlf" },
+  // { label: "Prospect Qlf", value: "prospect_qlf" },
 ];
 
 const getInitials = (prenom, nom) => {
@@ -52,7 +52,7 @@ const CoachList = () => {
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [fileList, setFileList] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 8 });
   const [filterType, setFilterType] = useState("all");
   const [filteredClients, setFilteredClients] = useState([]);
 
@@ -503,14 +503,14 @@ const CoachList = () => {
             >
               VRG
             </Button>
-            <Button
+            {/* <Button
               className={`btn ${
                 type === "prospect_qlf" ? "btn-active" : "btn-inactive"
               }`}
               onClick={() => handleCategoryClick(record._id, "prospect_qlf")}
             >
               QLF
-            </Button>
+            </Button> */}
           </div>
           <div className="mt-2">
             <strong>Commentaire:</strong> {record.categoryComment || "N/A"}

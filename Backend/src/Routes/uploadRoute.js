@@ -6,6 +6,7 @@ const Contract = require("../Models/ContractModel");
 const nodemailer = require("nodemailer");
 const Devis = require("../Models/DevisModel");
 const Planning = require("../Models/PlanningModel");
+const Calendar = require("../Models/CalendarModel");
 
 
 
@@ -391,6 +392,106 @@ router.get('/planning/:coachId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching planning entries for coach:', error);
     res.status(500).json({ message: 'Error fetching planning entries.' });
+  }
+});
+
+router.post("/calendar", async (req, res) => {
+  try {
+    const { title, start, end } = req.body;
+    
+    // Create a new event
+    const newEvent = new Calendar({
+      title,
+      start,
+      end,
+    });
+
+    // Save the event to MongoDB
+    await newEvent.save();
+
+    // Send a success response
+    res.status(201).json(newEvent);
+  } catch (error) {
+    console.error("Error creating event", error);
+    res.status(500).json({ error: "Server error while creating event" });
+  }
+});
+
+// GET route to fetch all events
+router.get("/calendar", async (req, res) => {
+  try {
+    // Retrieve all events from MongoDB
+    const events = await Calendar.find();
+    
+    // Send events as a response
+    res.status(200).json(events);
+  } catch (error) {
+    console.error("Error fetching events", error);
+    res.status(500).json({ error: "Server error while fetching events" });
+  }
+});
+
+// router.post("/send-email", async (req, res) => {
+//   const { email } = req.body;
+
+//   if (!req.body.email) {
+//     return res.status(400).send("Recipient email is required.");
+//   }
+//   // Email options
+//   const mailOptions = {
+//     from: process.env.EMAIL_USER,
+//     to: email,
+//     subject: 'Suivi de notre conversation',
+//     text: `Cher(e) coach,\n\nMerci pour notre conversation récente. Si vous avez des questions ou besoin de plus d'informations, n'hésitez pas à me contacter.\n\nCordialement,\nL'équipe GOKO`,
+//   };
+
+//   try {
+//     // Send the email
+//     await transporter.sendMail(mailOptions);
+//     res.status(200).json({ message: "Email sent successfully" });
+//   } catch (error) {
+//     console.error("Error sending email:", error);
+//     res.status(500).json({ message: "Error sending email" });
+//   }
+// });
+router.post("/send-email", async (req, res) => {
+  const { email, signature, prenom } = req.body;
+
+  if (!email) {
+    return res.status(400).send("Recipient email is required.");
+  }
+  console.log('email & signature & prenom', email, prenom, signature)
+
+  // Prepare the email content with signature
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Rejoignez GokoSports - Partagez votre expertise et développez votre clientèle !',
+    html: `
+      <p>Bonjour ${prenom},</p>
+      <p>Nous sommes ravis de vous accueillir sur GokoSports, la plateforme qui met en relation des coachs de qualité avec des sportifs en quête de progrès.</p>
+      <p>GokoSports vous permet de :</p>
+      <ul>
+        <li>Accéder à une communauté grandissante de sportifs motivés.</li>
+        <li>Développer votre clientèle sans vous soucier des démarches administratives.</li>
+        <li>Bénéficier de visibilité et d'outils pour gérer facilement vos séances de coaching.</li>
+      </ul>
+      <p>En rejoignant notre réseau, vous aurez la possibilité de transformer votre passion en une activité durable et de toucher un public encore plus large.</p>
+      <p>Pour commencer, rien de plus simple : créez votre profil en quelques minutes et commencez à coacher des clients dès aujourd'hui !</p>
+      <p>Pour toute question, n’hésitez pas à nous contacter. Notre équipe est à votre disposition pour vous aider à tirer le meilleur parti de GokoSports.</p>
+      <p>Sportivement,<br />
+      L'équipe GokoSports</p>
+      <p><img src="data:image/png;base64,${signature}" alt="Signature" /></p>
+    `,
+  };
+  
+  try {
+    // Send the email
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: "Email sent successfully" });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ message: "Error sending email" });
   }
 });
 

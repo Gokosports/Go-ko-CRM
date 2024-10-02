@@ -15,14 +15,12 @@ import {
 } from "antd";
 import {
   EditOutlined,
-
   DeleteOutlined,
   PlusOutlined,
   MailOutlined,
 } from "@ant-design/icons";
 import "tailwindcss/tailwind.css";
-import { useForm } from 'antd/es/form/Form';
-
+import { useForm } from "antd/es/form/Form";
 
 const { TabPane } = Tabs;
 
@@ -156,7 +154,10 @@ const CoachesDetailsPage = () => {
       };
 
       console.log("Email Data:", emailData);
-      await axios.post("http://localhost:3000/api/send-email", emailData); // POST request to send the email
+      await axios.post(
+        "https://go-ko-9qul.onrender.com/api/send-email",
+        emailData
+      ); // POST request to send the email
       message.success("Email envoyé avec succès !");
       form.resetFields();
       setIsModalVisible(false);
@@ -184,7 +185,7 @@ const CoachesDetailsPage = () => {
   const handleSaveC = async () => {
     try {
       const values = await assignForm.validateFields();
-    console.log("Validated Values:", values);
+      console.log("Validated Values:", values);
       const emailData = {
         email: values.email,
         fullnameCoach: `${values.coach.prenom} ${values.coach.nom}`,
@@ -192,7 +193,10 @@ const CoachesDetailsPage = () => {
       };
 
       console.log("Email Data:", emailData);
-      await axios.post("http://localhost:3000/api/send-email-command", emailData); // POST request to send the email
+      await axios.post(
+        "https://go-ko-9qul.onrender.com/api/send-email-command",
+        emailData
+      ); // POST request to send the email
       message.success("Email envoyé avec succès !");
       assignForm.resetFields();
       setIsModalVisible(false);
@@ -587,8 +591,6 @@ const CoachesDetailsPage = () => {
         </Form>
       </Modal>
 
-
-
       <Modal
         title="Enoyer email de commande"
         visible={isAssignModalVisible}
@@ -599,7 +601,7 @@ const CoachesDetailsPage = () => {
       >
         <Form form={assignForm} layout="vertical" onFinish={handleSaveC}>
           <div className="flex-1 overflow-y-auto p-2 max-h-96 gap-2">
-          <Form.Item
+            <Form.Item
               name="email"
               label="Email de coach"
               rules={[{ required: true, message: "Veuillez entrer le email" }]}

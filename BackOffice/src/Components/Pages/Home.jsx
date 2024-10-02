@@ -354,7 +354,7 @@ function Dashboard() {
               style={{ width: "80%" }}
               className="transform transition-transform hover:scale-105 border-1 border-opacity-50 mx-auto shadow-lg"
             >
-              {loading ? <p>Loading...</p> : <p className="text-4xl text-center">{counts.coaches}</p>}
+              {loading ? <p>Loading...</p> : <p className="text-4xl font-bold text-blue-900 text-center">{counts.coaches}</p>}
             </Card>
           </Link>
         </div>

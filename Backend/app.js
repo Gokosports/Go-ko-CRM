@@ -67,8 +67,9 @@ app.use('/api', contractRoutes);
 
 app.use(fileUpload());
 
-
-
+app.get('/*', function (req, res) {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 app.get('/specialities', async (req, res) => {
     try {

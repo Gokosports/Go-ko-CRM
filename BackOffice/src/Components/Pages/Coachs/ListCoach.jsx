@@ -439,6 +439,19 @@ const CoachList = () => {
 
   const columns = [
     {
+      title: "Raison Sociale",
+      dataIndex: "raisonsociale",
+      key: "raisonsociale",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
       title: "Coach",
       key: "coach",
       render: (text, record) => (
@@ -468,6 +481,19 @@ const CoachList = () => {
       ),
     },
     {
+      title: "Téléphone",
+      dataIndex: "phone",
+      key: "phone",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
       title: "Email",
       dataIndex: "email",
       key: "email",
@@ -480,6 +506,60 @@ const CoachList = () => {
         </div>
       ),
     },
+    {
+      title: "Code Postal",
+      dataIndex: "codepostal",
+      key: "codepostal",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "SIRET",
+      dataIndex: "siret",
+      key: "siret",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "Ville",
+      dataIndex: "ville",
+      key: "ville",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+  
+    {
+      title: "Adresse",
+      dataIndex: "adresse",
+      key: "adresse",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    
     {
       title: "Type",
       dataIndex: "type",
@@ -518,19 +598,7 @@ const CoachList = () => {
         </div>
       ),
     },
-    {
-      title: "Téléphone",
-      dataIndex: "phone",
-      key: "phone",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
+   
     {
       title: "Âge",
       dataIndex: "age",
@@ -557,71 +625,8 @@ const CoachList = () => {
         </div>
       ),
     },
-    {
-      title: "Ville",
-      dataIndex: "ville",
-      key: "ville",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "SIRET",
-      dataIndex: "siret",
-      key: "siret",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Adresse",
-      dataIndex: "adresse",
-      key: "adresse",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Code Postal",
-      dataIndex: "codepostal",
-      key: "codepostal",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Raison Sociale",
-      dataIndex: "raisonsociale",
-      key: "raisonsociale",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
+   
+   
     {
       title: "Spécialité",
       dataIndex: "speciality",

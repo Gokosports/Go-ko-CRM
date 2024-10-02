@@ -439,6 +439,19 @@ const ListCoaches = () => {
 
   const columns = [
     {
+      title: "Raison Sociale",
+      dataIndex: "raisonsociale",
+      key: "raisonsociale",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
       title: "Coach",
       key: "coach",
       render: (text, record) => (
@@ -446,24 +459,23 @@ const ListCoaches = () => {
           className="flex items-center cursor-pointer"
           onClick={() => handleCoachClick(record)}
         >
-          {record.image ? (
-            <img
-              src={record.image}
-              alt="Coach"
-              className="w-11 h-11 rounded-full mr-2"
-            />
-          ) : (
-            <Avatar
-              style={{ backgroundColor: "#87d068", marginRight: "20px" }}
-              size={40}
-              className="mr-2"
-            >
-              {getInitials(record.prenom, record.nom)}
-            </Avatar>
-          )}
+          
           <span>
             {record.prenom} {record.nom}
           </span>
+        </div>
+      ),
+    },
+    {
+      title: "Téléphone",
+      dataIndex: "phone",
+      key: "phone",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
         </div>
       ),
     },
@@ -480,6 +492,59 @@ const ListCoaches = () => {
         </div>
       ),
     },
+    {
+      title: "Code Postal",
+      dataIndex: "codepostal",
+      key: "codepostal",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "SIRET",
+      dataIndex: "siret",
+      key: "siret",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "Ville",
+      dataIndex: "ville",
+      key: "ville",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: "Adresse",
+      dataIndex: "adresse",
+      key: "adresse",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+   
     {
       title: "Type",
       dataIndex: "type",
@@ -518,19 +583,7 @@ const ListCoaches = () => {
         </div>
       ),
     },
-    {
-      title: "Téléphone",
-      dataIndex: "phone",
-      key: "phone",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
+   
     {
       title: "Âge",
       dataIndex: "age",
@@ -557,19 +610,7 @@ const ListCoaches = () => {
         </div>
       ),
     },
-    {
-      title: "Ville",
-      dataIndex: "ville",
-      key: "ville",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
+    
     {
       title: "Spécialité",
       dataIndex: "speciality",
@@ -598,58 +639,9 @@ const ListCoaches = () => {
         </div>
       ),
     },
-    {
-      title: "SIRET",
-      dataIndex: "siret",
-      key: "siret",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Adresse",
-      dataIndex: "adresse",
-      key: "adresse",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Code Postal",
-      dataIndex: "codepostal",
-      key: "codepostal",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Raison Sociale",
-      dataIndex: "raisonsociale",
-      key: "raisonsociale",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
+    
+    
+    
     // {
     //   title: "Action",
     //   key: "action",
@@ -732,14 +724,6 @@ const ListCoaches = () => {
               </Button>
             ))}
           </div>
-        </div>
-        <div>
-          {/* <Button type="primary" onClick={() => setIsAssignModalVisible(true)}>
-            Affecter les Coachs au Commercial
-          </Button>
-          <Button type="primary" onClick={() => setIsUnassignModalVisible(true)} className="ml-2">
-            Désaffecter les Coachs du Commercial
-          </Button> */}
         </div>
       </div>
       <Table

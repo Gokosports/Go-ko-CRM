@@ -455,33 +455,31 @@ router.get("/calendar", async (req, res) => {
 //   }
 // });
 router.post("/send-email", async (req, res) => {
-  const { email, signature, prenom } = req.body;
+  const { email, fullnameCoach, fullnameCommercial} = req.body;
 
-  if (!email) {
-    return res.status(400).send("Recipient email is required.");
-  }
-  console.log('email & signature & prenom', email, prenom, signature)
-
-  // Prepare the email content with signature
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: 'Rejoignez GokoSports - Partagez votre expertise et développez votre clientèle !',
+    subject: 'Découvrez GOKO – L\'application qui connecte coachs et sportifs pour optimiser votre activité!',
     html: `
-      <p>Bonjour ${prenom},</p>
-      <p>Nous sommes ravis de vous accueillir sur GokoSports, la plateforme qui met en relation des coachs de qualité avec des sportifs en quête de progrès.</p>
-      <p>GokoSports vous permet de :</p>
+          <img src="https://firebasestorage.googleapis.com/v0/b/goko-app.appspot.com/o/contrats%2Fgoko.png?alt=media&token=d474ecec-b028-4626-9540-a7edc387fe22" alt="Image" style="width: 50px; height: 50px; display: block;"/>
+      <p>Bonjour ${fullnameCoach},</p>
+      <p>Je vous présente GOKO, une application innovante spécialement conçue pour mettre en relation les coachs sportifs et les entités sportives avec des sportifs de tous niveaux.</p>
+      <p>GOKO offre une plateforme unique pour promouvoir votre activité de coach et optimiser votre gestion au quotidien grâce à de nombreuses fonctionnalités adaptées à vos besoins. En rejoignant GOKO, vous aurez accès à des outils performants qui vous permettront de :</p>
       <ul>
-        <li>Accéder à une communauté grandissante de sportifs motivés.</li>
-        <li>Développer votre clientèle sans vous soucier des démarches administratives.</li>
-        <li>Bénéficier de visibilité et d'outils pour gérer facilement vos séances de coaching.</li>
+        <li>Accroître votre visibilité auprès d’une large communauté de sportifs.</li>
+        <li>Gérer facilement vos rendez-vous et vos plannings en ligne.</li>
+        <li>Faciliter la prise de contact avec de nouveaux clients potentiels.</li>
+        <li>Promouvoir vos services (cours, programmes, conseils) grâce à des options de personnalisation de votre profil.</li>
+        <li>Bénéficier de retours d’expérience et de recommandations pour renforcer votre réputation.</li>
+        <li>Et bien plus encore !</li>
       </ul>
-      <p>En rejoignant notre réseau, vous aurez la possibilité de transformer votre passion en une activité durable et de toucher un public encore plus large.</p>
-      <p>Pour commencer, rien de plus simple : créez votre profil en quelques minutes et commencez à coacher des clients dès aujourd'hui !</p>
-      <p>Pour toute question, n’hésitez pas à nous contacter. Notre équipe est à votre disposition pour vous aider à tirer le meilleur parti de GokoSports.</p>
-      <p>Sportivement,<br />
-      L'équipe GokoSports</p>
-      <p><img src="data:image/png;base64,${signature}" alt="Signature" /></p>
+      <p>Que vous soyez coach sportif indépendant ou affilié à une entité sportive, GOKO vous aide à développer votre activité en facilitant la rencontre avec des sportifs qui recherchent vos compétences, vos conseils et votre savoir-faire.</p>
+      <p>Nous serions ravis de vous en dire plus sur GOKO et comment cette application peut répondre à vos attentes. Si vous souhaitez plus d’informations ou avez des questions, n’hésitez pas à nous contacter.</p>
+      <p>Dans l'attente d'échanger avec vous, je vous remercie pour votre attention et reste à votre disposition pour convenir d’un rendez-vous ou d’une démonstration de l’application.</p>
+      <p>Cordialement,<br />
+      ${fullnameCommercial}<br />
+      GOKO Team</p>
     `,
   };
   
@@ -494,6 +492,47 @@ router.post("/send-email", async (req, res) => {
     res.status(500).json({ message: "Error sending email" });
   }
 });
+
+router.post("/send-email-command", async (req, res) => {
+  const { email, fullnameCoach, fullnameCommercial} = req.body;
+
+  
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Bienvenue sur GOKO – Merci pour votre confiance !',
+    html: `
+      <p>Bonjour ${fullnameCoach},</p>
+      <img src="https://firebasestorage.googleapis.com/v0/b/goko-app.appspot.com/o/contrats%2Fistockphoto-636887598-612x612.jpg?alt=media&token=a00092b2-499d-4751-9bcf-9814ff15e08c" alt="Image" />
+      <p>Nous sommes ravis de vous compter parmi la communauté GOKO, et nous vous remercions sincèrement pour la confiance que vous nous accordez. En rejoignant notre plateforme, vous faites un grand pas vers le développement de votre activité et l’optimisation de vos interactions avec les sportifs de tous niveaux.</p>
+      <p>Grâce à votre abonnement, vous avez désormais accès à toutes les fonctionnalités qui font de GOKO une application unique pour les coachs et entités sportives :</p>
+      <ul>
+        <li>Gestion simplifiée de vos rendez-vous et de votre agenda.</li>
+        <li>Visibilité accrue auprès d’une large communauté de sportifs en quête de coaching.</li>
+        <li>Outils de promotion pour mettre en avant vos services, programmes et offres spéciales.</li>
+        <li>Système de recommandation pour renforcer votre réputation et attirer de nouveaux clients.</li>
+        <li>Et bien d'autres fonctionnalités qui faciliteront votre quotidien.</li>
+      </ul>
+      <p>Nous sommes là pour vous accompagner dans l’utilisation de l’application et vous assurer une expérience optimale. Si vous avez la moindre question, ou si vous souhaitez découvrir des astuces pour tirer le meilleur parti de GOKO, notre équipe est à votre disposition.</p>
+      <p>Encore une fois, un grand merci pour votre confiance. Nous sommes impatients de vous voir grandir au sein de la communauté GOKO et de contribuer à votre réussite !</p>
+      <p>À très bientôt sur GOKO !</p>
+      <p>Cordialement,<br />
+      ${fullnameCommercial}<br />
+      GOKO Team</p>
+    `,
+};
+
+    
+  try {
+    // Send the email
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: "Email sent successfully" });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ message: "Error sending email" });
+  }
+});
+
 
 
 module.exports = router;

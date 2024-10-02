@@ -28,7 +28,7 @@ const transporter = nodemailer.createTransport({
 // Helper function to upload file to Firebase Storage
 const uploadFile = (file) => {
   return new Promise((resolve, reject) => {
-    const fileName = Date.now() + "-" + path.extname(file.originalname);
+    const fileName = `contrats/${Date.now()}-${path.basename(file.originalname)}`; // Change here
     const fileUpload = bucket.file(fileName);
 
     const stream = fileUpload.createWriteStream({

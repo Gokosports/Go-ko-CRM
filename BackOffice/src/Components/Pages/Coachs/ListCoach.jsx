@@ -481,7 +481,7 @@ const CoachList = () => {
       ),
     },
     {
-      title: "Type et Comentaire",
+      title: "Type",
       dataIndex: "type",
       key: "type",
       render: (type, record) => (

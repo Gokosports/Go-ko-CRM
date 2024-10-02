@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -10,26 +8,22 @@ import {
   Modal,
   Form,
   Input,
-  Select,
   message,
-  Upload,
-  Image,
   Avatar,
   Tabs,
   Popconfirm,
 } from "antd";
 import {
   EditOutlined,
-  UploadOutlined,
+
   DeleteOutlined,
-  UserSwitchOutlined,
   PlusOutlined,
   MailOutlined,
 } from "@ant-design/icons";
 import "tailwindcss/tailwind.css";
-import SignaturePadComponent from "../../SignaturePadComponent";
+import { useForm } from 'antd/es/form/Form';
 
-const { Option } = Select;
+
 const { TabPane } = Tabs;
 
 const getInitials = (prenom, nom) => {
@@ -50,11 +44,6 @@ const CoachesDetailsPage = () => {
   const [assignForm] = Form.useForm();
   const navigate = useNavigate();
   const location = useLocation();
-  const signaturePadRef = useRef(null);
-
-  const handleSignatureComplete = (dataURL) => {
-    setSignature(dataURL); // Save the signature data URL
-  };
 
   const fetchCoach = async () => {
     try {
@@ -140,7 +129,6 @@ const CoachesDetailsPage = () => {
     assignForm.resetFields();
   };
 
-  // const handleSave = async (values) => {
   //   try {
   //     const emailData = {
   //       email: values.email,
@@ -161,44 +149,74 @@ const CoachesDetailsPage = () => {
 
   const handleSave = async (values) => {
     try {
-      const signatureData = signaturePadRef.current.getSignature(); // Get the signature data
-
       const emailData = {
         email: values.email,
-        signature: signatureData, // Use the captured signature
-        prenom: values.prenom, // Include the first name if needed
+        fullnameCoach: `${values.coach.prenom} ${values.coach.nom}`,
+        fullnameCommercial: `${values.commercial.nom} ${values.commercial.prenom}`,
       };
 
       console.log("Email Data:", emailData);
-      await axios.post(
-        "https://go-ko-9qul.onrender.com/api/send-email",
-        emailData
-      ); // POST request to send the email
+      await axios.post("http://localhost:3000/api/send-email", emailData); // POST request to send the email
       message.success("Email envoyé avec succès !");
       form.resetFields();
       setIsModalVisible(false);
-      signaturePadRef.current.clearSignature(); // Clear the signature after sending
     } catch (error) {
       message.error("Erreur lors de l'envoi de l'email.");
       console.error(error);
     }
   };
-  const handleSaveC = () => {};
 
   const handleSendContact = () => {
     form.setFieldsValue({
       email: coach.email,
-      prenom: coach.prenom,
+      coach: {
+        prenom: coach.prenom,
+        nom: coach.nom,
+      }, // Full name of the coach
+      commercial: {
+        nom: coach.commercial.nom,
+        prenom: coach.commercial.prenom,
+      },
     });
     setIsModalVisible(true);
   };
 
+  const handleSaveC = async () => {
+    try {
+      const values = await assignForm.validateFields();
+    console.log("Validated Values:", values);
+      const emailData = {
+        email: values.email,
+        fullnameCoach: `${values.coach.prenom} ${values.coach.nom}`,
+        fullnameCommercial: `${values.commercial.nom} ${values.commercial.prenom}`,
+      };
+
+      console.log("Email Data:", emailData);
+      await axios.post("http://localhost:3000/api/send-email-command", emailData); // POST request to send the email
+      message.success("Email envoyé avec succès !");
+      assignForm.resetFields();
+      setIsModalVisible(false);
+    } catch (error) {
+      message.error("Erreur lors de l'envoi de l'email.");
+      console.error(error);
+    }
+  };
+
   const handleSendCommande = () => {
-    form.setFieldsValue({
-      email: coach.email,
-      prenom: coach.prenom,
-    });
-    setIsModalVisible(true);
+    if (coach) {
+      assignForm.setFieldsValue({
+        email: coach.email,
+        coach: {
+          prenom: coach.prenom,
+          nom: coach.nom,
+        },
+        commercial: {
+          nom: coach.commercial.nom,
+          prenom: coach.commercial.prenom,
+        },
+      });
+    }
+    setIsAssignModalVisible(true);
   };
 
   const handleDeleteComment = async (commentId) => {
@@ -317,24 +335,24 @@ const CoachesDetailsPage = () => {
     },
   ];
 
-  const uploadProps = {
-    name: "file",
-    action: "https://api.cloudinary.com/v1_1/doagzivng/image/upload",
-    data: {
-      upload_preset: "kj1jodbh",
-    },
-    showUploadList: false,
-    onChange: (info) => {
-      if (info.file.status === "done") {
-        const imageUrl = info.file.response.secure_url;
-        form.setFieldsValue({ imageUrl });
-        setCoach({ ...coach, imageUrl });
-        message.success(`${info.file.name} fichier téléchargé avec succès`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} échec du téléchargement du fichier.`);
-      }
-    },
-  };
+  // const uploadProps = {
+  //   name: "file",
+  //   action: "https://api.cloudinary.com/v1_1/doagzivng/image/upload",
+  //   data: {
+  //     upload_preset: "kj1jodbh",
+  //   },
+  //   showUploadList: false,
+  //   onChange: (info) => {
+  //     if (info.file.status === "done") {
+  //       const imageUrl = info.file.response.secure_url;
+  //       form.setFieldsValue({ imageUrl });
+  //       setCoach({ ...coach, imageUrl });
+  //       message.success(`${info.file.name} fichier téléchargé avec succès`);
+  //     } else if (info.file.status === "error") {
+  //       message.error(`${info.file.name} échec du téléchargement du fichier.`);
+  //     }
+  //   },
+  // };
 
   const commentColumns = [
     {
@@ -493,7 +511,7 @@ const CoachesDetailsPage = () => {
           icon={<MailOutlined />}
           onClick={handleSendContact}
         >
-          Email de contact
+          Mail de contact
         </Button>
 
         <Button
@@ -502,7 +520,7 @@ const CoachesDetailsPage = () => {
           icon={<MailOutlined />}
           onClick={handleSendCommande}
         >
-          Email de commande
+          Mail de commande
         </Button>
       </div>
       <Modal
@@ -517,20 +535,46 @@ const CoachesDetailsPage = () => {
         <Form form={form} layout="vertical" onFinish={handleSave}>
           <div className="flex-1 overflow-y-auto p-2 max-h-96 gap-2">
             <Form.Item
-              name="prenom"
-              label="Prenom"
-              rules={[{ required: true, message: "Veuillez entrer le prenom" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
               name="email"
               label="Email de coach"
               rules={[{ required: true, message: "Veuillez entrer le email" }]}
             >
               <Input />
             </Form.Item>
-            <SignaturePadComponent ref={signaturePadRef} />
+            <Form.Item
+              name={["coach", "prenom"]}
+              label="Prénom"
+              rules={[
+                { required: true, message: "Veuillez entrer votre prénom!" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name={["coach", "nom"]}
+              label="Nom"
+              rules={[
+                { required: true, message: "Veuillez entrer votre nom!" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name={["commercial", "prenom"]} // Nested name structure for prenom
+              label="Prenom du Commercial"
+              rules={[{ required: true, message: "Veuillez entrer le prénom" }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name={["commercial", "nom"]} // Nested name structure for nom
+              label="Nom du Commercial"
+              rules={[{ required: true, message: "Veuillez entrer le nom" }]}
+            >
+              <Input />
+            </Form.Item>
           </div>
           <Form.Item className="mt-2">
             <Button type="primary" htmlType="submit">
@@ -542,6 +586,9 @@ const CoachesDetailsPage = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+
+
       <Modal
         title="Enoyer email de commande"
         visible={isAssignModalVisible}
@@ -552,24 +599,47 @@ const CoachesDetailsPage = () => {
       >
         <Form form={assignForm} layout="vertical" onFinish={handleSaveC}>
           <div className="flex-1 overflow-y-auto p-2 max-h-96 gap-2">
-            <Form.Item
-              name="prenom"
-              label="Prenom"
-              rules={[{ required: true, message: "Veuillez entrer le prenom" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
+          <Form.Item
               name="email"
               label="Email de coach"
               rules={[{ required: true, message: "Veuillez entrer le email" }]}
             >
               <Input />
             </Form.Item>
+            <Form.Item
+              name={["coach", "prenom"]}
+              label="Prénom"
+              rules={[
+                { required: true, message: "Veuillez entrer votre prénom!" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name={["coach", "nom"]}
+              label="Nom"
+              rules={[
+                { required: true, message: "Veuillez entrer votre nom!" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
 
-            <SignaturePadComponent
-              onSignatureComplete={handleSignatureComplete}
-            />
+            <Form.Item
+              name={["commercial", "prenom"]} // Nested name structure for prenom
+              label="Prenom du Commercial"
+              rules={[{ required: true, message: "Veuillez entrer le prénom" }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name={["commercial", "nom"]} // Nested name structure for nom
+              label="Nom du Commercial"
+              rules={[{ required: true, message: "Veuillez entrer le nom" }]}
+            >
+              <Input />
+            </Form.Item>
           </div>
           <Form.Item>
             <Button type="primary" htmlType="submit">

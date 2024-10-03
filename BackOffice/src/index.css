@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Reduce the font size for table rows */
+.ant-table td {
+    font-size: 12px; /* Adjust the size as needed */
+  }
+  
+  /* Reduce the font size for table headers */
+  .ant-table th {
+    font-size: 14px; /* Adjust the size for header titles */
+  }
+  
+  /* Optionally reduce the padding for a more compact table */
+  .ant-table td, .ant-table th {
+    padding: 8px; /* Adjust the padding for your needs */
+  }
+  

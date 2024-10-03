@@ -30,6 +30,7 @@ const CoachCommentsPage = () => {
   const token = localStorage.getItem("token");
   const decodedToken = token ? jwtDecode(token) : null;
   const connectedCommercial = decodedToken ? `${decodedToken.name}` : "";
+  const userRole = decodedToken ? decodedToken.role : null;
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -213,6 +214,15 @@ const CoachCommentsPage = () => {
   const isDoc = () => {
     return decodedToken && decodedToken.role === "Admin";
   };
+  const renderCoachLink = () => {
+    if (userRole === "Admin") {
+      return <Link to={`/coach/${id}`}>Informations du Coach</Link>;
+    } else if (userRole === "Commercial") {
+      return <Link to={`/coaches/${id}`}>Informations du Coach</Link>;
+    } else {
+      return <span>Informations du Coach</span>; // fallback case
+    }
+  };
   return (
     <div className="p-4 border rounded shadow-lg mt-4">
       <Breadcrumb>
@@ -228,7 +238,7 @@ const CoachCommentsPage = () => {
         <Breadcrumb.Item>Commentaires du Coach</Breadcrumb.Item>
       </Breadcrumb>
       <Tabs defaultActiveKey="2">
-        <TabPane tab={<Link to={`/coach/${id}`}>Informations</Link>} key="1">
+      <TabPane tab={renderCoachLink()} key="1">
           {/* Add information tab content here */}
         </TabPane>
         <TabPane tab="Commentaires" key="2">

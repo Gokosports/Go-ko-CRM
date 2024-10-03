@@ -34,7 +34,8 @@ const Header = () => {
   const decodedToken = token ? jwtDecode(token) : null;
   const navigate = useNavigate();
 
-  const Logout = () => {
+  const Logout = async () => {
+    await axios.post("https://go-ko-9qul.onrender.comadmin/logout");
     localStorage.removeItem("token");
     navigate("/login");
   };

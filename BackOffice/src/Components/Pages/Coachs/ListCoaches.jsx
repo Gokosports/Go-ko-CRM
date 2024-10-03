@@ -2,27 +2,12 @@ import React, { useState, useEffect } from "react";
 import {
   Table,
   Button,
-  Space,
-  Modal,
-  Form,
-  Input,
-  Select,
   message,
-  Popconfirm,
-  Upload,
   Breadcrumb,
-  Avatar,
 } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "tailwindcss/tailwind.css";
-
-const { Option } = Select;
 const clientTypes = [
   { label: "Tous", value: "all" },
   { label: "Client Actif", value: "client_actif" },
@@ -40,19 +25,8 @@ const ListCoaches = () => {
   const [filteredCoaches, setFilteredCoaches] = useState(coaches); // New state to store filtered data
   const [specialities, setSpecialities] = useState([]);
   const [commercials, setCommercials] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isAssignModalVisible, setIsAssignModalVisible] = useState(false);
-  const [isUnassignModalVisible, setIsUnassignModalVisible] = useState(false);
-  const [currentCoach, setCurrentCoach] = useState(null);
   const [selectedCoaches, setSelectedCoaches] = useState([]);
-  const [form] = Form.useForm();
-  const [assignForm] = Form.useForm();
-  const [unassignForm] = Form.useForm();
-  const [uploading, setUploading] = useState(false);
-  const [uploadedFileName, setUploadedFileName] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [fileList, setFileList] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 5 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 6 });
   const [filterType, setFilterType] = useState("all");
   const [filteredClients, setFilteredClients] = useState([]);
 
@@ -236,223 +210,45 @@ const ListCoaches = () => {
     navigate(`/coaches/${coach._id}`);
   };
 
-  const showEditModal = async (coach) => {
-    if (specialities.length === 0) {
-      await fetchSpecialities();
-    }
-    setCurrentCoach(coach);
-    form.setFieldsValue({
-      ...coach,
-      ville: coach.ville || "",
-      speciality: coach.speciality
-        ? coach.speciality.map((speciality) => speciality._id)
-        : [],
-      image: coach.image || "",
-    });
-    setUploadedFileName(coach.image ? coach.image.split("/").pop() : "");
-    setImageUrl(coach.image || "");
-    setIsModalVisible(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setCurrentCoach(null);
-    form.resetFields();
-    setUploadedFileName("");
-    setImageUrl("");
-    setFileList([]);
-  };
-
-  const handleDelete = async (coachId) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        message.error("No token found, please login first");
-        return;
-      }
-
-      await axios.delete(`https://go-ko-9qul.onrender.com/coaches/${coachId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setCoaches(coaches.filter((coach) => coach._id !== coachId));
-      message.success("Coach deleted successfully");
-    } catch (error) {
-      console.error("Error deleting coach:", error);
-      message.error("Failed to delete coach");
-    }
-  };
-
-  const handleFinish = async (values) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        message.error("No token found, please login first");
-        return;
-      }
-
-      const data = {
-        ...values,
-        speciality: values.speciality,
-      };
-
-      if (currentCoach) {
-        const response = await axios.put(
-          `https://go-ko-9qul.onrender.com/coaches/${currentCoach._id}`,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setCoaches(
-          coaches.map((coach) =>
-            coach._id === currentCoach._id
-              ? { ...coach, ...response.data }
-              : coach
-          )
-        );
-        message.success("Coach updated successfully");
-      } else {
-        const response = await axios.post(
-          "https://go-ko-9qul.onrender.com/coaches",
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setCoaches([...coaches, response.data]);
-        message.success("Coach created successfully");
-      }
-      handleCancel();
-    } catch (error) {
-      console.error("Error saving coach:", error);
-      message.error("Failed to save coach");
-    }
-  };
-
-  const handleAssign = async (values) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        message.error("No token found, please login first");
-        return;
-      }
-
-      await axios.post(
-        "https://go-ko-9qul.onrender.com/coaches/assign-coaches",
-        {
-          coachIds: selectedCoaches,
-          commercialId: values.commercial,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const updatedCoaches = coaches.map((coach) => {
-        if (selectedCoaches.includes(coach._id)) {
-          return {
-            ...coach,
-            commercial: commercials.find(
-              (com) => com._id === values.commercial
-            ),
-          };
-        }
-        return coach;
-      });
-      setCoaches(updatedCoaches);
-      message.success("Coaches assigned to commercial successfully");
-      setIsAssignModalVisible(false);
-      setSelectedCoaches([]);
-    } catch (error) {
-      console.error("Error assigning coaches:", error);
-      message.error("Failed to assign coaches");
-    }
-  };
-
-  const handleUnassign = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        message.error("No token found, please login first");
-        return;
-      }
-
-      await axios.post(
-        "https://go-ko-9qul.onrender.com/coaches/unassign-coaches",
-        {
-          coachIds: selectedCoaches,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const updatedCoaches = coaches.map((coach) => {
-        if (selectedCoaches.includes(coach._id)) {
-          return {
-            ...coach,
-            commercial: null,
-          };
-        }
-        return coach;
-      });
-      setCoaches(updatedCoaches);
-      message.success("Coaches unassigned from commercial successfully");
-      setIsUnassignModalVisible(false);
-      setSelectedCoaches([]);
-    } catch (error) {
-      console.error("Error unassigning coaches:", error);
-      message.error("Failed to unassign coaches");
-    }
-  };
-
-  const handleUploadChange = ({ fileList }) => {
-    setFileList(fileList);
-    if (fileList.length > 0 && fileList[0].status === "done") {
-      const imageUrl = fileList[0].response.secure_url;
-      form.setFieldsValue({ image: imageUrl });
-      setUploadedFileName(fileList[0].name);
-      setImageUrl(imageUrl);
-      setUploading(false);
-      message.success(`${fileList[0].name} file uploaded successfully`);
-    } else if (fileList.length > 0 && fileList[0].status === "error") {
-      console.error("Upload error:", fileList[0].error, fileList[0].response);
-      message.error(`${fileList[0].name} file upload failed.`);
-      setUploading(false);
-    }
-  };
 
   const handleTableChange = (pagination) => {
     setPagination(pagination);
   };
+  // Paginate data for the current page
+const paginateData = (data, current, pageSize) => {
+  // First, filter and sort the data
+  const sortedData = data.sort((a, b) => {
+    if (!a.commercial) return -1; // Coaches without commercial come first
+    if (!b.commercial) return 1; // Coaches without commercial come first
+    return 0; // Keep original order
+  });
+
+  // Then, slice the data for pagination
+  const startIndex = (current - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  return sortedData.slice(startIndex, endIndex);
+};
+  const rowSelection = {
+    onChange: (selectedRowKeys) => {
+      setSelectedCoaches(selectedRowKeys);
+    },
+    selectedRowKeys: selectedCoaches,
+  };
 
   const columns = [
     {
-      title: "Raison Sociale",
+      title: <span style={{ fontSize: '12px' }}>Raison Sociale</span>,
       dataIndex: "raisonsociale",
       key: "raisonsociale",
+    
       render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
+        <div style={{ fontSize: '12px', cursor: 'pointer' }} onClick={() => handleCoachClick(record)}>
+        {text}
+      </div>
       ),
     },
     {
-      title: "Coach",
+      title: <span style={{ fontSize: '12px' }}>Coach</span>,
       key: "coach",
       render: (text, record) => (
         <div
@@ -467,9 +263,10 @@ const ListCoaches = () => {
       ),
     },
     {
-      title: "Téléphone",
+      title: <span style={{ fontSize: '12px' }}>Téléphone</span>,
       dataIndex: "phone",
       key: "phone",
+      width: 100,
       render: (text, record) => (
         <div
           className="cursor-pointer"
@@ -480,20 +277,18 @@ const ListCoaches = () => {
       ),
     },
     {
-      title: "Email",
+      title:<span style={{ fontSize: '12px' }}>Email</span>,
       dataIndex: "email",
       key: "email",
+      width: 120,
       render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
+        <div style={{ fontSize: '12px', cursor: 'pointer' }} onClick={() => handleCoachClick(record)}>
+        {text}
+      </div>
       ),
     },
     {
-      title: "Code Postal",
+      title:<span style={{ fontSize: '12px' }}>Code Postal</span>,
       dataIndex: "codepostal",
       key: "codepostal",
       render: (text, record) => (
@@ -506,7 +301,7 @@ const ListCoaches = () => {
       ),
     },
     {
-      title: "SIRET",
+      title:<span style={{ fontSize: '12px' }}>SIRET</span>,
       dataIndex: "siret",
       key: "siret",
       render: (text, record) => (
@@ -519,7 +314,7 @@ const ListCoaches = () => {
       ),
     },
     {
-      title: "Ville",
+      title:<span style={{ fontSize: '12px' }}>Ville</span>,
       dataIndex: "ville",
       key: "ville",
       render: (text, record) => (
@@ -532,7 +327,7 @@ const ListCoaches = () => {
       ),
     },
     {
-      title: "Adresse",
+      title:<span style={{ fontSize: '12px' }}>Adresse</span>,
       dataIndex: "adresse",
       key: "adresse",
       render: (text, record) => (
@@ -545,47 +340,40 @@ const ListCoaches = () => {
       ),
     },
    
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-      render: (type, record) => (
-        <div className="flex-1">
-          <div className="flex gap-2">
-            <Button
-              className={`btn ${
-                type === "client_actif" ? "btn-active" : "btn-inactive"
-              }`}
-              onClick={() => handleCategoryClick(record._id, "client_actif")}
-            >
-              Actif
-            </Button>
-            <Button
-              className={`btn ${
-                type === "prospect_vr" ? "btn-active" : "btn-inactive"
-              }`}
-              onClick={() => handleCategoryClick(record._id, "prospect_vr")}
-            >
-              VRG
-            </Button>
-            {/* <Button
-              className={`btn ${
-                type === "prospect_qlf" ? "btn-active" : "btn-inactive"
-              }`}
-              onClick={() => handleCategoryClick(record._id, "prospect_qlf")}
-            >
-              QLF
-            </Button> */}
-          </div>
-          <div className="mt-2">
-            <strong>Commentaire:</strong> {record.categoryComment || "N/A"}
-          </div>
-        </div>
-      ),
-    },
+    // {
+    //   title:<span style={{ fontSize: '12px' }}>Type</span>,
+    //   dataIndex: "type",
+    //   key: "type",
+    //   width: 150,
+    //   render: (type, record) => (
+    //     <div className="flex-1">
+    //       <div className="flex gap-2">
+    //         <Button
+    //           className={`btn ${
+    //             type === "client_actif" ? "btn-active" : "btn-inactive"
+    //           }`}
+    //           onClick={() => handleCategoryClick(record._id, "client_actif")}
+    //         >
+    //           Actif
+    //         </Button>
+    //         <Button
+    //           className={`btn ${
+    //             type === "prospect_vr" ? "btn-active" : "btn-inactive"
+    //           }`}
+    //           onClick={() => handleCategoryClick(record._id, "prospect_vr")}
+    //         >
+    //           VRG
+    //         </Button>
+    //       </div>
+    //       <div className="mt-2">
+    //         <strong>Commentaire:</strong> {record.categoryComment || "N/A"}
+    //       </div>
+    //     </div>
+    //   ),
+    // },
    
     {
-      title: "Âge",
+      title:<span style={{ fontSize: '12px' }}>Âge</span>,
       dataIndex: "age",
       key: "age",
       render: (text, record) => (
@@ -598,7 +386,7 @@ const ListCoaches = () => {
       ),
     },
     {
-      title: "Sexe",
+      title:<span style={{ fontSize: '12px' }}>Sexe</span>,
       dataIndex: "sex",
       key: "sex",
       render: (text, record) => (
@@ -612,7 +400,7 @@ const ListCoaches = () => {
     },
     
     {
-      title: "Spécialité",
+      title:<span style={{ fontSize: '12px' }}>Spécialité</span>,
       dataIndex: "speciality",
       key: "speciality",
       render: (specialities) => (
@@ -626,7 +414,7 @@ const ListCoaches = () => {
     },
 
     {
-      title: "Commercial",
+      title:<span style={{ fontSize: '12px' }}>Commercial</span>,
       key: "commercial",
       render: (text, record) => (
         <div
@@ -640,66 +428,7 @@ const ListCoaches = () => {
       ),
     },
     
-    
-    
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (text, record) => (
-    //     <Space size="middle">
-    //       <Button
-    //         icon={<EditOutlined />}
-    //         style={{ backgroundColor: "green", color: "white" }}
-    //         onClick={() => showEditModal(record)}
-    //       />
-    //       {/* <Popconfirm
-    //         title="Are you sure you want to delete this coach?"
-    //         onConfirm={() => handleDelete(record._id)}
-    //         okText="Yes"
-    //         cancelText="No"
-    //       >
-    //         <Button
-    //           icon={<DeleteOutlined />}
-    //           style={{ backgroundColor: "red", color: "white" }}
-    //           danger
-    //         />
-    //       </Popconfirm> */}
-    //     </Space>
-    //   ),
-    // },
   ];
-
-  const rowSelection = {
-    onChange: (selectedRowKeys) => {
-      setSelectedCoaches(selectedRowKeys);
-    },
-    selectedRowKeys: selectedCoaches,
-  };
-
-  const uploadProps = {
-    name: "file",
-    action: "https://api.cloudinary.com/v1_1/doagzivng/image/upload",
-    data: {
-      upload_preset: "kj1jodbh",
-    },
-    fileList,
-    onChange: handleUploadChange,
-  };
-
-  // Paginate data for the current page
-  const paginateData = (data, current, pageSize) => {
-    // First, filter and sort the data
-    const sortedData = data.sort((a, b) => {
-      if (!a.commercial) return -1; // Coaches without commercial come first
-      if (!b.commercial) return 1; // Coaches without commercial come first
-      return 0; // Keep original order
-    });
-
-    // Then, slice the data for pagination
-    const startIndex = (current - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return sortedData.slice(startIndex, endIndex);
-  };
 
   return (
     <div className="p-4">
@@ -726,6 +455,7 @@ const ListCoaches = () => {
           </div>
         </div>
       </div>
+      <div className="w-full p-2">
       <Table
         columns={columns}
         dataSource={paginateData(
@@ -733,8 +463,8 @@ const ListCoaches = () => {
           pagination.current,
           pagination.pageSize
         ).map((coach) => ({ ...coach, key: coach._id }))}
-        scroll={{ x: 600 }}
         rowSelection={rowSelection}
+        scroll={{ x: 600 }}
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
@@ -746,190 +476,9 @@ const ListCoaches = () => {
           },
         }}
         onChange={handleTableChange}
+        tableLayout="fixed"
       />
-      <Modal
-        className="fixed-modal"
-        title={currentCoach ? "Modifier Coach" : "Ajouter Coach"}
-        visible={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        width={500}
-        centered
-      >
-        <Form form={form} layout="vertical" onFinish={handleFinish}>
-          <div className="grid grid-cols-2 gap-2">
-            <Form.Item
-              name="prenom"
-              label="Prénom"
-              rules={[{ required: true, message: "Veuillez entrer le prénom" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="nom"
-              label="Nom"
-              rules={[{ required: true, message: "Veuillez entrer le nom" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              label="Email"
-              rules={[{ required: true, message: "Veuillez entrer l'email" }]}
-            >
-              <Input type="email" />
-            </Form.Item>
-            <Form.Item
-              name="phone"
-              label="Téléphone"
-              rules={[
-                { required: true, message: "Veuillez entrer le téléphone" },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="age"
-              label="Âge"
-              rules={[{ required: true, message: "Veuillez entrer l'âge" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="sex"
-              label="Sexe"
-              rules={[
-                { required: true, message: "Veuillez sélectionner le sexe" },
-              ]}
-            >
-              <Select>
-                <Option value="homme">Homme</Option>
-                <Option value="femme">Femme</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="ville"
-              label="Ville"
-              rules={[{ required: true, message: "Veuillez entrer la ville" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="speciality"
-              label="Spécialité"
-              rules={[
-                {
-                  required: true,
-                  message: "Veuillez sélectionner la spécialité",
-                },
-              ]}
-            >
-              <Select mode="multiple">
-                {specialities.map((speciality) => (
-                  <Option key={speciality._id} value={speciality._id}>
-                    {speciality.nom}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item label="Image">
-              <Upload {...uploadProps}>
-                <Button icon={<UploadOutlined />} loading={uploading}>
-                  Télécharger
-                </Button>
-              </Upload>
-            </Form.Item>
-            {uploadedFileName && (
-              <Form.Item>
-                <div className="flex items-center mt-2">
-                  <Avatar
-                    src={imageUrl}
-                    alt="Uploaded Image"
-                    size={50}
-                    className="mr-2"
-                  />
-                  <span>{uploadedFileName}</span>
-                  <Button
-                    type="link"
-                    icon={<DeleteOutlined />}
-                    onClick={() => {
-                      form.setFieldsValue({ image: "" });
-                      setUploadedFileName("");
-                      setImageUrl("");
-                    }}
-                  />
-                </div>
-              </Form.Item>
-            )}
-          </div>
-          <Form.Item className="mt-2">
-            <Button type="primary" htmlType="submit">
-              {currentCoach ? "Enregistrer les modifications" : "Ajouter Coach"}
-            </Button>
-            <Button onClick={handleCancel} className="ml-2">
-              Annuler
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-      <Modal
-        title="Affecter les Coachs au Commercial"
-        visible={isAssignModalVisible}
-        onCancel={() => setIsAssignModalVisible(false)}
-        footer={null}
-      >
-        <Form form={assignForm} onFinish={handleAssign}>
-          <Form.Item
-            name="commercial"
-            label="Commercial"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez sélectionner un commercial",
-              },
-            ]}
-          >
-            <Select placeholder="Sélectionnez un commercial">
-              {commercials.map((commercial) => (
-                <Option key={commercial._id} value={commercial._id}>
-                  {commercial.nom} {commercial.prenom}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Affecter
-            </Button>
-            <Button
-              onClick={() => setIsAssignModalVisible(false)}
-              className="ml-2"
-            >
-              Annuler
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-      <Modal
-        title="Désaffecter les Coachs du Commercial"
-        visible={isUnassignModalVisible}
-        onCancel={() => setIsUnassignModalVisible(false)}
-        footer={null}
-      >
-        <Form form={unassignForm} onFinish={handleUnassign}>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Désaffecter
-            </Button>
-            <Button
-              onClick={() => setIsUnassignModalVisible(false)}
-              className="ml-2"
-            >
-              Annuler
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+      </div>
     </div>
   );
 };

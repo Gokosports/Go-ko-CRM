@@ -4,7 +4,7 @@ import {jwtDecode} from 'jwt-decode';
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');

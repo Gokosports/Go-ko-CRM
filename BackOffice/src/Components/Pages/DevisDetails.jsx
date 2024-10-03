@@ -381,7 +381,7 @@ Fait à Roubaix, le 23 septembre 2024.
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
       <Tabs defaultActiveKey="3">
-        <TabPane tab={<Link to={`/coach/${id}`}>Informations</Link>} key="1">
+        <TabPane tab={<Link to={`/coaches/${id}`}>Informations</Link>} key="1">
           {/* Add information tab content here */}
         </TabPane>
 

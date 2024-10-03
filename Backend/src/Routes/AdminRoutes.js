@@ -8,12 +8,13 @@ const {
     updateAdminById,
     deleteAdminById
 } = require('../Controllers/AdminController');
-const { adMed, loginClient } = require('../Controllers/authController');
+const { adMed, loginClient, logout } = require('../Controllers/authController');
 
 router.post('/login', adMed);
 router.post('/loginClient', loginClient);
 router.get('/profile', profile);
 router.put('/:id', updateAdminById);
+router.post('/logout', logout);
 
 const { authenticateUser, authorize } = require('../Middlewares/adminMiddleware');
 

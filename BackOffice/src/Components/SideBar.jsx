@@ -15,7 +15,7 @@ const SideBar = () => {
     const { collapsed } = useContext(ToggleContext);
     // const { decodedToken } = useContext(LoginContext);
     const token = localStorage.getItem('token')
-    const decodedToken =token ? jwtDecode(token):'';
+    const decodedToken = token ? jwtDecode(token):'';
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -143,7 +143,7 @@ const SideBar = () => {
             key: '/CalendarCommerciale',
             icon: <FontAwesomeIcon icon={faCalendarAlt} />, 
             label: 'Calendar',
-            role: "Commercial",
+            // role: "Commercial",
         },
           
         {

@@ -395,21 +395,26 @@ router.get('/planning/:coachId', async (req, res) => {
   }
 });
 
-router.post("/calendar", async (req, res) => {
+
+
+
+// POST route to create a new event
+router.post("/calendar",  async (req, res) => {
   try {
-    const { title, start, end } = req.body;
-    
-    // Create a new event
+    const { title, start, end, userId } = req.body; // userId is passed in the request body
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+
     const newEvent = new Calendar({
       title,
       start,
       end,
+      createdBy: userId, // Use the userId from the request body
     });
 
-    // Save the event to MongoDB
     await newEvent.save();
-
-    // Send a success response
     res.status(201).json(newEvent);
   } catch (error) {
     console.error("Error creating event", error);
@@ -417,13 +422,15 @@ router.post("/calendar", async (req, res) => {
   }
 });
 
-// GET route to fetch all events
-router.get("/calendar", async (req, res) => {
+// // GET route to fetch events for the logged-in commercial
+router.get("/calendar/:id", async (req, res) => {
   try {
-    // Retrieve all events from MongoDB
-    const events = await Calendar.find();
-    
-    // Send events as a response
+    const { id  } = req.params; 
+    console.log("User ID:", id);
+
+    const events = await Calendar.find({ createdBy: id  });
+    console.log("Fetched events:", events);
+
     res.status(200).json(events);
   } catch (error) {
     console.error("Error fetching events", error);
@@ -431,29 +438,52 @@ router.get("/calendar", async (req, res) => {
   }
 });
 
-// router.post("/send-email", async (req, res) => {
-//   const { email } = req.body;
 
-//   if (!req.body.email) {
-//     return res.status(400).send("Recipient email is required.");
-//   }
-//   // Email options
-//   const mailOptions = {
-//     from: process.env.EMAIL_USER,
-//     to: email,
-//     subject: 'Suivi de notre conversation',
-//     text: `Cher(e) coach,\n\nMerci pour notre conversation récente. Si vous avez des questions ou besoin de plus d'informations, n'hésitez pas à me contacter.\n\nCordialement,\nL'équipe GOKO`,
-//   };
 
-//   try {
-//     // Send the email
-//     await transporter.sendMail(mailOptions);
-//     res.status(200).json({ message: "Email sent successfully" });
-//   } catch (error) {
-//     console.error("Error sending email:", error);
-//     res.status(500).json({ message: "Error sending email" });
-//   }
-// });
+// PUT route to update an event
+router.put("/calendar/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, start, end } = req.body;
+
+    const updatedEvent = await Calendar.findByIdAndUpdate(
+      id,
+      { title, start, end },
+      { new: true } // Return the updated event
+    );
+
+    if (!updatedEvent) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    res.status(200).json(updatedEvent);
+  } catch (error) {
+    console.error("Error updating event", error);
+    res.status(500).json({ error: "Server error while updating event" });
+  }
+});
+
+// DELETE route to delete an event
+router.delete("/calendar/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedEvent = await Calendar.findByIdAndDelete(id);
+
+    if (!deletedEvent) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    res.status(200).json({ message: "Event deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting event", error);
+    res.status(500).json({ error: "Server error while deleting event" });
+  }
+});
+
+
+
+
 router.post("/send-email", async (req, res) => {
   const { email, fullnameCoach, fullnameCommercial} = req.body;
 

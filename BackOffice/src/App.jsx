@@ -40,9 +40,8 @@ import PlanningCommerciale from "./Components/Pages/PlanningCommerciale";
 
 
 
-
 const MainLayout = ({ children }) => {
-  const { isLoggedIn } = useContext(LoginContext);  
+  const { isLoggedIn  } = useContext(LoginContext);  
   const { Content } = Layout;
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -54,7 +53,7 @@ const MainLayout = ({ children }) => {
     if (!isLoggedIn()) {
       navigate("/login");
     }
-  }, []);
+  }, [isLoggedIn]);
 
 
   return (
@@ -65,7 +64,7 @@ const MainLayout = ({ children }) => {
           <SideBar />
         </div>
         <Content
-          className="m-6 p-6"
+          className="p-2 m-2"
           style={{
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
@@ -77,6 +76,7 @@ const MainLayout = ({ children }) => {
     </Layout>
   );
 };
+
 
 function App() {
   const { decodedToken } = useContext(LoginContext);
@@ -279,14 +279,16 @@ function App() {
             </MainLayout>
           }
         />
-         <Route
-          path="/CalendarCommerciale"
-          element={
-            <MainLayout>
-              <PlanningCommerciale/>
-            </MainLayout>
-          }
-        />
+        <Route
+  path="/CalendarCommerciale"
+  element={
+    <MainLayout>
+        <PlanningCommerciale />
+    </MainLayout>
+  }
+/>
+
+        
        
        
        <Route

@@ -218,7 +218,6 @@ function Dashboard() {
   const [coaches, setCoaches] = useState([]);
   const token = localStorage.getItem("token");
   const decodedToken = token ? jwtDecode(token) : { name: "", role: "" };
-  const user = useContext(LoginContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -413,8 +412,8 @@ function Dashboard() {
 
       <div className="flex flex-wrap justify-center items-start">
         <div
-          className="w-full  mt-10 mb-10 border rounded shadow-lg bg-white"
-          style={{ height: "440px", width: "100%", overflowY: "auto" }}
+          className="w-full mt-10 mb-10 border rounded shadow-lg bg-white"
+          style={{width: "100%" }}
         >
           <div className="">
           {decodedToken.role === "Admin" ? (

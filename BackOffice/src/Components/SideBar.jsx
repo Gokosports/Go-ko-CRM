@@ -143,7 +143,7 @@ const SideBar = () => {
             key: '/CalendarCommerciale',
             icon: <FontAwesomeIcon icon={faCalendarAlt} />, 
             label: 'Calendar',
-            // role: "Commercial",
+            role: "Commercial",
         },
           
         {

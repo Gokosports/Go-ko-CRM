@@ -10,7 +10,7 @@ const {
 } = require('../Controllers/CommercialController'); // Ajustez le chemin si nécessaire
 
 
-const {authenticateUser,authorize} = require('../Middlewares/adminMiddleware');
+// const {authenticateUser,authorize} = require('../Middlewares/adminMiddleware');
 
 // Route pour créer un nouveau commercial
 router.post('/', createCommercial);
@@ -22,7 +22,7 @@ router.get('/', getAllCommercials);
 // Route pour récupérer un commercial par son ID
 router.get('/:id', getCommercialById);
 
-router.use(authenticateUser);
+// router.use(authenticateUser);
 
 //router.patch('/:id', authorize(['Admin']), changeStatus);
 

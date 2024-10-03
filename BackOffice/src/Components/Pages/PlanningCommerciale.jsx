@@ -26,7 +26,7 @@ const PlanningCommerciale = () => {
     setEvents([]); // Clear previous events when fetching new ones
     try {
       const response = await axios.get(
-        `https://go-ko-9qul.onrender.comapi/calendar/${commercialId}`
+        `https://go-ko-9qul.onrender.com/api/calendar/${commercialId}`
       );
       if (Array.isArray(response.data)) {
         setEvents(response.data);
@@ -68,7 +68,7 @@ const PlanningCommerciale = () => {
 
     try {
       const response = await axios.post(
-        "https://go-ko-9qul.onrender.comapi/calendar",
+        "https://go-ko-9qul.onrender.com/api/calendar",
         newEvent
       );
       setEvents((prevEvents) => [...prevEvents, response.data]);
@@ -91,7 +91,7 @@ const PlanningCommerciale = () => {
 
     try {
       const response = await axios.put(
-        `https://go-ko-9qul.onrender.comapi/calendar/${selectedEventId}`,
+        `https://go-ko-9qul.onrender.com/api/calendar/${selectedEventId}`,
         updatedEvent
       );
       setEvents((prevEvents) =>
@@ -113,7 +113,7 @@ const PlanningCommerciale = () => {
 
     try {
       await axios.delete(
-        `https://go-ko-9qul.onrender.comapi/calendar/${selectedEventId}`
+        `https://go-ko-9qul.onrender.com/api/calendar/${selectedEventId}`
       );
       setEvents((prevEvents) =>
         prevEvents.filter((event) => event._id !== selectedEventId)

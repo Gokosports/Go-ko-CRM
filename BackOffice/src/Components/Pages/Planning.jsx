@@ -199,7 +199,7 @@ const Planning = () => {
             htmlFor="comment"
             className="block text-sm font-medium text-gray-700"
           >
-            Comment:
+            Commentaire:
           </label>
           <textarea
             id="comment"
@@ -208,7 +208,7 @@ const Planning = () => {
             onChange={(e) =>
               setFormData({ ...formData, comment: e.target.value })
             }
-            placeholder="Add any comments here..."
+            placeholder="Ajoutez vos commentaires ici..."
             required
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
           />

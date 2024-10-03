@@ -182,6 +182,7 @@ const Planning = () => {
           >
             <option value="">Select Situation</option>
             <option value="Scheduled">Appel de vente</option>
+            <option value="Scheduled">Hors planning</option>
             <option value="Completed">Négociation devis</option>
             <option value="Canceled">Conclusion vente</option>
             <option value="Canceled">Vente</option>

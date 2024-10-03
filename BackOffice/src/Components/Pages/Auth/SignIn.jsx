@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../../../assets/style/login.css";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,6 +17,7 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [redirect, setRedirect] = useState(false);
+  const {Navigate} = useNavigate();
 
   const handleUsernameChange = (event) => {
     setEmail(event.target.value);

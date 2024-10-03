@@ -35,7 +35,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const Logout = async () => {
-    await axios.post("https://go-ko-9qul.onrender.comadmin/logout");
+    await axios.post("https://go-ko-9qul.onrender.com/admin/logout");
     localStorage.removeItem("token");
     navigate("/login");
   };

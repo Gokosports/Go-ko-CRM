@@ -44,7 +44,6 @@ const SignIn = () => {
       const token = response.data.token;
       localStorage.setItem("token", token);
       const decodedToken = jwtDecode(token);
-      console.log("decodedToken", decodedToken);
       setRedirect(true);
       console.log('Login successful. Token:', token);
       message.success(`Bienvenue dans le tableau de bord ${decodedToken.role}`);

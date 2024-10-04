@@ -373,8 +373,8 @@ router.get("/contracts", async (req, res) => {
 
 router.post('/planning', async (req, res) => {
   try {
-    const { coachId, time, callSituation, comment } = req.body;
-    const newPlanning = new Planning({ coachId, time, callSituation, comment });
+    const { coachId, commercialName, time, callSituation, comment } = req.body;
+    const newPlanning = new Planning({ coachId, commercialName, time, callSituation, comment });
     const savedPlanning = await newPlanning.save();
     res.status(200).send({ message: 'Planning created', savedPlanning });
   } catch (error) {
@@ -395,97 +395,61 @@ router.get('/planning/:coachId', async (req, res) => {
   }
 });
 
-
-
-
-// POST route to create a new event
-router.post("/calendar",  async (req, res) => {
+router.get('/planning', async (req, res) => {
   try {
-    const { title, start, end, userId } = req.body; // userId is passed in the request body
-
-    if (!userId) {
-      return res.status(400).json({ error: "userId is required" });
-    }
-
-    const newEvent = new Calendar({
-      title,
-      start,
-      end,
-      createdBy: userId, // Use the userId from the request body
-    });
-
-    await newEvent.save();
-    res.status(201).json(newEvent);
+    const AllPlannings = await Planning.find();
+    console.log("All Plannings", AllPlannings)
+    res.status(200).json(AllPlannings)
   } catch (error) {
-    console.error("Error creating event", error);
-    res.status(500).json({ error: "Server error while creating event" });
+    console.error('Error fetching planning entries for coach:', error);
+    res.status(500).json({ message: 'Error fetching planning entries.' });
   }
-});
-
-// // GET route to fetch events for the logged-in commercial
-router.get("/calendar/:id", async (req, res) => {
-  try {
-    const { id  } = req.params; 
-    console.log("User ID:", id);
-
-    const events = await Calendar.find({ createdBy: id  });
-    console.log("Fetched events:", events);
-
-    res.status(200).json(events);
-  } catch (error) {
-    console.error("Error fetching events", error);
-    res.status(500).json({ error: "Server error while fetching events" });
-  }
-});
-
-
-
-// PUT route to update an event
-router.put("/calendar/:id", async (req, res) => {
+})
+// PUT /planning/:id - Update a planning entry by ID
+router.put('/planning/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, start, end } = req.body;
-
-    const updatedEvent = await Calendar.findByIdAndUpdate(
+    const { time, callSituation, comment } = req.body;
+    
+    const updatedPlanning = await Planning.findByIdAndUpdate(
       id,
-      { title, start, end },
-      { new: true } // Return the updated event
+      { time, callSituation, comment },
+      { new: true } // This option returns the updated document
     );
 
-    if (!updatedEvent) {
-      return res.status(404).json({ error: "Event not found" });
+    if (!updatedPlanning) {
+      return res.status(404).send({ message: 'Planning not found' });
     }
 
-    res.status(200).json(updatedEvent);
+    res.status(200).send({ message: 'Planning updated', updatedPlanning });
   } catch (error) {
-    console.error("Error updating event", error);
-    res.status(500).json({ error: "Server error while updating event" });
+    console.error('Error updating planning:', error);
+    res.status(500).send({ message: 'Error updating planning' });
   }
 });
 
-// DELETE route to delete an event
-router.delete("/calendar/:id", async (req, res) => {
+// DELETE /planning/:id - Delete a planning entry by ID
+router.delete('/planning/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedEvent = await Calendar.findByIdAndDelete(id);
+    const deletedPlanning = await Planning.findByIdAndDelete(id);
 
-    if (!deletedEvent) {
-      return res.status(404).json({ error: "Event not found" });
+    if (!deletedPlanning) {
+      return res.status(404).send({ message: 'Planning not found' });
     }
 
-    res.status(200).json({ message: "Event deleted successfully" });
+    res.status(200).send({ message: 'Planning deleted', deletedPlanning });
   } catch (error) {
-    console.error("Error deleting event", error);
-    res.status(500).json({ error: "Server error while deleting event" });
+    console.error('Error deleting planning:', error);
+    res.status(500).send({ message: 'Error deleting planning' });
   }
 });
-
 
 
 
 router.post("/send-email", async (req, res) => {
-  const { email, fullnameCoach, fullnameCommercial} = req.body;
+  const { email, fullnameCoach, fullnameCommercial, phone, emailc } = req.body;
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -494,8 +458,11 @@ router.post("/send-email", async (req, res) => {
     html: `
           <img src="https://firebasestorage.googleapis.com/v0/b/goko-app.appspot.com/o/contrats%2Fgoko.png?alt=media&token=d474ecec-b028-4626-9540-a7edc387fe22" alt="Image" style="width: 50px; height: 50px; display: block;"/>
       <p>Bonjour ${fullnameCoach},</p>
+
       <p>Je vous présente GOKO, une application innovante spécialement conçue pour mettre en relation les coachs sportifs et les entités sportives avec des sportifs de tous niveaux.</p>
+
       <p>GOKO offre une plateforme unique pour promouvoir votre activité de coach et optimiser votre gestion au quotidien grâce à de nombreuses fonctionnalités adaptées à vos besoins. En rejoignant GOKO, vous aurez accès à des outils performants qui vous permettront de :</p>
+      
       <ul>
         <li>Accroître votre visibilité auprès d’une large communauté de sportifs.</li>
         <li>Gérer facilement vos rendez-vous et vos plannings en ligne.</li>
@@ -504,11 +471,22 @@ router.post("/send-email", async (req, res) => {
         <li>Bénéficier de retours d’expérience et de recommandations pour renforcer votre réputation.</li>
         <li>Et bien plus encore !</li>
       </ul>
+
       <p>Que vous soyez coach sportif indépendant ou affilié à une entité sportive, GOKO vous aide à développer votre activité en facilitant la rencontre avec des sportifs qui recherchent vos compétences, vos conseils et votre savoir-faire.</p>
+      
       <p>Nous serions ravis de vous en dire plus sur GOKO et comment cette application peut répondre à vos attentes. Si vous souhaitez plus d’informations ou avez des questions, n’hésitez pas à nous contacter.</p>
+      
       <p>Dans l'attente d'échanger avec vous, je vous remercie pour votre attention et reste à votre disposition pour convenir d’un rendez-vous ou d’une démonstration de l’application.</p>
+      
       <p>Cordialement,<br />
+      
+
       ${fullnameCommercial}<br />
+      
+
+      ${emailc} - ${phone}<br />
+
+
       GOKO Team</p>
     `,
   };
@@ -524,7 +502,7 @@ router.post("/send-email", async (req, res) => {
 });
 
 router.post("/send-email-command", async (req, res) => {
-  const { email, fullnameCoach, fullnameCommercial} = req.body;
+  const { email, fullnameCoach, fullnameCommercial, phone, emailc} = req.body;
 
   
   const mailOptions = {
@@ -532,22 +510,37 @@ router.post("/send-email-command", async (req, res) => {
     to: email,
     subject: 'Bienvenue sur GOKO – Merci pour votre confiance !',
     html: `
-      <p>Bonjour ${fullnameCoach},</p>
       <img src="https://firebasestorage.googleapis.com/v0/b/goko-app.appspot.com/o/contrats%2Fistockphoto-636887598-612x612.jpg?alt=media&token=a00092b2-499d-4751-9bcf-9814ff15e08c" alt="Image" />
+      
+      <p>Bonjour ${fullnameCoach},</p>
+
       <p>Nous sommes ravis de vous compter parmi la communauté GOKO, et nous vous remercions sincèrement pour la confiance que vous nous accordez. En rejoignant notre plateforme, vous faites un grand pas vers le développement de votre activité et l’optimisation de vos interactions avec les sportifs de tous niveaux.</p>
+      
       <p>Grâce à votre abonnement, vous avez désormais accès à toutes les fonctionnalités qui font de GOKO une application unique pour les coachs et entités sportives :</p>
+     
       <ul>
         <li>Gestion simplifiée de vos rendez-vous et de votre agenda.</li>
         <li>Visibilité accrue auprès d’une large communauté de sportifs en quête de coaching.</li>
         <li>Outils de promotion pour mettre en avant vos services, programmes et offres spéciales.</li>
         <li>Système de recommandation pour renforcer votre réputation et attirer de nouveaux clients.</li>
         <li>Et bien d'autres fonctionnalités qui faciliteront votre quotidien.</li>
-      </ul>
+      
+        </ul>
+
       <p>Nous sommes là pour vous accompagner dans l’utilisation de l’application et vous assurer une expérience optimale. Si vous avez la moindre question, ou si vous souhaitez découvrir des astuces pour tirer le meilleur parti de GOKO, notre équipe est à votre disposition.</p>
+      
       <p>Encore une fois, un grand merci pour votre confiance. Nous sommes impatients de vous voir grandir au sein de la communauté GOKO et de contribuer à votre réussite !</p>
+      
       <p>À très bientôt sur GOKO !</p>
+
+
       <p>Cordialement,<br />
+
+
       ${fullnameCommercial}<br />
+
+       ${emailc} - ${phone}<br />
+
       GOKO Team</p>
     `,
 };

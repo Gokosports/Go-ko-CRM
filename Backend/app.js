@@ -52,7 +52,6 @@ app.use('/admin', AdminRoutes);
 app.use('/coaches', CoachRoutes);
 app.use('/clients', ClientRoutes);
 app.use('/speciality', SpecialityRoutes);
-
 app.use('/comments', commentRoutes); // Route pour les commentaires
 app.use('/coachs-comment', coachCommentRoutes);
 

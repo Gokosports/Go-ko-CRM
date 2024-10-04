@@ -1102,35 +1102,35 @@ const CoachDetailsPage = () => {
             <Form.Item
               name="prenom"
               label="Prénom"
-              rules={[{ required: true, message: "Veuillez entrer le prénom" }]}
+              rules={[{ required: false, message: "Veuillez entrer le prénom" }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="siret"
               label="SIRET"
-              rules={[{ required: true, message: "Veuillez entrer le siret" }]}
+              rules={[{ required: false, message: "Veuillez entrer le siret" }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="raisonsociale"
               label="Raison sociale"
-              rules={[{ required: true, message: "Veuillez entrer le Raison sociale" }]}
+              rules={[{ required: false, message: "Veuillez entrer le Raison sociale" }]}
               >
               <Input />
               </Form.Item>
               <Form.Item
                  name='codepostal'
                  label='Code postal'
-                 rules={[{ required: true, message: "Veuillez entrer le Code postal'" }]}
+                 rules={[{ required: false, message: "Veuillez entrer le Code postal'" }]}
                  >
                   <Input />
                  </Form.Item>
               <Form.Item
                  name='adresse'
                  label='Adresse'
-                 rules={[{ required: true, message: "Veuillez entrer lAdresse'" }]}
+                 rules={[{ required: false, message: "Veuillez entrer lAdresse'" }]}
                  >
                   <Input />
                  </Form.Item>
@@ -1138,14 +1138,14 @@ const CoachDetailsPage = () => {
             <Form.Item
               name="nom"
               label="Nom"
-              rules={[{ required: true, message: "Veuillez entrer le nom" }]}
+              rules={[{ required: false, message: "Veuillez entrer le nom" }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="email"
               label="Email"
-              rules={[{ required: true, message: "Veuillez entrer l'email" }]}
+              rules={[{ required: false, message: "Veuillez entrer l'email" }]}
             >
               <Input type="email" />
             </Form.Item>
@@ -1153,7 +1153,7 @@ const CoachDetailsPage = () => {
               name="phone"
               label="Téléphone"
               rules={[
-                { required: true, message: "Veuillez entrer le téléphone" },
+                { required: false, message: "Veuillez entrer le téléphone" },
               ]}
             >
               <Input />
@@ -1161,13 +1161,13 @@ const CoachDetailsPage = () => {
             <Form.Item
               name="age"
               label="Âge"
-              rules={[{ required: true, message: "Veuillez entrer l'âge" }]}
+              rules={[{ required: false, message: "Veuillez entrer l'âge" }]}
             >
               <Input />
             </Form.Item><Form.Item
               name="phone"
               label="Télephone"
-              rules={[{ required: true, message: "Veuillez entrer le Télephone" }]}
+              rules={[{ required: false, message: "Veuillez entrer le Télephone" }]}
             >
               <Input />
             </Form.Item>
@@ -1175,7 +1175,7 @@ const CoachDetailsPage = () => {
               name="sex"
               label="Sexe"
               rules={[
-                { required: true, message: "Veuillez sélectionner le sexe" },
+                { required: false, message: "Veuillez sélectionner le sexe" },
               ]}
             >
               <Select>
@@ -1188,24 +1188,24 @@ const CoachDetailsPage = () => {
               label="Spécialité"
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: "Veuillez sélectionner la spécialité",
                 },
               ]}
             >
-              {/* <Select mode="multiple">
+              <Select mode="multiple">
                 {specialities.map((speciality) => (
                   <Option key={speciality._id} value={speciality._id}>
                     {speciality.nom}
                   </Option>
                 ))}
-              </Select> */}
-              <Input />
+              </Select>
+       
             </Form.Item>
             <Form.Item
               name="ville"
               label="Ville"
-              rules={[{ required: true, message: "Veuillez entrer la ville" }]}
+              rules={[{ required: false, message: "Veuillez entrer la ville" }]}
             >
               <Input />
             </Form.Item>
@@ -1264,13 +1264,14 @@ const CoachDetailsPage = () => {
               },
             ]}
           >
-            <Select placeholder="Sélectionnez un commercial">
+            <Input />
+            {/* <Select placeholder="Sélectionnez un commercial">
               {commercials.map((commercial) => (
                 <Option key={commercial._id} value={commercial._id}>
                   {commercial.prenom} {commercial.nom}
                 </Option>
               ))}
-            </Select>
+            </Select> */}
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">

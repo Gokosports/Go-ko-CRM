@@ -776,9 +776,11 @@ const CoachList = () => {
         }}
         onChange={handleTableChange}
       /> */}
+
       <Table
   columns={columns}
-  dataSource={paginateData(coaches, pagination.current, pagination.pageSize).map((coach) => ({ ...coach, key: coach._id }))}
+  dataSource={paginateData(coaches, 
+    pagination.current, pagination.pageSize).map((coach) => ({ ...coach, key: coach._id }))}
   rowKey="_id"
   scroll={{ x: 600 }}
   rowSelection={rowSelection}

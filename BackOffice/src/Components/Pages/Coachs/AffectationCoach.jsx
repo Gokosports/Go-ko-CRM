@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Table,
   Button,
@@ -39,6 +39,7 @@ const CoachList = () => {
   const [isUnassignModalVisible, setIsUnassignModalVisible] = useState(false);
   const [currentCoach, setCurrentCoach] = useState(null);
   const [selectedCoaches, setSelectedCoaches] = useState([]);
+  const [sortedCoaches, setSortedCoaches] = useState([]);
   const [form] = Form.useForm();
   const [assignForm] = Form.useForm();
   const [unassignForm] = Form.useForm();
@@ -538,20 +539,34 @@ const CoachList = () => {
   //   const endIndex = startIndex + pageSize;
   //   return data.slice(startIndex, endIndex);
   // };
-
-  const paginateData = (data, current, pageSize) => {
-    // First, filter and sort the data
-    const sortedData = data.sort((a, b) => {
+  useEffect(() => {
+    const sortedData = [...coaches].sort((a, b) => {
       if (!a.commercial) return -1; // Coaches without commercial come first
       if (!b.commercial) return 1;  // Coaches without commercial come first
       return 0; // Keep original order
     });
+    setSortedCoaches(sortedData);
+  }, [coaches]);
+
+  // Memoize pagination data to avoid recalculating on every render
+  const paginateData = useMemo(() => {
+    const startIndex = (pagination.current - 1) * pagination.pageSize;
+    const endIndex = startIndex + pagination.pageSize;
+    return sortedCoaches.slice(startIndex, endIndex).map((coach) => ({ ...coach, key: coach._id }));
+  }, [sortedCoaches, pagination.current, pagination.pageSize]);
+  // const paginateData = (data, current, pageSize) => {
+  //   // First, filter and sort the data
+  //   const sortedData = data.sort((a, b) => {
+  //     if (!a.commercial) return -1; // Coaches without commercial come first
+  //     if (!b.commercial) return 1;  // Coaches without commercial come first
+  //     return 0; // Keep original order
+  //   });
   
-    // Then, slice the data for pagination
-    const startIndex = (current - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return sortedData.slice(startIndex, endIndex);
-  };
+  //   // Then, slice the data for pagination
+  //   const startIndex = (current - 1) * pageSize;
+  //   const endIndex = startIndex + pageSize;
+  //   return sortedData.slice(startIndex, endIndex);
+  // };
   
 
   return (
@@ -583,7 +598,8 @@ const CoachList = () => {
       </div>
       <Table
   columns={columns}
-  dataSource={paginateData(coaches, pagination.current, pagination.pageSize).map((coach) => ({ ...coach, key: coach._id }))}
+  // dataSource={paginateData(coaches, pagination.current, pagination.pageSize).map((coach) => ({ ...coach, key: coach._id }))}
+  dataSource={paginateData}
   rowKey="_id"
   scroll={{ x: 600 }}
   rowSelection={rowSelection}

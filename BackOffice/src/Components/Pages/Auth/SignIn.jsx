@@ -16,8 +16,8 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [redirect, setRedirect] = useState(false);
-  const {Navigate} = useNavigate();
+
+  const navigate = useNavigate(); 
   
 
   const handleUsernameChange = (event) => {
@@ -43,23 +43,22 @@ const SignIn = () => {
           password,
         }
       );
-      setRedirect(true);
+   
       const token = response.data.token;
       localStorage.setItem("token", token);
       const decodedToken = jwtDecode(token);
      
       console.log('Login successful. Token:', token);
+      navigate("/"); 
       message.success(`Bienvenue dans le tableau de bord ${decodedToken.role}`);
-      setRedirect(true);
+     
     } catch (error) {
       message.error("Email ou mot de passe invalide");
       console.error("Erreur lors de la connexion:", error);
     }
   };
 
-  if (redirect) {
-    return <Navigate to={"/"} />;
-  }
+ 
 
   return (
     <>

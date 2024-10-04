@@ -598,6 +598,7 @@ const CoachList = () => {
     },
   }}
   onChange={handleTableChange}
+   tableLayout="fixed"
 />
 
       {/* <Table

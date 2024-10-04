@@ -755,7 +755,7 @@ const CoachList = () => {
           </Button> */}
         </div>
       </div>
-      {/* <Table
+      <Table
         columns={columns}
         dataSource={paginateData(
           filteredCoaches,
@@ -775,9 +775,10 @@ const CoachList = () => {
           },
         }}
         onChange={handleTableChange}
-      /> */}
+         tableLayout="fixed"
+      />
 
-      <Table
+      {/* <Table
   columns={columns}
   dataSource={paginateData(coaches, 
     pagination.current, pagination.pageSize).map((coach) => ({ ...coach, key: coach._id }))}
@@ -796,7 +797,7 @@ const CoachList = () => {
   }}
   onChange={handleTableChange}
   tableLayout="fixed"
-/>
+/> */}
 
       <Modal
         // className="fixed-modal"

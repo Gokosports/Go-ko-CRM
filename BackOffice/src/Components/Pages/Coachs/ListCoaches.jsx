@@ -4,7 +4,18 @@ import {
   Button,
   message,
   Breadcrumb,
+  Space,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Upload
 } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import "tailwindcss/tailwind.css";
@@ -30,7 +41,13 @@ const ListCoaches = () => {
   const [pagination, setPagination] = useState({ current: 1, pageSize: 6 });
   const [filterType, setFilterType] = useState("all");
   const [filteredClients, setFilteredClients] = useState([]);
-
+  const [currentCoach, setCurrentCoach] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [fileList, setFileList] = useState([]);
+  const [form] = Form.useForm();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -172,6 +189,32 @@ const ListCoaches = () => {
     return clients.filter((client) => client.type === type); // Ensure client.type exists
   };
 
+  const showEditModal = async (coach) => {
+    if (specialities.length === 0) {
+      await fetchSpecialities();
+    }
+    setCurrentCoach(coach);
+    form.setFieldsValue({
+      ...coach,
+      ville: coach.ville || "",
+      speciality: coach.speciality
+        ? coach.speciality.map((speciality) => speciality._id)
+        : [],
+      image: coach.image || "",
+    });
+    setUploadedFileName(coach.image ? coach.image.split("/").pop() : "");
+    setImageUrl(coach.image || "");
+    setIsModalVisible(true);
+  };
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setCurrentCoach(null);
+    form.resetFields();
+    setUploadedFileName("");
+    setImageUrl("");
+    setFileList([]);
+  };
+
   const handleFilterClick = (type) => {
     setFilterType(type); // Set the current filter type
     const filtered = filterClients(type, coaches); // Filter coaches based on type
@@ -210,7 +253,81 @@ const ListCoaches = () => {
   const handleCoachClick = (coach) => {
     navigate(`/coaches/${coach._id}`);
   };
+  const handleFinish = async (values) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        message.error("No token found, please login first");
+        return;
+      }
 
+      const data = {
+        ...values,
+        speciality: values.speciality,
+      };
+
+      if (currentCoach) {
+        const response = await axios.put(
+          `https://go-ko-9qul.onrender.com/coaches/${currentCoach._id}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setCoaches(
+          coaches.map((coach) =>
+            coach._id === currentCoach._id
+              ? { ...coach, ...response.data }
+              : coach
+          )
+        );
+        message.success("Coach updated successfully");
+      } else {
+        const response = await axios.post(
+          "https://go-ko-9qul.onrender.com/coaches",
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setCoaches([...coaches, response.data]);
+        message.success("Coach created successfully");
+      }
+      handleCancel();
+    } catch (error) {
+      console.error("Error saving coach:", error);
+      message.error("Failed to save coach");
+    }
+  };
+
+  const handleUploadChange = ({ fileList }) => {
+    setFileList(fileList);
+    if (fileList.length > 0 && fileList[0].status === "done") {
+      const imageUrl = fileList[0].response.secure_url;
+      form.setFieldsValue({ image: imageUrl });
+      setUploadedFileName(fileList[0].name);
+      setImageUrl(imageUrl);
+      setUploading(false);
+      message.success(`${fileList[0].name} file uploaded successfully`);
+    } else if (fileList.length > 0 && fileList[0].status === "error") {
+      console.error("Upload error:", fileList[0].error, fileList[0].response);
+      message.error(`${fileList[0].name} file upload failed.`);
+      setUploading(false);
+    }
+  };
+  const uploadProps = {
+    name: "file",
+    action: "https://api.cloudinary.com/v1_1/doagzivng/image/upload",
+    data: {
+      upload_preset: "kj1jodbh",
+    },
+    fileList,
+    onChange: handleUploadChange,
+  };
 
   const handleTableChange = (pagination) => {
     setPagination(pagination);
@@ -229,6 +346,7 @@ const paginateData = (data, current, pageSize) => {
   const endIndex = startIndex + pageSize;
   return sortedData.slice(startIndex, endIndex);
 };
+
   const rowSelection = {
     onChange: (selectedRowKeys) => {
       setSelectedCoaches(selectedRowKeys);
@@ -428,6 +546,21 @@ const paginateData = (data, current, pageSize) => {
         </div>
       ),
     },
+    {
+      title: <span style={{ fontSize: '12px' }}>Action</span>,
+      key: "action",
+      render: (text, record) => (
+        <Space size="middle">
+          <Button
+            icon={<EditOutlined />}
+            style={{ backgroundColor: "green", color: "white" }}
+            onClick={() => showEditModal(record)}
+            size="small" 
+          />
+        
+        </Space>
+      ),
+    },
     
   ];
 
@@ -479,6 +612,168 @@ const paginateData = (data, current, pageSize) => {
         onChange={handleTableChange}
         tableLayout="fixed"
       />
+      <Modal
+        // className="fixed-modal"
+        title={currentCoach ? "Modifier Coach" : "Ajouter Coach"}
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={500}
+        centered
+        className="fixed-modal rounded-lg shadow-lg  bg-white"
+      >
+        <Form form={form} layout="vertical" onFinish={handleFinish}>
+          <div className="grid grid-cols-2 overflow-y-auto p-4 max-h-96 gap-2">
+            <Form.Item
+              name="prenom"
+              label="Prénom"
+              rules={[{ required: false, message: "Veuillez entrer le prénom" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="nom"
+              label="Nom"
+              rules={[{ required: false, message: "Veuillez entrer le nom" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[{ required: false, message: "Veuillez entrer l'email" }]}
+            >
+              <Input type="email" />
+            </Form.Item>
+            <Form.Item
+              name="phone"
+              label="Téléphone"
+              rules={[
+                { required: false, message: "Veuillez entrer le téléphone" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="age"
+              label="Âge"
+              rules={[{ required: false, message: "Veuillez entrer l'âge" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="sex"
+              label="Sexe"
+              rules={[
+                { required: false, message: "Veuillez sélectionner le sexe" },
+              ]}
+            >
+              <Select>
+                <Option value="homme">Homme</Option>
+                <Option value="femme">Femme</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="ville"
+              label="Ville"
+              rules={[{ required: false, message: "Veuillez entrer la ville" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="siret"
+              label="Siret"
+              rules={[{ required: false, message: "Veuillez entrer le siret" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="raisonsociale"
+              label="Raison sociale"
+              rules={[
+                {
+                  required: true,
+                  message: "Veuillez entrer la raison sociale",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="adresse"
+              label="Adresse"
+              rules={[{ required: false, message: "Veuillez entrer l'adresse" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="codepostal"
+              label="Code postal"
+              rules={[
+                { required: false, message: "Veuillez entrer le code postal" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="speciality"
+              label="Spécialité"
+              rules={[
+                {
+                  required: false,
+                  message: "Veuillez sélectionner la spécialité",
+                },
+              ]}
+            >
+          
+              <Select mode="multiple">
+                {specialities.map((speciality) => (
+                  <Option key={speciality._id} value={speciality._id}>
+                    {speciality.nom}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Image">
+              <Upload {...uploadProps}>
+                <Button icon={<UploadOutlined />} loading={uploading}>
+                  Télécharger
+                </Button>
+              </Upload>
+            </Form.Item>
+            {uploadedFileName && (
+              <Form.Item>
+                <div className="flex items-center mt-2">
+                  <Avatar
+                    src={imageUrl}
+                    alt="Uploaded Image"
+                    size={50}
+                    className="mr-2"
+                  />
+                  <span>{uploadedFileName}</span>
+                  <Button
+                    type="link"
+                    icon={<DeleteOutlined />}
+                    onClick={() => {
+                      form.setFieldsValue({ image: "" });
+                      setUploadedFileName("");
+                      setImageUrl("");
+                    }}
+                  />
+                </div>
+              </Form.Item>
+            )}
+          </div>
+          <Form.Item className="mt-2">
+            <Button type="primary" htmlType="submit">
+              {currentCoach ? "Enregistrer les modifications" : "Ajouter Coach"}
+            </Button>
+            <Button onClick={handleCancel} className="ml-2">
+              Annuler
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
       </div>
     </div>
   );

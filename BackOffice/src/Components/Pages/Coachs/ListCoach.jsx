@@ -37,7 +37,7 @@ const getInitials = (prenom, nom) => {
 
 const CoachList = () => {
   const [coaches, setCoaches] = useState([]);
-  const [filteredCoaches, setFilteredCoaches] = useState(coaches); // New state to store filtered data
+  const [filteredCoaches, setFilteredCoaches] = useState(coaches); 
   const [specialities, setSpecialities] = useState([]);
   const [commercials, setCommercials] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -747,12 +747,7 @@ const CoachList = () => {
           </div>
         </div>
         <div>
-          {/* <Button type="primary" onClick={() => setIsAssignModalVisible(true)}>
-            Affecter les Coachs au Commercial
-          </Button>
-          <Button type="primary" onClick={() => setIsUnassignModalVisible(true)} className="ml-2">
-            Désaffecter les Coachs du Commercial
-          </Button> */}
+         
         </div>
       </div>
       <Table
@@ -763,7 +758,7 @@ const CoachList = () => {
           pagination.pageSize
         ).map((coach) => ({ ...coach, key: coach._id }))}
         scroll={{ x: 600 }}
-        rowSelection={rowSelection}
+        rowSelection={selectedCoaches}
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,

@@ -14,7 +14,7 @@ router.get('/', authenticateUser, getCoaches);
 router.get('/:id', authenticateUser,  authorize(['Admin', 'Commercial']), getCoachById);
 
 // Route to update a coach by ID
-router.put('/:id', authenticateUser, authorize(['Admin']), updateCoach);
+router.put('/:id', authenticateUser, authorize(['Admin', 'Commercial']), updateCoach);
 
 // Route to delete a coach by ID
 router.delete('/:id', authenticateUser, authorize(['Admin']), deleteCoach);

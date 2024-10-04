@@ -18,6 +18,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [redirect, setRedirect] = useState(false);
   const {Navigate} = useNavigate();
+  
 
   const handleUsernameChange = (event) => {
     setEmail(event.target.value);
@@ -42,10 +43,11 @@ const SignIn = () => {
           password,
         }
       );
+      setRedirect(true);
       const token = response.data.token;
       localStorage.setItem("token", token);
       const decodedToken = jwtDecode(token);
-      setRedirect(true);
+     
       console.log('Login successful. Token:', token);
       message.success(`Bienvenue dans le tableau de bord ${decodedToken.role}`);
       setRedirect(true);

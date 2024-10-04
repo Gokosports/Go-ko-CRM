@@ -6,7 +6,7 @@ import {
   Breadcrumb,
 } from "antd";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import "tailwindcss/tailwind.css";
 const clientTypes = [
   { label: "Tous", value: "all" },
@@ -21,6 +21,7 @@ const getInitials = (prenom, nom) => {
 };
 
 const ListCoaches = () => {
+  const {id} = useParams()
   const [coaches, setCoaches] = useState([]);
   const [filteredCoaches, setFilteredCoaches] = useState(coaches); // New state to store filtered data
   const [specialities, setSpecialities] = useState([]);
@@ -69,7 +70,7 @@ const ListCoaches = () => {
       const token = localStorage.getItem("token");
 
       if (!id) {
-        console.error("User ID is missing in localStorage");
+       
         return;
       }
 

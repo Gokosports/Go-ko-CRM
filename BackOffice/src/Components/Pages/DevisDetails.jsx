@@ -16,6 +16,7 @@ import "tailwindcss/tailwind.css";
 import logo from "../../assets/images/goko.png";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 // import SignaturePadComponent from "../SignaturePadComponent";
 
 const { Option } = Select;
@@ -31,6 +32,10 @@ const DevisDetails = () => {
   const [ttc, setTTC] = useState(0); // State for TTC (Toutes Taxes Comprises)
   const taxRate = 0.2; // Fixed tax rate (20%)
   const [discountedPrice, setDiscountedPrice] = useState(0);
+
+  const token = localStorage.getItem("token");
+  const decodedToken = token ? jwtDecode(token) : null;
+  const userRole = decodedToken ? decodedToken.role : null;
 
   const handleDurationChange = (e) => {
     const duration = e.target.value;
@@ -227,7 +232,7 @@ const DevisDetails = () => {
     });
 
     doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
+    doc.setFont("arial", "normal");
 
     const CGVUContent = `
   Version en vigueur au 23 septembre 2024  
@@ -298,7 +303,7 @@ Fait à Roubaix, le 23 septembre 2024.
           }
 
           if (index < lines.length - 1) {
-            const words = line.split(" ");
+            const words = line.split("  ");
             const spaceWidth =
               (pageContentWidth -
                 doc.getStringUnitWidth(line) * doc.internal.getFontSize()) /
@@ -377,11 +382,20 @@ Fait à Roubaix, le 23 septembre 2024.
       message.error("Échec de l'envoi du PDF.");
     }
   };
+  const renderCoachLink = () => {
+    if (userRole === "Admin") {
+      return <Link to={`/coach/${id}`}>Informations</Link>;
+    } else if (userRole === "Commercial") {
+      return <Link to={`/coaches/${id}`}>Informations</Link>;
+    } else {
+      return <span>Informations du Coach</span>; // fallback case
+    }
+  };
 
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
       <Tabs defaultActiveKey="3">
-        <TabPane tab={<Link to={`/coaches/${id}`}>Informations</Link>} key="1">
+      <TabPane tab={renderCoachLink()} key="1">
           {/* Add information tab content here */}
         </TabPane>
 
@@ -514,10 +528,12 @@ Fait à Roubaix, le 23 septembre 2024.
               {
                 required: false, // Not mandatory
                 message: "Veuillez entrer le nom commercial",
+               
               },
             ]}
+            
           >
-            <Input className="rounded-md" />
+            <Input className="rounded-md" readOnly/>
           </Form.Item>
 
           <Form.Item

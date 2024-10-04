@@ -149,6 +149,8 @@ const CoachesDetailsPage = () => {
     try {
       const emailData = {
         email: values.email,
+        phone: values.phonec.phone,
+        emailc: values.emailcomm.emailc,
         fullnameCoach: `${values.coach.prenom} ${values.coach.nom}`,
         fullnameCommercial: `${values.commercial.nom} ${values.commercial.prenom}`,
       };
@@ -170,10 +172,17 @@ const CoachesDetailsPage = () => {
   const handleSendContact = () => {
     form.setFieldsValue({
       email: coach.email,
+      phonec: {
+        phone: coach.commercial.phone,
+      },
+      emailcomm: {
+        emailc: coach.commercial.email,
+      },
+
       coach: {
         prenom: coach.prenom,
         nom: coach.nom,
-      }, // Full name of the coach
+      },
       commercial: {
         nom: coach.commercial.nom,
         prenom: coach.commercial.prenom,
@@ -188,6 +197,8 @@ const CoachesDetailsPage = () => {
       console.log("Validated Values:", values);
       const emailData = {
         email: values.email,
+        phone: values.phonec.phone,
+        emailc: values.emailcomm.emailc,
         fullnameCoach: `${values.coach.prenom} ${values.coach.nom}`,
         fullnameCommercial: `${values.commercial.nom} ${values.commercial.prenom}`,
       };
@@ -210,6 +221,12 @@ const CoachesDetailsPage = () => {
     if (coach) {
       assignForm.setFieldsValue({
         email: coach.email,
+        phonec: {
+          phone: coach.commercial.phone,
+        },
+        emailcomm: {
+          emailc: coach.commercial.email,
+        },
         coach: {
           prenom: coach.prenom,
           nom: coach.nom,
@@ -546,6 +563,22 @@ const CoachesDetailsPage = () => {
               <Input />
             </Form.Item>
             <Form.Item
+              name={["emailcomm", "emailc"]}
+              label="Email de commerciale"
+              rules={[{ required: true, message: "Veuillez entrer le email" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name={["phonec", "phone"]}
+              label="Téléphone de Commerciale"
+              rules={[
+                { required: true, message: "Veuillez entrer le téléphone" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
               name={["coach", "prenom"]}
               label="Prénom"
               rules={[
@@ -605,6 +638,22 @@ const CoachesDetailsPage = () => {
               name="email"
               label="Email de coach"
               rules={[{ required: true, message: "Veuillez entrer le email" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name={["emailcomm", "emailc"]}
+              label="Email de commerciale"
+              rules={[{ required: true, message: "Veuillez entrer le email" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name={["phonec", "phone"]}
+              label="Téléphone de Commerciale"
+              rules={[
+                { required: true, message: "Veuillez entrer le téléphone" },
+              ]}
             >
               <Input />
             </Form.Item>

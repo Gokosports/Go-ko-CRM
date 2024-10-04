@@ -95,7 +95,7 @@ const CoachList = () => {
       const token = localStorage.getItem("token");
 
       if (!id) {
-        console.error("User ID is missing in localStorage");
+      
         return;
       }
 

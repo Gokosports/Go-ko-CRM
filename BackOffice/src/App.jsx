@@ -42,6 +42,7 @@ import PlanningCommerciale from "./Components/Pages/PlanningCommerciale";
 
 const MainLayout = ({ children }) => {
   const { isLoggedIn  } = useContext(LoginContext);  
+  
   const { Content } = Layout;
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -279,11 +280,12 @@ function App() {
             </MainLayout>
           }
         />
-        <Route
+       
+       <Route
   path="/CalendarCommerciale"
   element={
     <MainLayout>
-        <PlanningCommerciale />
+      <PlanningCommerciale />
     </MainLayout>
   }
 />

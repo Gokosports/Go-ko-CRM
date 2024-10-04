@@ -216,9 +216,9 @@ const CoachCommentsPage = () => {
   };
   const renderCoachLink = () => {
     if (userRole === "Admin") {
-      return <Link to={`/coach/${id}`}>Informations du Coach</Link>;
+      return <Link to={`/coach/${id}`}>Informations</Link>;
     } else if (userRole === "Commercial") {
-      return <Link to={`/coaches/${id}`}>Informations du Coach</Link>;
+      return <Link to={`/coaches/${id}`}>Informations</Link>;
     } else {
       return <span>Informations du Coach</span>; // fallback case
     }
@@ -262,10 +262,10 @@ const CoachCommentsPage = () => {
             scroll={{ x: "max-content" }}
           />
         </TabPane>
-        <TabPane tab={<Link to={`/CréerContrat/${id}`}>Contrat</Link>} key="1">
+        <TabPane tab={<Link to={`/CréerContrat/${id}`}>Contrat</Link>} key="3">
           {/* Add information tab content here */}
         </TabPane>
-        <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="1">
+        <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="4">
           {/* Add information tab content here */}
         </TabPane>
       </Tabs>

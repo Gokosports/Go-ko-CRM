@@ -817,6 +817,7 @@ const CoachDetailsPage = () => {
   }
 
   const isString = (value) => typeof value === "string";
+  const isNumber = (value) => typeof value === "number";
 
   const data = [
     { key: "1", field: "Nom", value: isString(coach.nom) ? coach.nom : "N/A" },
@@ -855,6 +856,26 @@ const CoachDetailsPage = () => {
       value: coach.commercial
         ? `${coach.commercial.prenom} ${coach.commercial.nom}`
         : "Non affecté",
+    },
+    {
+      key: "11",
+      field: "SIRET",
+      value: isString(coach.siret) ? coach.siret : "N/A",
+    },
+    {
+      key: "12",
+      field: "Raison sociale",
+      value: isString(coach.raisonsociale) ? coach.raisonsociale : "N/A",
+    },
+    {
+      key: "13",
+      field: "Adresse",
+      value: isString(coach.adresse) ? coach.adresse : "N/A",
+    },
+    {
+      key: "14",
+      field: "Code postal",
+      value: isNumber(coach.codepostal) ? coach.codepostal : "N/A",
     },
   ];
 
@@ -1066,6 +1087,7 @@ const CoachDetailsPage = () => {
           Modifier Coach
         </Button>
       </div>
+
       <Modal
         title="Modifier Coach"
         visible={isModalVisible}
@@ -1084,6 +1106,35 @@ const CoachDetailsPage = () => {
             >
               <Input />
             </Form.Item>
+            <Form.Item
+              name="siret"
+              label="SIRET"
+              rules={[{ required: true, message: "Veuillez entrer le siret" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="raisonsociale"
+              label="Raison sociale"
+              rules={[{ required: true, message: "Veuillez entrer le Raison sociale" }]}
+              >
+              <Input />
+              </Form.Item>
+              <Form.Item
+                 name='codepostal'
+                 label='Code postal'
+                 rules={[{ required: true, message: "Veuillez entrer le Code postal'" }]}
+                 >
+                  <Input />
+                 </Form.Item>
+              <Form.Item
+                 name='adresse'
+                 label='Adresse'
+                 rules={[{ required: true, message: "Veuillez entrer lAdresse'" }]}
+                 >
+                  <Input />
+                 </Form.Item>
+              
             <Form.Item
               name="nom"
               label="Nom"
@@ -1113,6 +1164,12 @@ const CoachDetailsPage = () => {
               rules={[{ required: true, message: "Veuillez entrer l'âge" }]}
             >
               <Input />
+            </Form.Item><Form.Item
+              name="phone"
+              label="Télephone"
+              rules={[{ required: true, message: "Veuillez entrer le Télephone" }]}
+            >
+              <Input />
             </Form.Item>
             <Form.Item
               name="sex"
@@ -1136,13 +1193,14 @@ const CoachDetailsPage = () => {
                 },
               ]}
             >
-              <Select mode="multiple">
+              {/* <Select mode="multiple">
                 {specialities.map((speciality) => (
                   <Option key={speciality._id} value={speciality._id}>
                     {speciality.nom}
                   </Option>
                 ))}
-              </Select>
+              </Select> */}
+              <Input />
             </Form.Item>
             <Form.Item
               name="ville"

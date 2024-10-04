@@ -123,6 +123,35 @@ const AddCoach = () => {
             <Input />
           </Form.Item>
           <Form.Item
+                 name='codepostal'
+                 label='Code postal'
+                 rules={[{ required: true, message: "Veuillez entrer le Code postal'" }]}
+                 >
+                  <Input />
+                 </Form.Item>
+          <Form.Item
+              name="raisonsociale"
+              label="Raison sociale"
+              rules={[{ required: true, message: "Veuillez entrer le Raison sociale" }]}
+              >
+              <Input />
+              </Form.Item>
+              <Form.Item
+              name="siret"
+              label="SIRET"
+              rules={[{ required: true, message: "Veuillez entrer le siret" }]}
+            >
+              <Input />
+            </Form.Item>
+              <Form.Item
+                 name='adresse'
+                 label='Adresse'
+                 rules={[{ required: true, message: "Veuillez entrer lAdresse'" }]}
+                 >
+                  <Input />
+                 </Form.Item>
+         
+          <Form.Item
             name="email"
             label="Email"
             rules={[{ required: true, message: "Veuillez entrer l'email" }]}
@@ -174,13 +203,14 @@ const AddCoach = () => {
               },
             ]}
           >
-            <Select mode="multiple">
+            {/* <Select mode="multiple">
               {specialities.map((speciality) => (
                 <Option key={speciality._id} value={speciality._id}>
                   {speciality.nom}
                 </Option>
               ))}
-            </Select>
+            </Select> */}
+            <Input />
           </Form.Item>
           <Form.Item name="image" label="Image">
             <Upload {...uploadProps}>

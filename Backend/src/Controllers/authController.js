@@ -72,7 +72,7 @@ const adMed = async (req, res) => {
       );
       // console.log('Commercial login successful:', token);
       return res.json({ token });
-      console.log("Commercial login successful:", token);
+    
     }
 
     const admin = await Admin.findOne({ email: req.body.email });

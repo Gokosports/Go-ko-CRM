@@ -4,9 +4,10 @@ const path = require("path");
 const { bucket } = require("../../firebase-config");
 const Contract = require("../Models/ContractModel");
 const nodemailer = require("nodemailer");
-const Devis = require("../Models/DevisModel");
+// const Devis = require("../Models/DevisModel");
+// const Calendar = require("../Models/CalendarModel");
 const Planning = require("../Models/PlanningModel");
-const Calendar = require("../Models/CalendarModel");
+const Coach = require('../Models/CoachModel');
 
 
 
@@ -555,6 +556,47 @@ router.post("/send-email-command", async (req, res) => {
     res.status(500).json({ message: "Error sending email" });
   }
 });
+
+router.get('/search', async (req, res) => {
+  try {
+    const { search } = req.query; // Get the search query from the request
+    const upperSearch = search.trim().toUpperCase();
+    const numericSearch = parseInt(search.trim(), 10);
+    console.log("Search Query:", search); // Log the search query
+    console.log("Search Query:", search.trim());
+    // Prepare the query object
+    const query = {
+      $or: [
+        { raisonsociale: { $regex: upperSearch, $options: "i" } },
+        { nom: { $regex: upperSearch, $options: "i" } },
+        { prenom: { $regex: upperSearch, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+        { siret: { $regex: search, $options: "i" } },
+      ],
+    };
+    console.log("Query:", query); // Log the query object
+    if (!isNaN(numericSearch)) {
+      query.$or.push({ codepostal: numericSearch }); // Add the codepostal condition
+    }
+    
+
+    const coaches = await Coach.find(query).populate('commercial');
+    // const coaches = await Coach.find(query); // Perform the query
+    
+
+    if (coaches.length === 0) {
+      console.log("No coaches found for the search query.");
+    } else {
+      console.log("Filtered Coaches:", coaches); // Log filtered coaches
+    }
+
+    res.json(coaches); // Respond with the list of filtered coaches
+  } catch (error) {
+    console.error("Error fetching coaches:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 
 

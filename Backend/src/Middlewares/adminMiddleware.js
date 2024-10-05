@@ -9,12 +9,11 @@ const authenticateUser = (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1]; // Assume 'Bearer <token>'
-    console.log('Token:', token);
+   
 
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
         req.user = decodedToken; // Store the decoded token in req.user
-        console.log('Decoded Token:', decodedToken);
         next();
     } catch (error) {
         if (error.name === 'TokenExpiredError') {

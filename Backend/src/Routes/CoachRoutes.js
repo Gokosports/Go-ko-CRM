@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getCoaches, createCoach, getCoachById, updateCoach, deleteCoach, importCoaches, assignCoachToCommercial ,unassignCoachFromCommercial, updateCoachCategory, getChoachFilterPreference, getCoachesByCommercial} = require('../Controllers/CoachController');
+const { getCoaches, createCoach, getCoachById, updateCoach, deleteCoach, importCoaches, assignCoachToCommercial ,unassignCoachFromCommercial, updateCoachCategory, getChoachFilterPreference, getCoachesByCommercial, getCoachesByFilter} = require('../Controllers/CoachController');
 const { authenticateUser, authorize } = require('../Middlewares/adminMiddleware');
 
 
@@ -8,7 +8,7 @@ const { authenticateUser, authorize } = require('../Middlewares/adminMiddleware'
 router.post('/', authenticateUser, authorize(['Admin']), createCoach);
 
 // Route to get all coaches (with authentication and filtering)
-router.get('/', authenticateUser, getCoaches);
+router.get('/',  getCoaches);
 
 // Route to get a coach by ID
 router.get('/:id', authenticateUser,  authorize(['Admin', 'Commercial']), getCoachById);

@@ -12,10 +12,11 @@ exports.createCoach = async (req, res) => {
     }
 };
 
+  
 // Get all coaches
 exports.getCoaches = async (req, res) => {
     try {
-        console.log('req.user in getCoaches:', req.user); // Log req.user pour vérifier s'il est défini
+ 
 
         let coaches;
         if (req.user && req.user.role === 'Commercial') {

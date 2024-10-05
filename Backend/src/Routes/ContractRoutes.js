@@ -12,4 +12,5 @@ router.get('/', ContractController.getContract);
 router.post('/planning', ContractController.createPlanning);
 
 
+
 module.exports = router;

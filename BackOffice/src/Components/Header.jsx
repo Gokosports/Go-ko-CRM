@@ -34,6 +34,7 @@ const Header = () => {
   const decodedToken = token ? jwtDecode(token) : null;
   const navigate = useNavigate();
 
+
   const Logout = async () => {
     await axios.post("https://go-ko-9qul.onrender.com/admin/logout");
     localStorage.removeItem("token");
@@ -56,10 +57,11 @@ const Header = () => {
   const { collapsed, onClickHandler } = useContext(ToggleContext);
   const [profileVisible, setProfileVisible] = useState(false);
   const [profileImage, setProfileImage] = useState("");
-
+  
   useEffect(() => {
     const fetchProfileImage = async () => {
       try {
+        const token = localStorage.getItem("token");
         const response = await axios.get(
           "https://go-ko-9qul.onrender.com/admin",
           {
@@ -78,6 +80,8 @@ const Header = () => {
     }
   }, [token]);
 
+ 
+
   const showProfile = () => {
     setProfileVisible(true);
   };
@@ -92,12 +96,15 @@ const Header = () => {
     return initials.toUpperCase();
   };
 
+  
+
   return (
     <Header
       className="header flex items-center justify-between"
       style={{ maxHeight: "100%", padding: "0 25px" }}
     >
-      <Button
+    <div className="flex">
+    <Button
         type="text"
         icon={
           collapsed ? (
@@ -118,18 +125,23 @@ const Header = () => {
         }}
       />
       <Link to="/">
-        <div className="logo flex items-end">
+      <img src={logo} alt="logo" className="w-12 h-10 ml-16" />
+  </Link>
+    </div>
+        {/* <div className="logo flex items-end">
+        </div> */}
           {/* <span className="font-bold text-white text-2xl">GOKO</span> */}
-          <img src={logo} alt="logo" className="w-12 h-10 ml-12" />
-        </div>
-      </Link>
-      <div className="flex items-center ml-4 mr-auto">
+      {/* <div className="flex items-center ml-4 mr-auto">
         <Input
+          type="text"
           placeholder="Rechercher..."
           prefix={<SearchOutlined />}
           className="w-48"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyUp={handleKeyPress}
         />
-      </div>
+      </div> */}
       <div className="flex items-center">
         <Avatar src={profileImage} className="bg-blue-950 mr-2" size={40}>
           {!profileImage &&

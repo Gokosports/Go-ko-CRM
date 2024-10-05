@@ -17,27 +17,22 @@ import {
   EditOutlined,
   DeleteOutlined,
   UploadOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "tailwindcss/tailwind.css";
 
 const { Option } = Select;
-const clientTypes = [
-  { label: "Tous", value: "all" },
-  { label: "Client Actif", value: "client_actif" },
-  { label: "Prospect VRG", value: "prospect_vr" },
-  // { label: "Prospect Qlf", value: "prospect_qlf" },
-];
-
-const getInitials = (prenom, nom) => {
-  if (!prenom || !nom) return "";
-  return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase();
-};
+// const clientTypes = [
+//   { label: "Tous", value: "all" },
+//   { label: "Client Actif", value: "client_actif" },
+//   { label: "Prospect VRG", value: "prospect_vr" },
+//   // { label: "Prospect Qlf", value: "prospect_qlf" },
+// ];
 
 const CoachList = () => {
-  const [coaches, setCoaches] = useState([]);
-  const [filteredCoaches, setFilteredCoaches] = useState(coaches); 
+  const navigate = useNavigate();
   const [specialities, setSpecialities] = useState([]);
   const [commercials, setCommercials] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -53,72 +48,15 @@ const CoachList = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [fileList, setFileList] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 8 });
-  const [filterType, setFilterType] = useState("all");
+  const [coaches, setCoaches] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
-
-  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchCoaches();
     fetchSpecialities();
     fetchCommercials();
-  }, []);
-
-  useEffect(() => {
-    const fetchCoaches = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          message.error("No token found, please login first");
-          return;
-        }
-        const response = await axios.get(
-          "https://go-ko-9qul.onrender.com/coaches",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setCoaches(response.data);
-      } catch (error) {
-        console.error("Error fetching coaches:", error);
-        message.error("Failed to fetch coaches");
-      }
-    };
-    fetchCoaches();
-  }, []); // Re-run when filterType changes
-
-  useEffect(() => {
-    const fetchFilterPreference = async () => {
-      const id = localStorage.getItem("userId");
-      const token = localStorage.getItem("token");
-
-      if (!id) {
-      
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          `https://go-ko-9qul.onrender.com/coaches/${id}/filteredCoach`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        const { filterType } = response.data;
-        setFilterType(filterType || "all"); // Set the filter type
-
-        if (clients.length > 0) {
-          filterClients(filterType || "all", clients); // Apply the filter
-        }
-      } catch (error) {
-        console.error("Error fetching filter preference:", error);
-      }
-    };
-
-    fetchFilterPreference();
   }, []);
 
   const fetchCoaches = async () => {
@@ -128,6 +66,7 @@ const CoachList = () => {
         message.error("No token found, please login first");
         return;
       }
+      setLoading(true);
       const response = await axios.get(
         "https://go-ko-9qul.onrender.com/coaches",
         {
@@ -135,78 +74,50 @@ const CoachList = () => {
         }
       );
       setCoaches(response.data);
-      setFilteredClients(response.data); // Set the initial filtered clients
+      setFilteredClients(response.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching coaches:", error);
-      message.error("Failed to fetch coaches");
+      setLoading(false);
     }
-  };
-
-  const handleCategoryClick = async (id, categoryType) => {
-    // Prompt the user for a comment
-    const comment =
-      prompt("Entrez un commentaire pour le coach:") ||
-      "Ajouter un commentaire";
-
-    try {
-      // Get token from localStorage
-      const token = localStorage.getItem("token");
-
-      // Send request to update the coach's type and category comment
-      const response = await axios.put(
-        `https://go-ko-9qul.onrender.com/coaches/${id}/filterCoach`,
-        { filterType: categoryType, categoryComment: comment },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      console.log("Response from API:", response.data);
-
-      // Check if the response is valid and update the UI
-      if (response.data) {
-        // Update the coach's type and comment in the local state
-        const updatedCoaches = coaches.map((coach) =>
-          coach._id === id
-            ? { ...coach, type: categoryType, categoryComment: comment }
-            : coach
-        );
-
-        console.log("Updated coaches list:", updatedCoaches);
-
-        // Update the state for coaches
-        setCoaches(updatedCoaches);
-
-        // Re-filter the clients based on the new type
-        const filtered = filterClients(filterType, updatedCoaches);
-        setFilteredCoaches(filtered);
-
-        // Show a success message or update UI as needed
-        // message.success("Coach type and comment updated successfully");
-      } else {
-        message.error("Unable to update coach type");
-      }
-    } catch (error) {
-      console.error("Error updating coach type:", error);
-      message.error("Error updating coach type");
-    }
-  };
-
-  const filterClients = (type, clients) => {
-    if (type === "all") {
-      return clients;
-    }
-    return clients.filter((client) => client.type === type); // Ensure client.type exists
-  };
-
-  const handleFilterClick = (type) => {
-    setFilterType(type); // Set the current filter type
-    const filtered = filterClients(type, coaches); // Filter coaches based on type
-    setFilteredCoaches(filtered); // Update the filteredCoaches state with the filtered data
   };
 
   useEffect(() => {
-    const filtered = filterClients(filterType, coaches);
-    setFilteredCoaches(filtered);
-  }, [filterType, coaches]);
+    if (searchQuery.trim() === "") {
+      setCoaches(filteredClients); // Reset to original data when search is cleared
+    } else {
+      const delayDebounceFn = setTimeout(() => {
+        handleSearch();
+      }, 1000);
+      return () => clearTimeout(delayDebounceFn);
+    }
+  }, [searchQuery]);
+
+  const handleSearch = async () => {
+    try {
+      // Perform the search with postal code filter
+      setLoading(true);
+      const response = await axios.get(
+        `https://go-ko-9qul.onrender.com/api/search?search=${searchQuery}`
+      );
+      console.log("Search response:", response.data);
+
+      // Update coaches with filtered data
+      setCoaches(response.data);
+      setPagination({ current: 1, pageSize: 8 }); // Reset pagination for filtered results
+    } catch (error) {
+      console.error("Error searching coaches:", error);
+      setCoaches(filteredClients); // Reset to original state if search fails
+    } finally {
+      setLoading(false); // Stop loading after search completes
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   const fetchSpecialities = async () => {
     try {
@@ -437,9 +348,26 @@ const CoachList = () => {
     setPagination(pagination);
   };
 
+  // const rowSelection = {
+  //   onChange: (selectedRowKeys) => {
+  //     setSelectedCoaches(selectedRowKeys);
+  //   },
+  //   selectedRowKeys: selectedCoaches,
+  // };
+
+  const uploadProps = {
+    name: "file",
+    action: "https://api.cloudinary.com/v1_1/doagzivng/image/upload",
+    data: {
+      upload_preset: "kj1jodbh",
+    },
+    fileList,
+    onChange: handleUploadChange,
+  };
+
   const columns = [
     {
-      title: <span style={{ fontSize: '12px' }}>Raison Sociale</span>,
+      title: <span style={{ fontSize: "12px" }}>Raison Sociale</span>,
       dataIndex: "raisonsociale",
       key: "raisonsociale",
       render: (text, record) => (
@@ -494,7 +422,7 @@ const CoachList = () => {
       ),
     },
     {
-      title: <span style={{ fontSize: '12px' }}>Email</span>,
+      title: <span style={{ fontSize: "12px" }}>Email</span>,
       dataIndex: "email",
       key: "email",
       render: (text, record) => (
@@ -507,7 +435,7 @@ const CoachList = () => {
       ),
     },
     {
-      title: <span style={{ fontSize: '12px' }}>Code Postal</span>,
+      title: <span style={{ fontSize: "12px" }}>Code Postal</span>,
       dataIndex: "codepostal",
       key: "codepostal",
       render: (text, record) => (
@@ -520,7 +448,7 @@ const CoachList = () => {
       ),
     },
     {
-      title: <span style={{ fontSize: '12px' }}>SIRET</span>,
+      title: <span style={{ fontSize: "12px" }}>SIRET</span>,
       dataIndex: "siret",
       key: "siret",
       render: (text, record) => (
@@ -533,7 +461,7 @@ const CoachList = () => {
       ),
     },
     {
-      title: <span style={{ fontSize: '12px' }}>Ville</span>,
+      title: <span style={{ fontSize: "12px" }}>Ville</span>,
       dataIndex: "ville",
       key: "ville",
       render: (text, record) => (
@@ -545,9 +473,9 @@ const CoachList = () => {
         </div>
       ),
     },
-  
+
     {
-      title: <span style={{ fontSize: '12px' }}>Adresse</span>,
+      title: <span style={{ fontSize: "12px" }}>Adresse</span>,
       dataIndex: "adresse",
       key: "adresse",
       render: (text, record) => (
@@ -559,7 +487,7 @@ const CoachList = () => {
         </div>
       ),
     },
-    
+
     // {
     //   title: "Type",
     //   dataIndex: "type",
@@ -598,9 +526,9 @@ const CoachList = () => {
     //     </div>
     //   ),
     // },
-   
+
     {
-      title:<span style={{ fontSize: '12px' }}>Âge</span>,
+      title: <span style={{ fontSize: "12px" }}>Âge</span>,
       dataIndex: "age",
       key: "age",
       width: 60,
@@ -614,7 +542,7 @@ const CoachList = () => {
       ),
     },
     {
-      title: <span style={{ fontSize: '12px' }}>Sexe</span>,
+      title: <span style={{ fontSize: "12px" }}>Sexe</span>,
       dataIndex: "sex",
       key: "sex",
       width: 60,
@@ -627,10 +555,9 @@ const CoachList = () => {
         </div>
       ),
     },
-   
-   
+
     {
-      title: <span style={{ fontSize: '12px' }}>Spécialité</span>,
+      title: <span style={{ fontSize: "12px" }}>Spécialité</span>,
       dataIndex: "speciality",
       key: "speciality",
       render: (specialities) => (
@@ -647,7 +574,7 @@ const CoachList = () => {
     },
 
     {
-      title: <span style={{ fontSize: '12px' }}>Commercial</span>,
+      title: <span style={{ fontSize: "12px" }}>Commercial</span>,
       key: "commercial",
       render: (text, record) => (
         <div
@@ -661,7 +588,7 @@ const CoachList = () => {
       ),
     },
     {
-      title: <span style={{ fontSize: '12px' }}>Action</span>,
+      title: <span style={{ fontSize: "12px" }}>Action</span>,
       key: "action",
       render: (text, record) => (
         <Space size="middle">
@@ -669,7 +596,7 @@ const CoachList = () => {
             icon={<EditOutlined />}
             style={{ backgroundColor: "green", color: "white" }}
             onClick={() => showEditModal(record)}
-            size="small" 
+            size="small"
           />
           <Popconfirm
             title="Are you sure you want to delete this coach?"
@@ -681,7 +608,7 @@ const CoachList = () => {
               icon={<DeleteOutlined />}
               style={{ backgroundColor: "red", color: "white" }}
               danger
-              size="small" 
+              size="small"
             />
           </Popconfirm>
         </Space>
@@ -689,38 +616,20 @@ const CoachList = () => {
     },
   ];
 
-  const rowSelection = {
-    onChange: (selectedRowKeys) => {
-      setSelectedCoaches(selectedRowKeys);
-    },
-    selectedRowKeys: selectedCoaches,
-  };
-
-  const uploadProps = {
-    name: "file",
-    action: "https://api.cloudinary.com/v1_1/doagzivng/image/upload",
-    data: {
-      upload_preset: "kj1jodbh",
-    },
-    fileList,
-    onChange: handleUploadChange,
-  };
-
   // Paginate data for the current page
   const paginateData = (data, current, pageSize) => {
     // First, filter and sort the data
     const sortedData = data.sort((a, b) => {
       if (!a.commercial) return -1; // Coaches without commercial come first
-      if (!b.commercial) return 1;  // Coaches without commercial come first
+      if (!b.commercial) return 1; // Coaches without commercial come first
       return 0; // Keep original order
     });
-  
+
     // Then, slice the data for pagination
     const startIndex = (current - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     return sortedData.slice(startIndex, endIndex);
   };
-  
 
   return (
     <div className="p-4">
@@ -732,28 +641,39 @@ const CoachList = () => {
         <Breadcrumb.Item>Liste des Coachs</Breadcrumb.Item>
       </Breadcrumb>
       <h1 className="text-xl font-bold mb-4">Liste des Coachs</h1>
-      <div className="flex justify-between mb-4">
-        <div className="flex flex-col md:flex-row justify-between mb-4">
-          <div className="space-x-2">
-            {clientTypes?.map((type) => (
-              <Button
-                key={type.value}
-                type={filterType === type.value ? "primary" : "default"}
-                onClick={() => handleFilterClick(type.value)}
-              >
-                {type.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-        <div>
-         
-        </div>
+      <div className="flex items-center mr-auto mb-4">
+        <Input
+          type="text"
+          placeholder="Rechercher..."
+          prefix={<SearchOutlined />}
+          className="w-48"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyUp={handleKeyPress}
+        />
       </div>
       <Table
         columns={columns}
+        loading={loading}
         dataSource={paginateData(
-          filteredCoaches,
+          coaches,
+          pagination.current,
+          pagination.pageSize
+        )}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: coaches.length,
+          onChange: (page, pageSize) => {
+            setPagination({ current: page, pageSize });
+          },
+        }}
+        tableLayout="fixed"
+      />
+      {/* <Table
+        columns={columns}
+        dataSource={paginateData(
+          coaches,
           pagination.current,
           pagination.pageSize
         ).map((coach) => ({ ...coach, key: coach._id }))}
@@ -762,7 +682,7 @@ const CoachList = () => {
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: filteredClients.length,
+          total: coaches.length,
           showTotal: (total, range) =>
             `${range[0]}-${range[1]} de ${total} coachs`,
           onChange: (page, pageSize) => {
@@ -771,29 +691,7 @@ const CoachList = () => {
         }}
         onChange={handleTableChange}
          tableLayout="fixed"
-      />
-
-      {/* <Table
-  columns={columns}
-  dataSource={paginateData(coaches, 
-    pagination.current, pagination.pageSize).map((coach) => ({ ...coach, key: coach._id }))}
-  rowKey="_id"
-  scroll={{ x: 600 }}
-  rowSelection={rowSelection}
-  pagination={{
-    current: pagination.current,
-    pageSize: pagination.pageSize,
-    total: coaches.length,
-    showTotal: (total, range) =>
-      `${range[0]}-${range[1]} de ${total} coachs`,
-    onChange: (page, pageSize) => {
-      setPagination({ current: page, pageSize });
-    },
-  }}
-  onChange={handleTableChange}
-  tableLayout="fixed"
-/> */}
-
+      /> */}
       <Modal
         // className="fixed-modal"
         title={currentCoach ? "Modifier Coach" : "Ajouter Coach"}
@@ -809,7 +707,9 @@ const CoachList = () => {
             <Form.Item
               name="prenom"
               label="Prénom"
-              rules={[{ required: false, message: "Veuillez entrer le prénom" }]}
+              rules={[
+                { required: false, message: "Veuillez entrer le prénom" },
+              ]}
             >
               <Input />
             </Form.Item>
@@ -884,7 +784,9 @@ const CoachList = () => {
             <Form.Item
               name="adresse"
               label="Adresse"
-              rules={[{ required: false, message: "Veuillez entrer l'adresse" }]}
+              rules={[
+                { required: false, message: "Veuillez entrer l'adresse" },
+              ]}
             >
               <Input />
             </Form.Item>
@@ -907,7 +809,6 @@ const CoachList = () => {
                 },
               ]}
             >
-          
               <Select mode="multiple">
                 {specialities.map((speciality) => (
                   <Option key={speciality._id} value={speciality._id}>

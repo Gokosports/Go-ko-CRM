@@ -348,12 +348,12 @@ const CoachList = () => {
     setPagination(pagination);
   };
 
-  // const rowSelection = {
-  //   onChange: (selectedRowKeys) => {
-  //     setSelectedCoaches(selectedRowKeys);
-  //   },
-  //   selectedRowKeys: selectedCoaches,
-  // };
+  const rowSelection = {
+    onChange: (selectedRowKeys) => {
+      setSelectedCoaches(selectedRowKeys);
+    },
+    selectedRowKeys: selectedCoaches,
+  };
 
   const uploadProps = {
     name: "file",
@@ -655,6 +655,7 @@ const CoachList = () => {
       <Table
         columns={columns}
         loading={loading}
+        rowSelection={rowSelection}
         dataSource={paginateData(
           coaches,
           pagination.current,

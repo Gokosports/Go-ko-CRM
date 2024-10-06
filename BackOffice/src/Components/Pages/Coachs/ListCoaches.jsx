@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Table,
   Button,
@@ -20,6 +20,7 @@ import {
 import axios from "axios";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import "tailwindcss/tailwind.css";
+import { LoginContext } from "../../store/LoginContext";
 
 // const clientTypes = [
 //   { label: "Tous", value: "all" },
@@ -53,37 +54,57 @@ const ListCoaches = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const user = useContext(LoginContext);
+  console.log("user", user)
 
-  useEffect(() => {
-    fetchCoaches();
-    fetchSpecialities();
-    fetchCommercials();
-  }, []);
 
   useEffect(() => {
     const fetchCoaches = async () => {
+    
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          message.error("No token found, please login first");
-          return;
-        }
-        const response = await axios.get(
-          "https://go-ko-9qul.onrender.com/coaches",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setCoaches(response.data);
+        setLoading(true)
+        const response = await axios.get("https://go-ko-9qul.onrender.com/coaches");
+        const allCoaches = response.data;
+
+        // Log the fetched coaches for debugging
+        console.log("Fetched Coaches:", allCoaches);
+
+        // Extract commercial name from the user context
+        const commercialName = user?.decodedToken?.name; // e.g., "Danguir1 Laila"
+        const nameParts = commercialName?.trim().split(" ") || [];
+        const firstName = nameParts.slice(1).join(" "); // Get all parts after the first one as first name
+        const lastName = nameParts[0]; // Get the first part as last name
+
+        // Filter coaches based on commercial name
+        const filteredCoaches = allCoaches.filter(coach => {
+          // Ensure the commercial object exists before accessing properties
+          const coachCommercial = coach.commercial || {};
+          const coachCommercialFirstName = coachCommercial.prenom; // Coach's first name
+          const coachCommercialLastName = coachCommercial.nom; // Coach's last name
+          
+          return (
+            coachCommercialFirstName === firstName && 
+            coachCommercialLastName === lastName
+          );
+        });
+
+        setCoaches(filteredCoaches);
       } catch (error) {
         console.error("Error fetching coaches:", error);
         message.error("Failed to fetch coaches");
+      } finally {
+        setLoading(false); // Set loading to false after fetching
       }
     };
+
     fetchCoaches();
-  }, []); // Re-run when filterType changes
+  }, [user]);
+
+
+  useEffect(() => {
+    fetchSpecialities();
+    fetchCommercials();
+  }, []);
 
   useEffect(() => {
     const fetchFilterPreference = async () => {
@@ -116,28 +137,6 @@ const ListCoaches = () => {
     fetchFilterPreference();
   }, []);
 
-  const fetchCoaches = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        message.error("No token found, please login first");
-        return;
-      }
-      setLoading(true);
-      const response = await axios.get(
-        "https://go-ko-9qul.onrender.com/coaches",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setCoaches(response.data);
-      setFilteredClients(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching coaches:", error);
-      setLoading(false);
-    }
-  };
   useEffect(() => {
     if (searchQuery.trim() === "") {
       setCoaches(filteredClients); // Reset to original data when search is cleared
@@ -657,7 +656,7 @@ const ListCoaches = () => {
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
-            total: filteredClients.length,
+            total: filteredCoaches.length,
             showTotal: (total, range) =>
               `${range[0]}-${range[1]} de ${total} coachs`,
             onChange: (page, pageSize) => {

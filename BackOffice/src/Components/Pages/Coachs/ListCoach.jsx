@@ -24,12 +24,12 @@ import { useNavigate, Link } from "react-router-dom";
 import "tailwindcss/tailwind.css";
 
 const { Option } = Select;
-// const clientTypes = [
-//   { label: "Tous", value: "all" },
-//   { label: "Client Actif", value: "client_actif" },
-//   { label: "Prospect VRG", value: "prospect_vr" },
-//   // { label: "Prospect Qlf", value: "prospect_qlf" },
-// ];
+const clientTypes = [
+  { label: "Tous", value: "all" },
+  { label: "Client Actif", value: "client_actif" },
+  { label: "Prospect VRG", value: "prospect_vr" },
+  // { label: "Prospect Qlf", value: "prospect_qlf" },
+];
 
 const CoachList = () => {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const CoachList = () => {
   const [filteredClients, setFilteredClients] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [filterType, setFilterType] = useState("all");
   useEffect(() => {
     fetchCoaches();
     fetchSpecialities();
@@ -347,13 +347,15 @@ const CoachList = () => {
   const handleTableChange = (pagination) => {
     setPagination(pagination);
   };
-
   const rowSelection = {
-    onChange: (selectedRowKeys) => {
-      setSelectedCoaches(selectedRowKeys);
-    },
     selectedRowKeys: selectedCoaches,
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log('Selected Row Keys:', selectedRowKeys);  // Log the selected row keys
+      console.log('Selected Rows:', selectedRows);  // Log the actual rows being selected
+      setSelectedCoaches(selectedRowKeys);  // Update the state with selected keys
+    },
   };
+  
 
   const uploadProps = {
     name: "file",
@@ -641,6 +643,21 @@ const CoachList = () => {
         <Breadcrumb.Item>Liste des Coachs</Breadcrumb.Item>
       </Breadcrumb>
       <h1 className="text-xl font-bold mb-4">Liste des Coachs</h1>
+  <div className="flex justify-between mb-4">
+        <div className="flex flex-col md:flex-row justify-between mb-4">
+          <div className="space-x-2">
+            {clientTypes?.map((type) => (
+              <Button
+                key={type.value}
+                type={filterType === type.value ? "primary" : "default"}
+                onClick={() => handleFilterClick(type.value)}
+              >
+                {type.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
       <div className="flex items-center mr-auto mb-4">
         <Input
           type="text"
@@ -652,15 +669,22 @@ const CoachList = () => {
           onKeyUp={handleKeyPress}
         />
       </div>
+      <div className="w-full p-2">
       <Table
+        onChange={handleTableChange}
         columns={columns}
         loading={loading}
-        rowSelection={rowSelection}
         dataSource={paginateData(
           coaches,
           pagination.current,
           pagination.pageSize
-        )}
+        ).map((coach) => ({ ...coach, key: coach._id }))}
+        // dataSource={paginateData(
+        //   coaches,
+        //   pagination.current,
+        //   pagination.pageSize,
+        // )}
+        rowSelection={rowSelection}
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
@@ -668,8 +692,10 @@ const CoachList = () => {
           onChange: (page, pageSize) => {
             setPagination({ current: page, pageSize });
           },
+          
         }}
         tableLayout="fixed"
+        
       />
       {/* <Table
         columns={columns}
@@ -916,6 +942,7 @@ const CoachList = () => {
           </Form.Item>
         </Form>
       </Modal>
+      </div>
     </div>
   );
 };

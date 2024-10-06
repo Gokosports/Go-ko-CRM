@@ -105,7 +105,9 @@ const adMed = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.clearCookie("token").send("Logged out");
+  // res.clearCookie("token").send("Logged out");
+  res.send("Logged out");
+
 };
 
 module.exports = { adMed, loginClient, logout };

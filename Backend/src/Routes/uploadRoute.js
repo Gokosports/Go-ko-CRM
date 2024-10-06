@@ -76,6 +76,13 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
     return res.status(400).send("Recipient contractDuration is required.");
   }
 
+  if (!req.body.raisonsociale) {
+    return res.status(400).send("raisonsociale is required");
+  }
+  if (!req.body.phone) {
+    return res.status(400).send('phone is required')
+  }
+
   try {
     const fileUrl = await uploadFile(req.file); // Upload file to Firebase
 
@@ -86,7 +93,9 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
       email: req.body.email,
       clientName: req.body.clientName,
       commercialName: req.body.commercialName,
-      contractDuration: req.body.contractDuration
+      contractDuration: req.body.contractDuration,
+      raisonsociale: req.body.raisonsociale,
+      phone: req.body.phone
     });
     const savedContract = await newContract.save();
     console.log("Contract saved to database:", savedContract);
@@ -96,7 +105,7 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
       from: process.env.EMAIL_USER,
       to: req.body.email,
       subject: `Contrat pour ${req.body.clientName}`,
-      text: `Cher(e) ${req.body.clientName},\n\nVeuillez trouver votre contrat ici : ${fileUrl}\n\nCordialement,\nGOKO`,
+      text: `Cher(e) ${req.body.clientName},\n\nNous avons le plaisir de vous informer que votre contrat est maintenant disponible. Vous pouvez le consulter et le télécharger via le lien suivant : ${fileUrl}\n\nSi vous avez des questions ou si vous avez besoin d'une assistance supplémentaire, n'hésitez pas à nous contacter.\n\nNous vous remercions de votre confiance et restons à votre disposition pour toute information complémentaire.\n\nCordialement,\nL'équipe GOKO`,
     };
     
 
@@ -481,6 +490,7 @@ router.post("/send-email", async (req, res) => {
       
       <p>Cordialement,<br />
       
+      <br style="margin-bottom: 20px;" />
 
       ${fullnameCommercial}<br />
       
@@ -505,7 +515,8 @@ router.post("/send-email", async (req, res) => {
 router.post("/send-email-command", async (req, res) => {
   const { email, fullnameCoach, fullnameCommercial, phone, emailc} = req.body;
 
-  
+  console.log('emailc', emailc)
+  console.log('phone', phone)
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
@@ -537,12 +548,13 @@ router.post("/send-email-command", async (req, res) => {
 
       <p>Cordialement,<br />
 
+<br style="margin-bottom: 20px;" />
 
       ${fullnameCommercial}<br />
 
        ${emailc} - ${phone}<br />
 
-      GOKO Team</p>
+      GOKO Team</p>.
     `,
 };
 

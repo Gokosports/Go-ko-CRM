@@ -7,6 +7,8 @@ const contractSchema = new mongoose.Schema({
   email: { type: String, required: true },
   commercialName: { type: String, required: true },
   contractDuration: { type: String, required: true },
+  raisonsociale: {type: String, required: true},
+  phone: {type: String, required: true}
 }, { timestamps: true });
 
 const Contract = mongoose.model('Contract', contractSchema);

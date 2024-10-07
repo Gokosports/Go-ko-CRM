@@ -232,15 +232,15 @@ const Planning = () => {
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
           >
             <option value="">Select Situation</option>
-            <option value="Scheduled">Appel de vente</option>
-            <option value="Scheduled">Hors planning</option>
-            <option value="Completed">Négociation devis</option>
-            <option value="Canceled">Conclusion vente</option>
-            <option value="Canceled">Vente</option>
-            <option value="Canceled">Appel de fidélisation</option>
-            <option value="Canceled">Ne répond pas</option>
-            <option value="Canceled">Faux numéro // Hors planning</option>
-            <option value="Canceled">Ne pas déranger</option>
+            <option value="Appel de vente">Appel de vente</option>
+            <option value="Hors planning">Hors planning</option>
+            <option value="Négociation devis">Négociation devis</option>
+            <option value="Conclusion vente">Conclusion vente</option>
+            <option value="Vente">Vente</option>
+            <option value="Appel de fidélisation">Appel de fidélisation</option>
+            <option value="Ne répond pas">Ne répond pas</option>
+            <option value="Faux numéro // Hors planning">Faux numéro // Hors planning</option>
+            <option value="Ne pas déranger">Ne pas déranger</option>
           </select>
         </div>
 
@@ -356,16 +356,35 @@ const Planning = () => {
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
           >
             <option value="">Select Situation</option>
-            <option value="Scheduled">Appel de vente</option>
-            <option value="Scheduled">Hors planning</option>
-            <option value="Completed">Négociation devis</option>
-            <option value="Canceled">Conclusion vente</option>
-            <option value="Canceled">Vente</option>
-            <option value="Canceled">Appel de fidélisation</option>
-            <option value="Canceled">Ne répond pas</option>
-            <option value="Canceled">Faux numéro // Hors planning</option>
-            <option value="Canceled">Ne pas déranger</option>
+            <option value="Appel de vente">Appel de vente</option>
+            <option value="Hors planning">Hors planning</option>
+            <option value="Négociation devis">Négociation devis</option>
+            <option value="Conclusion vente">Conclusion vente</option>
+            <option value="Vente">Vente</option>
+            <option value="Appel de fidélisation">Appel de fidélisation</option>
+            <option value="Ne répond pas">Ne répond pas</option>
+            <option value="Faux numéro // Hors planning">Faux numéro // Hors planning</option>
+            <option value="Ne pas dérange">Ne pas déranger</option>
           </select>
+          <div className="w-full">
+          <label
+            htmlFor="comment"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Commentaire:
+          </label>
+          <textarea
+            id="comment"
+            name="comment"
+            value={formData.comment}
+            onChange={(e) =>
+              setFormData({ ...formData, comment: e.target.value })
+            }
+            placeholder="Ajoutez vos commentaires ici..."
+            required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+          />
+        </div>
         </div>
       </Modal>
     </div>

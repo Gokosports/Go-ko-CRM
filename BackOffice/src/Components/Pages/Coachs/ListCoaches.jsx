@@ -39,7 +39,7 @@ const clientTypes = [
 const ListCoaches = () => {
   const { id } = useParams();
   const [coaches, setCoaches] = useState([]);
-  const [filteredCoaches, setFilteredCoaches] = useState(coaches); // New state to store filtered data
+  const [filteredCoaches, setFilteredCoaches] = useState(coaches);
   const [specialities, setSpecialities] = useState([]);
   const [commercials, setCommercials] = useState([]);
   const [selectedCoaches, setSelectedCoaches] = useState([]);
@@ -269,25 +269,61 @@ const ListCoaches = () => {
     }
   }, [searchQuery, filterType, activeCoaches, prospectCoaches]);
 
+  // const handleSearch = async () => {
+  //   try {
+  //     // Perform the search with postal code filter
+  //     setLoading(true);
+  //     const response = await axios.get(
+  //       `https://go-ko-9qul.onrender.com/api/search?search=${searchQuery}`
+  //     );
+  //     console.log("Search response:", response.data);
+
+  //     // Update coaches with filtered data
+  //     setCoaches(response.data);
+  //     setPagination({ current: 1, pageSize: 8 }); // Reset pagination for filtered results
+  //   } catch (error) {
+  //     console.error("Error searching coaches:", error);
+  //     setCoaches(filteredClients);
+  //   } finally {
+  //     setLoading(false); // Stop loading after search completes
+  //   }
+  // };
   const handleSearch = async () => {
     try {
-      // Perform the search with postal code filter
       setLoading(true);
-      const response = await axios.get(
-        `https://go-ko-9qul.onrender.com/api/search?search=${searchQuery}`
-      );
-      console.log("Search response:", response.data);
-
-      // Update coaches with filtered data
-      setCoaches(response.data);
+  
+      // Only search within the filtered coaches based on the commercial name
+      const commercialName = user?.decodedToken?.name;
+      const nameParts = commercialName?.trim().split(" ") || [];
+      const firstName = nameParts.slice(1).join(" ");
+      const lastName = nameParts[0];
+  
+      const filteredCoaches = coaches.filter((coach) => {
+        const { prenom: coachFirstName, nom: coachLastName } = coach.commercial || {};
+        return coachFirstName === firstName && coachLastName === lastName;
+      });
+  
+      // Perform search on the filtered coaches
+      const searchResults = filteredCoaches.filter((coach) => {
+        // Adjust your search logic based on which fields you want to search
+        const fullName = `${coach.commercial.prenom} ${coach.commercial.nom}`.toLowerCase();
+        const searchLowerCase = searchQuery.toLowerCase();
+        return fullName.includes(searchLowerCase) || 
+               coach.phone.includes(searchLowerCase) || 
+               (coach.raisonsociale && coach.raisonsociale.toLowerCase().includes(searchLowerCase));
+      });
+  
+      console.log("Search results:", searchResults);
+      setCoaches(searchResults); // Update the displayed coaches with the search results
       setPagination({ current: 1, pageSize: 8 }); // Reset pagination for filtered results
     } catch (error) {
       console.error("Error searching coaches:", error);
-      setCoaches(filteredClients);
+      setCoaches([]); // Reset coaches on error
     } finally {
-      setLoading(false); // Stop loading after search completes
+      setLoading(false);
     }
   };
+  
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {

@@ -211,6 +211,7 @@ const CoachesDetailsPage = () => {
       message.success("Email envoyé avec succès !");
       assignForm.resetFields();
       setIsModalVisible(false);
+      console.log("data", emailData);
     } catch (error) {
       message.error("Erreur lors de l'envoi de l'email.");
       console.error(error);
@@ -564,7 +565,7 @@ const CoachesDetailsPage = () => {
             </Form.Item>
             <Form.Item
               name={["emailcomm", "emailc"]}
-              label="Email de commerciale"
+              label="Email de commercial"
               rules={[{ required: true, message: "Veuillez entrer le email" }]}
             >
               <Input />
@@ -643,14 +644,14 @@ const CoachesDetailsPage = () => {
             </Form.Item>
             <Form.Item
               name={["emailcomm", "emailc"]}
-              label="Email de commerciale"
+              label="Email de commercial"
               rules={[{ required: true, message: "Veuillez entrer le email" }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name={["phonec", "phone"]}
-              label="Téléphone de Commerciale"
+              label="Téléphone de Commercial"
               rules={[
                 { required: true, message: "Veuillez entrer le téléphone" },
               ]}

@@ -53,6 +53,8 @@ const MainLayout = ({ children }) => {
   useEffect(() => {
     if (!isLoggedIn()) {
       navigate("/login");
+    } else {
+      navigate("/");
     }
   }, [isLoggedIn]);
 

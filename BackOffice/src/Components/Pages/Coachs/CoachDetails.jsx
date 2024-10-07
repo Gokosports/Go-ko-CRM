@@ -1254,25 +1254,15 @@ const CoachDetailsPage = () => {
         className="fixed-modal"
       >
         <Form form={assignForm} layout="vertical" onFinish={handleAssign}>
-          <Form.Item
-            name="commercial"
-            label="Commercial"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez sélectionner un commercial",
-              },
-            ]}
-          >
-            <Input />
-            {/* <Select placeholder="Sélectionnez un commercial">
-              {commercials.map((commercial) => (
-                <Option key={commercial._id} value={commercial._id}>
-                  {commercial.prenom} {commercial.nom}
-                </Option>
-              ))}
-            </Select> */}
-          </Form.Item>
+        <Form.Item name="commercial" label="Commercial" rules={[{ required: true, message: 'Veuillez sélectionner un commercial' }]}>
+                        <Select placeholder="Sélectionnez un commercial">
+                            {commercials.map(commercial => (
+                                <Option key={commercial._id} value={commercial._id}>
+                                    {commercial.prenom} {commercial.nom}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
               Affecter

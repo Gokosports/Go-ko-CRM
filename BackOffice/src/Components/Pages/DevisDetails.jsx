@@ -337,7 +337,9 @@ Fait à Roubaix, le 23 septembre 2024.
       recipientNom,
       recipientPrenom,
       contract.commercialName,
-      contract.contractDuration
+      contract.contractDuration,
+      contract.raisonsociale,
+      contract.phone
     );
   };
 
@@ -348,7 +350,9 @@ Fait à Roubaix, le 23 septembre 2024.
     recipientNom,
     recipientPrenom,
     commercialName,
-    contractDuration
+    contractDuration,
+    raisonsociale,
+    phone
   ) => {
     const clientName = `${recipientPrenom} ${recipientNom}`;
     const formData = new FormData();
@@ -361,7 +365,8 @@ Fait à Roubaix, le 23 septembre 2024.
     formData.append("clientName", clientName);
     formData.append("commercialName", commercialName);
     formData.append("contractDuration", contractDuration);
-
+    formData.append("raisonsociale", raisonsociale),
+      formData.append("phone", phone);
     try {
       const response = await axios.post(
         "https://go-ko-9qul.onrender.com/api/upload",
@@ -395,7 +400,7 @@ Fait à Roubaix, le 23 septembre 2024.
   return (
     <div className="p-8 bg-white shadow rounded-lg max-w-4xl mx-auto mt-8">
       <Tabs defaultActiveKey="3">
-      <TabPane tab={renderCoachLink()} key="1">
+        <TabPane tab={renderCoachLink()} key="1">
           {/* Add information tab content here */}
         </TabPane>
 
@@ -528,12 +533,10 @@ Fait à Roubaix, le 23 septembre 2024.
               {
                 required: false, // Not mandatory
                 message: "Veuillez entrer le nom commercial",
-               
               },
             ]}
-            
           >
-            <Input className="rounded-md" readOnly/>
+            <Input className="rounded-md" readOnly />
           </Form.Item>
 
           <Form.Item

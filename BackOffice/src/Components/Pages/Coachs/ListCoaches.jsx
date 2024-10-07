@@ -10,6 +10,7 @@ import {
   Input,
   Select,
   Upload,
+  Avatar,
 } from "antd";
 import {
   EditOutlined,
@@ -22,12 +23,13 @@ import { useNavigate, Link, useParams } from "react-router-dom";
 import "tailwindcss/tailwind.css";
 import { LoginContext } from "../../store/LoginContext";
 
-// const clientTypes = [
-//   { label: "Tous", value: "all" },
-//   { label: "Client Actif", value: "client_actif" },
-//   { label: "Prospect VRG", value: "prospect_vr" },
-//   // { label: "Prospect Qlf", value: "prospect_qlf" },
-// ];
+
+const clientTypes = [
+  { label: "Tous", value: "all" },
+  { label: "Client Actif", value: "client_actif" },
+  { label: "Prospect VRG", value: "prospect_vr" },
+  // { label: "Prospect Qlf", value: "prospect_qlf" },
+];
 
 // const getInitials = (prenom, nom) => {
 //   if (!prenom || !nom) return "";
@@ -55,55 +57,135 @@ const ListCoaches = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const user = useContext(LoginContext);
-  console.log("user", user)
+  console.log("user", user);
+  const [contracts, setContracts] = useState([]);
+  const [filteredContracts, setFilteredContracts] = useState([]);
+  const [activeCoaches, setActiveCoaches] = useState([]);
+  const [prospectCoaches, setProspectCoaches] = useState([]);
 
+  const fetchContracts = async () => {
+    try {
+      const response = await axios.get(
+        "https://go-ko-9qul.onrender.com/api/contracts"
+      );
+      console.log("All Contracts:", response.data);
+      setContracts(response.data);
+      setFilteredContracts(response.data);
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+    }
+  };
 
-  useEffect(() => {
-    const fetchCoaches = async () => {
-    
-      try {
-        setLoading(true)
-        const response = await axios.get("https://go-ko-9qul.onrender.com/coaches");
-        const allCoaches = response.data;
+  const fetchCoaches = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        "https://go-ko-9qul.onrender.com/coaches"
+      );
+      const allCoaches = response.data;
 
-        // Log the fetched coaches for debugging
-        console.log("Fetched Coaches:", allCoaches);
+      // Log the fetched coaches for debugging
+      console.log("Fetched Coaches:", allCoaches);
 
-        // Extract commercial name from the user context
-        const commercialName = user?.decodedToken?.name; // e.g., "Danguir1 Laila"
-        const nameParts = commercialName?.trim().split(" ") || [];
-        const firstName = nameParts.slice(1).join(" "); // Get all parts after the first one as first name
-        const lastName = nameParts[0]; // Get the first part as last name
+      // Extract commercial name from the user context
+      const commercialName = user?.decodedToken?.name; // e.g., "Danguir1 Laila"
+      const nameParts = commercialName?.trim().split(" ") || [];
+      const firstName = nameParts.slice(1).join(" "); // Get all parts after the first one as first name
+      const lastName = nameParts[0]; // Get the first part as last name
 
-        // Filter coaches based on commercial name
-        const filteredCoaches = allCoaches.filter(coach => {
-          // Ensure the commercial object exists before accessing properties
-          const coachCommercial = coach.commercial || {};
-          const coachCommercialFirstName = coachCommercial.prenom; // Coach's first name
-          const coachCommercialLastName = coachCommercial.nom; // Coach's last name
-          
-          return (
-            coachCommercialFirstName === firstName && 
-            coachCommercialLastName === lastName
+      // Filter coaches based on commercial name
+      const filteredCoaches = allCoaches.filter((coach) => {
+        // Ensure the commercial object exists before accessing properties
+        const coachCommercial = coach.commercial || {};
+        const coachCommercialFirstName = coachCommercial.prenom; // Coach's first name
+        const coachCommercialLastName = coachCommercial.nom; // Coach's last name
+
+        return (
+          coachCommercialFirstName === firstName &&
+          coachCommercialLastName === lastName
+        );
+      });
+
+      setCoaches(filteredCoaches);
+    } catch (error) {
+      console.error("Error fetching coaches:", error);
+      message.error("Failed to fetch coaches");
+    } finally {
+      setLoading(false); // Set loading to false after fetching
+    }
+  };
+  const handleFilterClick = (type) => {
+    setFilterType(type);
+
+    console.log("Current Coaches:", coaches);
+    console.log("Current Contracts:", contracts);
+
+    let filtered = [];
+
+    if (type === "client_actif") {
+      // Get coaches with contracts
+      filtered = coaches.filter((coach) => {
+        const hasContract = contracts.some((contract) => {
+          // Ensure phone number and raisonsociale are checked correctly
+          const hasPhoneMatch = contract.phone === coach.phone;
+          const hasRaisonSocialMatch =
+            contract.raisonsociale &&
+            coach.raisonsociale &&
+            contract.raisonsociale.toLowerCase() ===
+              coach.raisonsociale.toLowerCase();
+
+          console.log(
+            `Checking coach ${coach.nom}: has contract? ${
+              hasPhoneMatch || hasRaisonSocialMatch
+            }`
           );
+          return hasPhoneMatch || hasRaisonSocialMatch;
         });
+        return hasContract;
+      });
 
-        setCoaches(filteredCoaches);
-      } catch (error) {
-        console.error("Error fetching coaches:", error);
-        message.error("Failed to fetch coaches");
-      } finally {
-        setLoading(false); // Set loading to false after fetching
-      }
-    };
+      console.log("Filtered Active Coaches:", filtered);
+      setActiveCoaches(filtered);
+      setProspectCoaches([]);
+    } else if (type === "prospect_vr") {
+      // Get coaches without contracts
+      filtered = coaches.filter((coach) => {
+        const hasNoContract = !contracts.some((contract) => {
+          const hasPhoneMatch = contract.phone === coach.phone;
+          const hasRaisonSocialMatch =
+            contract.raisonsociale &&
+            coach.raisonsociale &&
+            contract.raisonsociale.toLowerCase() ===
+              coach.raisonsociale.toLowerCase();
 
-    fetchCoaches();
-  }, [user]);
+          console.log(
+            `Checking coach ${coach.nom}: has no contract? ${
+              !hasPhoneMatch && !hasRaisonSocialMatch
+            }`
+          );
+          return hasPhoneMatch || hasRaisonSocialMatch;
+        });
+        return hasNoContract;
+      });
 
+      console.log("Filtered Prospect Coaches:", filtered);
+      setProspectCoaches(filtered);
+      setActiveCoaches([]);
+    } else {
+      // Reset states for "Tous"
+      setActiveCoaches([]);
+      setProspectCoaches([]);
+      filtered = coaches; // Show all coaches
+    }
+
+    setFilteredCoaches(filtered);
+  };
 
   useEffect(() => {
+    fetchCoaches(); // Fetch coaches when user context is available
     fetchSpecialities();
     fetchCommercials();
+    fetchContracts();
   }, []);
 
   useEffect(() => {
@@ -139,14 +221,53 @@ const ListCoaches = () => {
 
   useEffect(() => {
     if (searchQuery.trim() === "") {
-      setCoaches(filteredClients); // Reset to original data when search is cleared
+      // setCoaches(filteredClients);
+      const fetchCoaches = async () => {
+        try {
+          setLoading(true);
+          const response = await axios.get(
+            "https://go-ko-9qul.onrender.com/coaches"
+          );
+          const allCoaches = response.data;
+
+          // Log the fetched coaches for debugging
+          console.log("Fetched Coaches:", allCoaches);
+
+          // Extract commercial name from the user context
+          const commercialName = user?.decodedToken?.name; // e.g., "Danguir1 Laila"
+          const nameParts = commercialName?.trim().split(" ") || [];
+          const firstName = nameParts.slice(1).join(" "); // Get all parts after the first one as first name
+          const lastName = nameParts[0]; // Get the first part as last name
+
+          // Filter coaches based on commercial name
+          const filteredCoaches = allCoaches.filter((coach) => {
+            // Ensure the commercial object exists before accessing properties
+            const coachCommercial = coach.commercial || {};
+            const coachCommercialFirstName = coachCommercial.prenom; // Coach's first name
+            const coachCommercialLastName = coachCommercial.nom; // Coach's last name
+
+            return (
+              coachCommercialFirstName === firstName &&
+              coachCommercialLastName === lastName
+            );
+          });
+
+          setCoaches(filteredCoaches);
+        } catch (error) {
+          console.error("Error fetching coaches:", error);
+          message.error("Failed to fetch coaches");
+        } finally {
+          setLoading(false); // Set loading to false after fetching
+        }
+      };
+      fetchCoaches();
     } else {
       const delayDebounceFn = setTimeout(() => {
         handleSearch();
       }, 1000);
       return () => clearTimeout(delayDebounceFn);
     }
-  }, [searchQuery]);
+  }, [searchQuery, filterType, activeCoaches, prospectCoaches]);
 
   const handleSearch = async () => {
     try {
@@ -162,7 +283,7 @@ const ListCoaches = () => {
       setPagination({ current: 1, pageSize: 8 }); // Reset pagination for filtered results
     } catch (error) {
       console.error("Error searching coaches:", error);
-      setCoaches(filteredClients); // Reset to original state if search fails
+      setCoaches(filteredClients);
     } finally {
       setLoading(false); // Stop loading after search completes
     }
@@ -171,53 +292,6 @@ const ListCoaches = () => {
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       handleSearch();
-    }
-  };
-  const handleCategoryClick = async (id, categoryType) => {
-    // Prompt the user for a comment
-    const comment =
-      prompt("Entrez un commentaire pour le coach:") ||
-      "Ajouter un commentaire";
-
-    try {
-      // Get token from localStorage
-      const token = localStorage.getItem("token");
-
-      // Send request to update the coach's type and category comment
-      const response = await axios.put(
-        `https://go-ko-9qul.onrender.com/coaches/${id}/filterCoach`,
-        { filterType: categoryType, categoryComment: comment },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      console.log("Response from API:", response.data);
-
-      // Check if the response is valid and update the UI
-      if (response.data) {
-        // Update the coach's type and comment in the local state
-        const updatedCoaches = coaches.map((coach) =>
-          coach._id === id
-            ? { ...coach, type: categoryType, categoryComment: comment }
-            : coach
-        );
-
-        console.log("Updated coaches list:", updatedCoaches);
-
-        // Update the state for coaches
-        setCoaches(updatedCoaches);
-
-        // Re-filter the clients based on the new type
-        const filtered = filterClients(filterType, updatedCoaches);
-        setFilteredCoaches(filtered);
-
-        // Show a success message or update UI as needed
-        message.success("Coach type and comment updated successfully");
-      } else {
-        message.error("Unable to update coach type");
-      }
-    } catch (error) {
-      console.error("Error updating coach type:", error);
-      message.error("Error updating coach type");
     }
   };
 
@@ -254,16 +328,10 @@ const ListCoaches = () => {
     setFileList([]);
   };
 
-  const handleFilterClick = (type) => {
-    setFilterType(type); // Set the current filter type
-    const filtered = filterClients(type, coaches); // Filter coaches based on type
-    setFilteredCoaches(filtered); // Update the filteredCoaches state with the filtered data
-  };
-
-  useEffect(() => {
-    const filtered = filterClients(filterType, coaches);
-    setFilteredCoaches(filtered);
-  }, [filterType, coaches]);
+  // useEffect(() => {
+  //   const filtered = filterClients(filterType, coaches);
+  //   setFilteredCoaches(filtered);
+  // }, [filterType, coaches]);
 
   const fetchSpecialities = async () => {
     try {
@@ -627,7 +695,7 @@ const ListCoaches = () => {
           onKeyUp={handleKeyPress}
         />
       </div>
-      {/* <div className="flex justify-between mb-4">
+      <div className="flex justify-between mb-4">
         <div className="flex flex-col md:flex-row justify-between mb-4">
           <div className="space-x-2">
             {clientTypes?.map((type) => (
@@ -641,10 +709,79 @@ const ListCoaches = () => {
             ))}
           </div>
         </div>
-      </div> */}
+      </div>
       <div className="w-full p-2">
-        <Table
+        {filterType === "all" && (
+          <Table
+            onChange={handleTableChange}
+            columns={columns}
+            loading={loading}
+            dataSource={paginateData(
+              coaches,
+              pagination.current,
+              pagination.pageSize
+            ).map((coach) => ({ ...coach, key: coach._id }))}
+            // dataSource={paginateData(
+            //   coaches,
+            //   pagination.current,
+            //   pagination.pageSize,
+            // )}
+            rowSelection={rowSelection}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: coaches.length,
+              onChange: (page, pageSize) => {
+                setPagination({ current: page, pageSize });
+              },
+            }}
+            tableLayout="fixed"
+          />
+        )}
+
+        {filterType === "client_actif" && (
+          <Table
+            loading={loading}
+            onChange={handleTableChange}
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={activeCoaches.map((coach) => ({
+              ...coach,
+              key: coach._id,
+            }))}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: activeCoaches.length,
+              onChange: (page, pageSize) => {
+                setPagination({ current: page, pageSize });
+              },
+            }}
+            tableLayout="fixed"
+          />
+        )}
+        {filterType === "prospect_vr" && (
+          <Table
+            loading={loading}
+            columns={columns}
+            dataSource={prospectCoaches.map((coach) => ({
+              ...coach,
+              key: coach._id,
+            }))}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: prospectCoaches.length,
+              onChange: (page, pageSize) => {
+                setPagination({ current: page, pageSize });
+              },
+            }}
+            tableLayout="fixed"
+          />
+        )}
+        {/* <Table
           columns={columns}
+          user={user}
           loading={loading}
           dataSource={paginateData(
             filteredCoaches,
@@ -665,7 +802,8 @@ const ListCoaches = () => {
           }}
           onChange={handleTableChange}
           tableLayout="fixed"
-        />
+        /> */}
+
         <Modal
           // className="fixed-modal"
           title={currentCoach ? "Modifier Coach" : "Ajouter Coach"}

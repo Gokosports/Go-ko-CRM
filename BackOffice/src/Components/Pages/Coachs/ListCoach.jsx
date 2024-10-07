@@ -34,6 +34,7 @@ const clientTypes = [
 const CoachList = () => {
   const navigate = useNavigate();
   const [specialities, setSpecialities] = useState([]);
+
   const [commercials, setCommercials] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAssignModalVisible, setIsAssignModalVisible] = useState(false);
@@ -47,16 +48,23 @@ const CoachList = () => {
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [fileList, setFileList] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 8 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 12 });
   const [coaches, setCoaches] = useState([]);
   const [filteredClients, setFilteredClients] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [filterType, setFilterType] = useState("all");
+  const [contracts, setContracts] = useState([]);
+  const [filteredContracts, setFilteredContracts] = useState([]);
+  const [activeCoaches, setActiveCoaches] = useState([]);
+  const [prospectCoaches, setProspectCoaches] = useState([]);
+  const [filteredCoaches, setFilteredCoaches] = useState([]);
+
   useEffect(() => {
     fetchCoaches();
     fetchSpecialities();
     fetchCommercials();
+    fetchContracts();
   }, []);
 
   const fetchCoaches = async () => {
@@ -80,6 +88,86 @@ const CoachList = () => {
       console.error("Error fetching coaches:", error);
       setLoading(false);
     }
+  };
+
+  const fetchContracts = async () => {
+    try {
+      const response = await axios.get(
+        "https://go-ko-9qul.onrender.com/api/contracts"
+      );
+      console.log("All Contracts:", response.data);
+      setContracts(response.data);
+      setFilteredContracts(response.data);
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+    }
+  };
+
+  const handleFilterClick = (type) => {
+    setFilterType(type);
+
+    console.log("Current Coaches:", coaches);
+    console.log("Current Contracts:", contracts);
+
+    let filtered = [];
+
+    if (type === "client_actif") {
+      // Get coaches with contracts
+      filtered = coaches.filter((coach) => {
+        const hasContract = contracts.some((contract) => {
+          // Ensure phone number and raisonsociale are checked correctly
+          const hasPhoneMatch = contract.phone === coach.phone;
+          const hasRaisonSocialMatch =
+            contract.raisonsociale &&
+            coach.raisonsociale &&
+            contract.raisonsociale.toLowerCase() ===
+              coach.raisonsociale.toLowerCase();
+
+          console.log(
+            `Checking coach ${coach.nom}: has contract? ${
+              hasPhoneMatch || hasRaisonSocialMatch
+            }`
+          );
+          return hasPhoneMatch || hasRaisonSocialMatch;
+        });
+        return hasContract;
+      });
+
+      console.log("Filtered Active Coaches:", filtered);
+      setActiveCoaches(filtered);
+      setProspectCoaches([]);
+    } else if (type === "prospect_vr") {
+      // Get coaches without contracts
+      filtered = coaches.filter((coach) => {
+        const hasNoContract = !contracts.some((contract) => {
+          const hasPhoneMatch = contract.phone === coach.phone;
+          const hasRaisonSocialMatch =
+            contract.raisonsociale &&
+            coach.raisonsociale &&
+            contract.raisonsociale.toLowerCase() ===
+              coach.raisonsociale.toLowerCase();
+
+          console.log(
+            `Checking coach ${coach.nom}: has no contract? ${
+              !hasPhoneMatch && !hasRaisonSocialMatch
+            }`
+          );
+          return hasPhoneMatch || hasRaisonSocialMatch;
+        });
+        return hasNoContract;
+      });
+
+      console.log("Filtered Prospect Coaches:", filtered);
+      setProspectCoaches(filtered);
+      setActiveCoaches([]);
+    } else {
+      // Reset states for "Tous"
+      setActiveCoaches([]);
+      setProspectCoaches([]);
+      filtered = coaches; // Show all coaches
+    }
+
+    setFilteredCoaches(filtered);
   };
 
   useEffect(() => {
@@ -350,12 +438,11 @@ const CoachList = () => {
   const rowSelection = {
     selectedRowKeys: selectedCoaches,
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log('Selected Row Keys:', selectedRowKeys);  // Log the selected row keys
-      console.log('Selected Rows:', selectedRows);  // Log the actual rows being selected
-      setSelectedCoaches(selectedRowKeys);  // Update the state with selected keys
+      console.log("Selected Row Keys:", selectedRowKeys); // Log the selected row keys
+      console.log("Selected Rows:", selectedRows); // Log the actual rows being selected
+      setSelectedCoaches(selectedRowKeys); // Update the state with selected keys
     },
   };
-  
 
   const uploadProps = {
     name: "file",
@@ -643,7 +730,7 @@ const CoachList = () => {
         <Breadcrumb.Item>Liste des Coachs</Breadcrumb.Item>
       </Breadcrumb>
       <h1 className="text-xl font-bold mb-4">Liste des Coachs</h1>
-  <div className="flex justify-between mb-4">
+      <div className="flex justify-between mb-4">
         <div className="flex flex-col md:flex-row justify-between mb-4">
           <div className="space-x-2">
             {clientTypes?.map((type) => (
@@ -670,278 +757,308 @@ const CoachList = () => {
         />
       </div>
       <div className="w-full p-2">
-      <Table
-        onChange={handleTableChange}
-        columns={columns}
-        loading={loading}
-        dataSource={paginateData(
-          coaches,
-          pagination.current,
-          pagination.pageSize
-        ).map((coach) => ({ ...coach, key: coach._id }))}
-        // dataSource={paginateData(
-        //   coaches,
-        //   pagination.current,
-        //   pagination.pageSize,
-        // )}
-        rowSelection={rowSelection}
-        pagination={{
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: coaches.length,
-          onChange: (page, pageSize) => {
-            setPagination({ current: page, pageSize });
-          },
-          
-        }}
-        tableLayout="fixed"
-        
-      />
-      {/* <Table
-        columns={columns}
-        dataSource={paginateData(
-          coaches,
-          pagination.current,
-          pagination.pageSize
-        ).map((coach) => ({ ...coach, key: coach._id }))}
-        scroll={{ x: 600 }}
-        rowSelection={selectedCoaches}
-        pagination={{
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: coaches.length,
-          showTotal: (total, range) =>
-            `${range[0]}-${range[1]} de ${total} coachs`,
-          onChange: (page, pageSize) => {
-            setPagination({ current: page, pageSize });
-          },
-        }}
-        onChange={handleTableChange}
-         tableLayout="fixed"
-      /> */}
-      <Modal
-        // className="fixed-modal"
-        title={currentCoach ? "Modifier Coach" : "Ajouter Coach"}
-        visible={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        width={500}
-        centered
-        className="fixed-modal rounded-lg shadow-lg  bg-white"
-      >
-        <Form form={form} layout="vertical" onFinish={handleFinish}>
-          <div className="grid grid-cols-2 overflow-y-auto p-4 max-h-96 gap-2">
-            <Form.Item
-              name="prenom"
-              label="Prénom"
-              rules={[
-                { required: false, message: "Veuillez entrer le prénom" },
-              ]}
-            >
-              <Input />
+        {filterType === "all" && (
+          <Table
+            onChange={handleTableChange}
+            columns={columns}
+            loading={loading}
+            dataSource={paginateData(
+              coaches,
+              pagination.current,
+              pagination.pageSize
+            ).map((coach) => ({ ...coach, key: coach._id }))}
+            // dataSource={paginateData(
+            //   coaches,
+            //   pagination.current,
+            //   pagination.pageSize,
+            // )}
+            rowSelection={rowSelection}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: coaches.length,
+              onChange: (page, pageSize) => {
+                setPagination({ current: page, pageSize });
+              },
+            }}
+            tableLayout="fixed"
+          />
+        )}
+
+        {filterType === "client_actif" && (
+          <Table
+            loading={loading}
+            onChange={handleTableChange}
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={activeCoaches.map((coach) => ({
+              ...coach,
+              key: coach._id,
+            }))}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: activeCoaches.length,
+              onChange: (page, pageSize) => {
+                setPagination({ current: page, pageSize });
+              },
+            }}
+            tableLayout="fixed"
+          />
+        )}
+        {filterType === "prospect_vr" && (
+          <Table
+            loading={loading}
+            columns={columns}
+            dataSource={prospectCoaches.map((coach) => ({
+              ...coach,
+              key: coach._id,
+            }))}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: prospectCoaches.length,
+              onChange: (page, pageSize) => {
+                setPagination({ current: page, pageSize });
+              },
+            }}
+            tableLayout="fixed"
+          />
+        )}
+        <Modal
+          // className="fixed-modal"
+          title={currentCoach ? "Modifier Coach" : "Ajouter Coach"}
+          visible={isModalVisible}
+          onCancel={handleCancel}
+          footer={null}
+          width={500}
+          centered
+          className="fixed-modal rounded-lg shadow-lg  bg-white"
+        >
+          <Form form={form} layout="vertical" onFinish={handleFinish}>
+            <div className="grid grid-cols-2 overflow-y-auto p-4 max-h-96 gap-2">
+              <Form.Item
+                name="prenom"
+                label="Prénom"
+                rules={[
+                  { required: false, message: "Veuillez entrer le prénom" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="nom"
+                label="Nom"
+                rules={[{ required: false, message: "Veuillez entrer le nom" }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[
+                  { required: false, message: "Veuillez entrer l'email" },
+                ]}
+              >
+                <Input type="email" />
+              </Form.Item>
+              <Form.Item
+                name="phone"
+                label="Téléphone"
+                rules={[
+                  { required: false, message: "Veuillez entrer le téléphone" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="age"
+                label="Âge"
+                rules={[{ required: false, message: "Veuillez entrer l'âge" }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="sex"
+                label="Sexe"
+                rules={[
+                  { required: false, message: "Veuillez sélectionner le sexe" },
+                ]}
+              >
+                <Select>
+                  <Option value="homme">Homme</Option>
+                  <Option value="femme">Femme</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="ville"
+                label="Ville"
+                rules={[
+                  { required: false, message: "Veuillez entrer la ville" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="siret"
+                label="Siret"
+                rules={[
+                  { required: false, message: "Veuillez entrer le siret" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="raisonsociale"
+                label="Raison sociale"
+                rules={[
+                  {
+                    required: true,
+                    message: "Veuillez entrer la raison sociale",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="adresse"
+                label="Adresse"
+                rules={[
+                  { required: false, message: "Veuillez entrer l'adresse" },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="codepostal"
+                label="Code postal"
+                rules={[
+                  {
+                    required: false,
+                    message: "Veuillez entrer le code postal",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="speciality"
+                label="Spécialité"
+                rules={[
+                  {
+                    required: false,
+                    message: "Veuillez sélectionner la spécialité",
+                  },
+                ]}
+              >
+                <Select mode="multiple">
+                  {specialities.map((speciality) => (
+                    <Option key={speciality._id} value={speciality._id}>
+                      {speciality.nom}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item label="Image">
+                <Upload {...uploadProps}>
+                  <Button icon={<UploadOutlined />} loading={uploading}>
+                    Télécharger
+                  </Button>
+                </Upload>
+              </Form.Item>
+              {uploadedFileName && (
+                <Form.Item>
+                  <div className="flex items-center mt-2">
+                    <Avatar
+                      src={imageUrl}
+                      alt="Uploaded Image"
+                      size={50}
+                      className="mr-2"
+                    />
+                    <span>{uploadedFileName}</span>
+                    <Button
+                      type="link"
+                      icon={<DeleteOutlined />}
+                      onClick={() => {
+                        form.setFieldsValue({ image: "" });
+                        setUploadedFileName("");
+                        setImageUrl("");
+                      }}
+                    />
+                  </div>
+                </Form.Item>
+              )}
+            </div>
+            <Form.Item className="mt-2">
+              <Button type="primary" htmlType="submit">
+                {currentCoach
+                  ? "Enregistrer les modifications"
+                  : "Ajouter Coach"}
+              </Button>
+              <Button onClick={handleCancel} className="ml-2">
+                Annuler
+              </Button>
             </Form.Item>
+          </Form>
+        </Modal>
+        <Modal
+          title="Affecter les Coachs au Commercial"
+          visible={isAssignModalVisible}
+          onCancel={() => setIsAssignModalVisible(false)}
+          footer={null}
+        >
+          <Form form={assignForm} onFinish={handleAssign}>
             <Form.Item
-              name="nom"
-              label="Nom"
-              rules={[{ required: false, message: "Veuillez entrer le nom" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              label="Email"
-              rules={[{ required: false, message: "Veuillez entrer l'email" }]}
-            >
-              <Input type="email" />
-            </Form.Item>
-            <Form.Item
-              name="phone"
-              label="Téléphone"
-              rules={[
-                { required: false, message: "Veuillez entrer le téléphone" },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="age"
-              label="Âge"
-              rules={[{ required: false, message: "Veuillez entrer l'âge" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="sex"
-              label="Sexe"
-              rules={[
-                { required: false, message: "Veuillez sélectionner le sexe" },
-              ]}
-            >
-              <Select>
-                <Option value="homme">Homme</Option>
-                <Option value="femme">Femme</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="ville"
-              label="Ville"
-              rules={[{ required: false, message: "Veuillez entrer la ville" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="siret"
-              label="Siret"
-              rules={[{ required: false, message: "Veuillez entrer le siret" }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="raisonsociale"
-              label="Raison sociale"
+              name="commercial"
+              label="Commercial"
               rules={[
                 {
                   required: true,
-                  message: "Veuillez entrer la raison sociale",
+                  message: "Veuillez sélectionner un commercial",
                 },
               ]}
             >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="adresse"
-              label="Adresse"
-              rules={[
-                { required: false, message: "Veuillez entrer l'adresse" },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="codepostal"
-              label="Code postal"
-              rules={[
-                { required: false, message: "Veuillez entrer le code postal" },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="speciality"
-              label="Spécialité"
-              rules={[
-                {
-                  required: false,
-                  message: "Veuillez sélectionner la spécialité",
-                },
-              ]}
-            >
-              <Select mode="multiple">
-                {specialities.map((speciality) => (
-                  <Option key={speciality._id} value={speciality._id}>
-                    {speciality.nom}
+              <Select placeholder="Sélectionnez un commercial">
+                {commercials.map((commercial) => (
+                  <Option key={commercial._id} value={commercial._id}>
+                    {commercial.nom} {commercial.prenom}
                   </Option>
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item label="Image">
-              <Upload {...uploadProps}>
-                <Button icon={<UploadOutlined />} loading={uploading}>
-                  Télécharger
-                </Button>
-              </Upload>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Affecter
+              </Button>
+              <Button
+                onClick={() => setIsAssignModalVisible(false)}
+                className="ml-2"
+              >
+                Annuler
+              </Button>
             </Form.Item>
-            {uploadedFileName && (
-              <Form.Item>
-                <div className="flex items-center mt-2">
-                  <Avatar
-                    src={imageUrl}
-                    alt="Uploaded Image"
-                    size={50}
-                    className="mr-2"
-                  />
-                  <span>{uploadedFileName}</span>
-                  <Button
-                    type="link"
-                    icon={<DeleteOutlined />}
-                    onClick={() => {
-                      form.setFieldsValue({ image: "" });
-                      setUploadedFileName("");
-                      setImageUrl("");
-                    }}
-                  />
-                </div>
-              </Form.Item>
-            )}
-          </div>
-          <Form.Item className="mt-2">
-            <Button type="primary" htmlType="submit">
-              {currentCoach ? "Enregistrer les modifications" : "Ajouter Coach"}
-            </Button>
-            <Button onClick={handleCancel} className="ml-2">
-              Annuler
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-      <Modal
-        title="Affecter les Coachs au Commercial"
-        visible={isAssignModalVisible}
-        onCancel={() => setIsAssignModalVisible(false)}
-        footer={null}
-      >
-        <Form form={assignForm} onFinish={handleAssign}>
-          <Form.Item
-            name="commercial"
-            label="Commercial"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez sélectionner un commercial",
-              },
-            ]}
-          >
-            <Select placeholder="Sélectionnez un commercial">
-              {commercials.map((commercial) => (
-                <Option key={commercial._id} value={commercial._id}>
-                  {commercial.nom} {commercial.prenom}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Affecter
-            </Button>
-            <Button
-              onClick={() => setIsAssignModalVisible(false)}
-              className="ml-2"
-            >
-              Annuler
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-      <Modal
-        title="Désaffecter les Coachs du Commercial"
-        visible={isUnassignModalVisible}
-        onCancel={() => setIsUnassignModalVisible(false)}
-        footer={null}
-      >
-        <Form form={unassignForm} onFinish={handleUnassign}>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Désaffecter
-            </Button>
-            <Button
-              onClick={() => setIsUnassignModalVisible(false)}
-              className="ml-2"
-            >
-              Annuler
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+          </Form>
+        </Modal>
+        <Modal
+          title="Désaffecter les Coachs du Commercial"
+          visible={isUnassignModalVisible}
+          onCancel={() => setIsUnassignModalVisible(false)}
+          footer={null}
+        >
+          <Form form={unassignForm} onFinish={handleUnassign}>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Désaffecter
+              </Button>
+              <Button
+                onClick={() => setIsUnassignModalVisible(false)}
+                className="ml-2"
+              >
+                Annuler
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
     </div>
   );

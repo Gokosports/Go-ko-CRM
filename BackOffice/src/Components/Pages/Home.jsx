@@ -1,4 +1,3 @@
-
 // import React, { useContext, useEffect, useState } from "react";
 // import { Card } from "antd";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -72,7 +71,7 @@
 
 //   const isAdmin =
 //     decodedToken.role && decodedToken.role.toLowerCase() === "admin";
-    
+
 //     // Ensure case-insensitivity
 
 //   return (
@@ -182,7 +181,7 @@
 //       ) : decodedToken.role === "Commercial" ? (
 //         <ListCoaches coaches={coaches} />
 //       ) : null}
-       
+
 //           </div>
 //         </div>
 //       </div>
@@ -192,7 +191,7 @@
 
 // export default Dashboard;
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -260,10 +259,10 @@ function Dashboard() {
     };
 
     fetchData();
-    fetchAssignedCoaches(decodedToken.userId);
-  }, [decodedToken.role, decodedToken.userId, token]); 
+    // fetchAssignedCoaches(decodedToken.userId);
+  }, [decodedToken.role, decodedToken.userId, token]);
   // useEffect(() => {
-    
+
   //   if (decodedToken.role === "Commercial") {
   //     fetchAssignedCoaches(decodedToken.userId);
   //     fetchCounts(decodedToken.userId);
@@ -291,30 +290,29 @@ function Dashboard() {
   //   }
   // };
 
-  const fetchAssignedCoaches = async (commercialId) => {
-    try {
-      const response = await axios.get(
-        `https://go-ko-9qul.onrender.com/coaches/assigned/${commercialId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setCoaches(response.data);
-      setCounts((prevCounts) => ({
-        ...prevCounts,
-        coaches: response.data.length, // Update coaches count to assigned coaches
-      }));
-    } catch (error) {
-      console.error("Error fetching assigned coaches", error);
-    }
-  };
+  // const fetchAssignedCoaches = async (commercialId) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://go-ko-9qul.onrender.com/coaches/assigned/${commercialId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     console.log('resposeassign', response.data)
+  //     setCoaches(response.data);
+  //     setCounts((prevCounts) => ({
+  //       ...prevCounts,
+  //       coaches: response.data.length, // Update coaches count to assigned coaches
+  //     }));
+  //   } catch (error) {
+  //     console.error("Error fetching assigned coaches", error);
+  //   }
+  // };
 
   const isAdmin =
     decodedToken.role && decodedToken.role.toLowerCase() === "admin";
-    
-    // Ensure case-insensitivity
 
   return (
     <>
@@ -353,7 +351,13 @@ function Dashboard() {
               style={{ width: "80%" }}
               className="transform transition-transform hover:scale-105 border-1 border-opacity-50 mx-auto shadow-lg"
             >
-              {loading ? <p>Loading...</p> : <p className="text-4xl font-bold text-blue-900 text-center">{counts.coaches}</p>}
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <p className="text-4xl font-bold text-blue-900 text-center">
+                  {counts.coaches}
+                </p>
+              )}
             </Card>
           </Link>
         </div>
@@ -413,15 +417,14 @@ function Dashboard() {
       <div className="flex flex-wrap justify-center items-start">
         <div
           className="w-full mt-10 mb-10 border rounded shadow-lg bg-white"
-          style={{width: "100%" }}
+          style={{ width: "100%" }}
         >
           <div className="">
-          {decodedToken.role === "Admin" ? (
-        <ListCoach coaches={coaches} />
-      ) : decodedToken.role === "Commercial" ? (
-        <ListCoaches coaches={coaches} />
-      ) : null}
-       
+            {decodedToken.role === "Admin" ? (
+              <ListCoach coaches={coaches} />
+            ) : decodedToken.role === "Commercial" ? (
+              <ListCoaches coaches={coaches} />
+            ) : null}
           </div>
         </div>
       </div>

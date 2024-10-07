@@ -314,8 +314,20 @@ const CoachList = () => {
       setUploading(false);
     }
   };
-
   const columns = [
+    {
+      title: <span style={{ fontSize: "12px" }}>Raison Sociale</span>,
+      dataIndex: "raisonsociale",
+      key: "raisonsociale",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
     {
       title: "Coach",
       key: "coach",
@@ -346,19 +358,6 @@ const CoachList = () => {
       ),
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
       title: "Téléphone",
       dataIndex: "phone",
       key: "phone",
@@ -372,9 +371,9 @@ const CoachList = () => {
       ),
     },
     {
-      title: "Âge",
-      dataIndex: "age",
-      key: "age",
+      title: <span style={{ fontSize: "12px" }}>Email</span>,
+      dataIndex: "email",
+      key: "email",
       render: (text, record) => (
         <div
           className="cursor-pointer"
@@ -385,59 +384,7 @@ const CoachList = () => {
       ),
     },
     {
-      title: "Sexe",
-      dataIndex: "sex",
-      key: "sex",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Ville",
-      dataIndex: "ville",
-      key: "ville",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "SIRET",
-      dataIndex: "siret",
-      key: "siret",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Adresse",
-      dataIndex: "adresse",
-      key: "adresse",
-      render: (text, record) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleCoachClick(record)}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Code Postal",
+      title: <span style={{ fontSize: "12px" }}>Code Postal</span>,
       dataIndex: "codepostal",
       key: "codepostal",
       render: (text, record) => (
@@ -450,9 +397,9 @@ const CoachList = () => {
       ),
     },
     {
-      title: "Raison Sociale",
-      dataIndex: "raisonsociale",
-      key: "raisonsociale",
+      title: <span style={{ fontSize: "12px" }}>SIRET</span>,
+      dataIndex: "siret",
+      key: "siret",
       render: (text, record) => (
         <div
           className="cursor-pointer"
@@ -463,20 +410,120 @@ const CoachList = () => {
       ),
     },
     {
-      title: "Spécialité",
+      title: <span style={{ fontSize: "12px" }}>Ville</span>,
+      dataIndex: "ville",
+      key: "ville",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+
+    {
+      title: <span style={{ fontSize: "12px" }}>Adresse</span>,
+      dataIndex: "adresse",
+      key: "adresse",
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+
+    // {
+    //   title: "Type",
+    //   dataIndex: "type",
+    //   key: "type",
+    //   render: (type, record) => (
+    //     <div className="flex-1">
+    //       <div className="flex gap-2">
+    //         <Button
+    //           className={`btn ${
+    //             type === "client_actif" ? "btn-active" : "btn-inactive"
+    //           }`}
+    //           onClick={() => handleCategoryClick(record._id, "client_actif")}
+    //         >
+    //           Actif
+    //         </Button>
+    //         <Button
+    //           className={`btn ${
+    //             type === "prospect_vr" ? "btn-active" : "btn-inactive"
+    //           }`}
+    //           onClick={() => handleCategoryClick(record._id, "prospect_vr")}
+    //         >
+    //           VRG
+    //         </Button>
+    //         {/* <Button
+    //           className={`btn ${
+    //             type === "prospect_qlf" ? "btn-active" : "btn-inactive"
+    //           }`}
+    //           onClick={() => handleCategoryClick(record._id, "prospect_qlf")}
+    //         >
+    //           QLF
+    //         </Button> */}
+    //       </div>
+    //       <div className="mt-2">
+    //         <strong>Commentaire:</strong> {record.categoryComment || "N/A"}
+    //       </div>
+    //     </div>
+    //   ),
+    // },
+
+    {
+      title: <span style={{ fontSize: "12px" }}>Âge</span>,
+      dataIndex: "age",
+      key: "age",
+      width: 60,
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: <span style={{ fontSize: "12px" }}>Sexe</span>,
+      dataIndex: "sex",
+      key: "sex",
+      width: 60,
+      render: (text, record) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => handleCoachClick(record)}
+        >
+          {text}
+        </div>
+      ),
+    },
+
+    {
+      title: <span style={{ fontSize: "12px" }}>Spécialité</span>,
       dataIndex: "speciality",
       key: "speciality",
       render: (specialities) => (
         <div>
           {Array.isArray(specialities) &&
             specialities.map((item, index) => (
-              <div key={index}>{item.nom}</div>
+              <span key={index}>
+                {item.nom}
+                {index < specialities.length - 1 && ", "}
+              </span>
             ))}
         </div>
       ),
     },
+
     {
-      title: "Commercial",
+      title: <span style={{ fontSize: "12px" }}>Commercial</span>,
       key: "commercial",
       render: (text, record) => (
         <div
@@ -490,7 +537,7 @@ const CoachList = () => {
       ),
     },
     {
-      title: "Action",
+      title: <span style={{ fontSize: "12px" }}>Action</span>,
       key: "action",
       render: (text, record) => (
         <Space size="middle">
@@ -498,6 +545,7 @@ const CoachList = () => {
             icon={<EditOutlined />}
             style={{ backgroundColor: "green", color: "white" }}
             onClick={() => showEditModal(record)}
+            size="small"
           />
           <Popconfirm
             title="Are you sure you want to delete this coach?"
@@ -509,12 +557,214 @@ const CoachList = () => {
               icon={<DeleteOutlined />}
               style={{ backgroundColor: "red", color: "white" }}
               danger
+              size="small"
             />
           </Popconfirm>
         </Space>
       ),
     },
   ];
+
+  // const columns = [
+  //   {
+  //     title: "Coach",
+  //     key: "coach",
+  //     render: (text, record) => (
+  //       <div
+  //         className="flex items-center cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {/* {record.image ? (
+  //           <img
+  //             src={record.image}
+  //             alt="Coach"
+  //             className="w-11 h-11 rounded-full mr-2"
+  //           />
+  //         ) : (
+  //           <Avatar
+  //             style={{ backgroundColor: "#87d068", marginRight: "20px" }}
+  //             size={40}
+  //             className="mr-2"
+  //           >
+  //             {getInitials(record.prenom, record.nom)}
+  //           </Avatar>
+  //         )} */}
+  //         <span>
+  //           {record.prenom} {record.nom}
+  //         </span>
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Email",
+  //     dataIndex: "email",
+  //     key: "email",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {text}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Téléphone",
+  //     dataIndex: "phone",
+  //     key: "phone",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {text}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Âge",
+  //     dataIndex: "age",
+  //     key: "age",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {text}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Sexe",
+  //     dataIndex: "sex",
+  //     key: "sex",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {text}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Ville",
+  //     dataIndex: "ville",
+  //     key: "ville",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {text}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "SIRET",
+  //     dataIndex: "siret",
+  //     key: "siret",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {text}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Adresse",
+  //     dataIndex: "adresse",
+  //     key: "adresse",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {text}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Code Postal",
+  //     dataIndex: "codepostal",
+  //     key: "codepostal",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {text}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Raison Sociale",
+  //     dataIndex: "raisonsociale",
+  //     key: "raisonsociale",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {text}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Spécialité",
+  //     dataIndex: "speciality",
+  //     key: "speciality",
+  //     render: (specialities) => (
+  //       <div>
+  //         {Array.isArray(specialities) &&
+  //           specialities.map((item, index) => (
+  //             <div key={index}>{item.nom}</div>
+  //           ))}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Commercial",
+  //     key: "commercial",
+  //     render: (text, record) => (
+  //       <div
+  //         className="cursor-pointer"
+  //         onClick={() => handleCoachClick(record)}
+  //       >
+  //         {record.commercial
+  //           ? `${record.commercial.prenom} ${record.commercial.nom}`
+  //           : "N/A"}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "Action",
+  //     key: "action",
+  //     render: (text, record) => (
+  //       <Space size="middle">
+  //         <Button
+  //           icon={<EditOutlined />}
+  //           style={{ backgroundColor: "green", color: "white" }}
+  //           onClick={() => showEditModal(record)}
+  //         />
+  //         <Popconfirm
+  //           title="Are you sure you want to delete this coach?"
+  //           onConfirm={() => handleDelete(record._id)}
+  //           okText="Yes"
+  //           cancelText="No"
+  //         >
+  //           <Button
+  //             icon={<DeleteOutlined />}
+  //             style={{ backgroundColor: "red", color: "white" }}
+  //             danger
+  //           />
+  //         </Popconfirm>
+  //       </Space>
+  //     ),
+  //   },
+  // ];
 
   const rowSelection = {
     onChange: (selectedRowKeys) => {
@@ -653,21 +903,21 @@ const CoachList = () => {
             <Form.Item
               name="prenom"
               label="Prénom"
-              rules={[{ required: true, message: "Veuillez entrer le prénom" }]}
+              rules={[{ required: false, message: "Veuillez entrer le prénom" }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="nom"
               label="Nom"
-              rules={[{ required: true, message: "Veuillez entrer le nom" }]}
+              rules={[{ required: false, message: "Veuillez entrer le nom" }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="email"
               label="Email"
-              rules={[{ required: true, message: "Veuillez entrer l'email" }]}
+              rules={[{ required: false, message: "Veuillez entrer l'email" }]}
             >
               <Input type="email" />
             </Form.Item>
@@ -675,7 +925,7 @@ const CoachList = () => {
               name="phone"
               label="Téléphone"
               rules={[
-                { required: true, message: "Veuillez entrer le téléphone" },
+                { required: false, message: "Veuillez entrer le téléphone" },
               ]}
             >
               <Input />
@@ -683,7 +933,7 @@ const CoachList = () => {
             <Form.Item
               name="age"
               label="Âge"
-              rules={[{ required: true, message: "Veuillez entrer l'âge" }]}
+              rules={[{ required: false, message: "Veuillez entrer l'âge" }]}
             >
               <Input />
             </Form.Item>
@@ -691,7 +941,7 @@ const CoachList = () => {
               name="sex"
               label="Sexe"
               rules={[
-                { required: true, message: "Veuillez sélectionner le sexe" },
+                { required: false, message: "Veuillez sélectionner le sexe" },
               ]}
             >
               <Select>
@@ -702,7 +952,7 @@ const CoachList = () => {
             <Form.Item
               name="ville"
               label="Ville"
-              rules={[{ required: true, message: "Veuillez entrer la ville" }]}
+              rules={[{ required: false, message: "Veuillez entrer la ville" }]}
             >
               <Input />
             </Form.Item>
@@ -711,7 +961,7 @@ const CoachList = () => {
               label="Spécialité"
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: "Veuillez sélectionner la spécialité",
                 },
               ]}

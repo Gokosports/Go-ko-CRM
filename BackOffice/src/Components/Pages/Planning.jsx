@@ -233,7 +233,6 @@ const Planning = () => {
           >
             <option value="">Select Situation</option>
             <option value="Appel de vente">Appel de vente</option>
-            <option value="Hors planning">Hors planning</option>
             <option value="Négociation devis">Négociation devis</option>
             <option value="Conclusion vente">Conclusion vente</option>
             <option value="Vente">Vente</option>
@@ -357,7 +356,6 @@ const Planning = () => {
           >
             <option value="">Select Situation</option>
             <option value="Appel de vente">Appel de vente</option>
-            <option value="Hors planning">Hors planning</option>
             <option value="Négociation devis">Négociation devis</option>
             <option value="Conclusion vente">Conclusion vente</option>
             <option value="Vente">Vente</option>

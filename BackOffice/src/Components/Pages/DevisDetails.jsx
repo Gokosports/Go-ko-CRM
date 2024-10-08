@@ -51,11 +51,11 @@ const DevisDetails = () => {
     let discountedPrice = selectedPrice;
 
     // Additional logic for bonus durations (1 year, 1.5 years, 2 years)
-    if (duration === "1 an complet") {
+    if (duration === "59.91 € par mois (12 mois + 1 mois offert)") {
       discountedPrice = (64.9 * 12) / 13; // 1-year with 1 month bonus
-    } else if (duration === "1.5 ans complet") {
+    } else if (duration === "56.75 € par mois (18 mois + 1 mois offert)") {
       discountedPrice = (59.9 * 18) / 19; // 1.5 years with 1 month bonus
-    } else if (duration === "2 ans complet") {
+    } else if (duration === "52.70 € par mois (24 mois + 1 mois offert)") {
       discountedPrice = (54.9 * 24) / 25; // 2 years with 1 month bonus
     }
 
@@ -158,12 +158,12 @@ const DevisDetails = () => {
       ["Date de fin du contrat", contract.endDate.format("DD-MM-YYYY")],
       ["Adresse club", contract.clubAddress],
       [
-        "Montant total",
-        contract.contractDuration === "1 an complet" ||
-        contract.contractDuration === "1.5 ans complet" ||
-        contract.contractDuration === "2 ans complet"
-          ? `${(discountedPrice * 12).toFixed(2)} €`
-          : totalPrice,
+        "Montant total", contract.contractDuration
+        // contract.contractDuration === "12 mois + 1 mois offert" ||
+        // contract.contractDuration === "18 mois + 1 mois offert" ||
+        // contract.contractDuration === "24 mois + 1 mois offert"
+        //   ? `${(discountedPrice * 12).toFixed(2)} €`
+        //   : totalPrice,
       ],
       ["Adresse", `${contract.address}`],
       ["Code postal", contract.codepostal],
@@ -412,7 +412,7 @@ Fait à Roubaix, le 23 septembre 2024.
           {/* Add information tab content here */}
         </TabPane>
         <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="4">
-          {/* Add information tab content here */}
+         
         </TabPane>
       </Tabs>
       <h2 className="text-2xl font-bold mb-6">Créer un Contrat pour Coach</h2>
@@ -605,9 +605,9 @@ Fait à Roubaix, le 23 septembre 2024.
               <Radio value="24 mois - 54,90 € par mois">
                 24 mois - 54,90 € par mois
               </Radio>
-              <Radio value="1 an complet">1 an complet</Radio>
-              <Radio value="1.5 ans complet">1.5 ans complet</Radio>
-              <Radio value="2 ans complet">2 ans complet</Radio>
+              <Radio value="59.91 € par mois (12 mois + 1 mois offert)">12 mois + 1 mois offert</Radio>
+              <Radio value="56.75 € par mois (18 mois + 1 mois offert)">18 mois + 1 mois offert</Radio>
+              <Radio value="52.70 € par mois (24 mois + 1 mois offert)">24 mois + 1 mois offert</Radio>
             </Radio.Group>
           </Form.Item>
           <Form.Item label="Montant Total HT">
@@ -704,7 +704,7 @@ Fait à Roubaix, le 23 septembre 2024.
           >
             <Input className="rounded-md" />
           </Form.Item>
-          <p className="text-lg mt-10 font-semibold">
+          <p className="text-lg mt-4 mb-6 font-semibold">
             Montant total : {totalPrice}
           </p>
         </div>

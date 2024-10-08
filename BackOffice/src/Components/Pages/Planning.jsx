@@ -44,6 +44,7 @@ const Planning = () => {
         }
       );
       setCoach(response.data);
+      console.log('lanningjdjdjj', response.data)
       const commercialName = response.data.commercial
         ? `${response.data.commercial.prenom} ${response.data.commercial.nom}`
         : "";
@@ -63,6 +64,7 @@ const Planning = () => {
         `https://go-ko-9qul.onrender.com/api/planning/${coachId}`
       );
       setPlannings(response.data);
+      console.log('testets', response.data)
     } catch (error) {
       console.error("Error fetching plannings:", error);
     } finally {
@@ -170,7 +172,7 @@ const Planning = () => {
       <Tabs defaultActiveKey="4">
         <TabPane tab={renderCoachLink()} key="1"></TabPane>
         <TabPane
-          tab={<Link to={`/coach/${coachId}/comments`}>Commentaires</Link>}
+          tab={<Link to={`/coach/${coachId}/planningDetails`}>Commentaires</Link>}
           key="2"
         ></TabPane>
         <TabPane

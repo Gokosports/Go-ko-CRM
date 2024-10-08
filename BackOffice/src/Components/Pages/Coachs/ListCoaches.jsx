@@ -28,13 +28,8 @@ const clientTypes = [
   { label: "Tous", value: "all" },
   { label: "Client Actif", value: "client_actif" },
   { label: "Prospect VRG", value: "prospect_vr" },
-  // { label: "Prospect Qlf", value: "prospect_qlf" },
 ];
 
-// const getInitials = (prenom, nom) => {
-//   if (!prenom || !nom) return "";
-//   return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase();
-// };
 
 const ListCoaches = () => {
   const { id } = useParams();

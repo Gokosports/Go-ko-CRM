@@ -819,7 +819,7 @@ const CoachesDetailsPage = () => {
   const handleTabChange = (key) => {
     setActiveTab(key);
     if (key === "2") {
-      navigate(`/coach/${id}/comments`);
+      navigate(`/coach/${id}/planningDetails`);
     } else if (key === "3") {
       navigate(`/CréerContrat/${id}`);
     } else if (key === "4") {

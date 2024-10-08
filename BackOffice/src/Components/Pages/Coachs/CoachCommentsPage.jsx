@@ -262,12 +262,12 @@ const CoachCommentsPage = () => {
             scroll={{ x: "max-content" }}
           />
         </TabPane>
-        <TabPane tab={<Link to={`/CréerContrat/${id}`}>Contrat</Link>} key="3">
+        <TabPane tab={<Link to={`/contrat/${id}`}>Contrat</Link>} key="3">
           {/* Add information tab content here */}
         </TabPane>
-        <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="4">
-          {/* Add information tab content here */}
-        </TabPane>
+        {/* <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="4">
+         
+        </TabPane> */}
       </Tabs>
       <Modal
         title={isEdit ? "Modifier le Commentaire" : "Ajouter un Commentaire"}

@@ -699,7 +699,7 @@ const CoachDetailsPage = () => {
     if (key === "2") {
       navigate(`/coach/${id}/comments`);
     } else if (key === "3") {
-      navigate(`/CréerContrat/${id}`);
+      navigate(`/contrat/${id}`);
     } else if (key === "4") {
       navigate(`/planning/${id}`);
     } else {
@@ -1068,11 +1068,11 @@ const CoachDetailsPage = () => {
             Créer un contract
           </Button>
         </TabPane>
-        <TabPane tab="Planning" key="4">
+        {/* <TabPane tab="Planning" key="4">
           <Button type="primary" icon={<PlusOutlined />}>
             Créer un contract
           </Button>
-        </TabPane>
+        </TabPane> */}
       </Tabs>
       <div className="flex justify-between items-center mt-4">
         <Link to="/list-coachs" className="text-blue-500 hover:underline">

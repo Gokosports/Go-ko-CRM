@@ -23,7 +23,7 @@ const { Option } = Select;
 const { TabPane } = Tabs;
 
 const DevisDetails = () => {
-  const { id } = useParams();
+  const { id, id: coachId } = useParams();
   const [form] = Form.useForm();
   const [coach, setCoach] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -405,7 +405,7 @@ Fait à Roubaix, le 23 septembre 2024.
         </TabPane>
 
         <TabPane
-          tab={<Link to={`/coach/${id}/comments`}>Commentaires</Link>}
+          tab={<Link to={`/coach/${coachId}/planningDetails`}>Commentaires</Link>}
           key="2"
         ></TabPane>
         <TabPane tab={<Link to={`/devis/${id}`}>Contrat</Link>} key="3">

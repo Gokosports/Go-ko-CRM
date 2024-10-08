@@ -73,7 +73,7 @@ const CoachList = () => {
   setLoading(true);
   try {
     // Fetch planning data
-    const planningResponse = await axios.get(`http://localhost:3000/api/planning`);
+    const planningResponse = await axios.get(`https://go-ko-9qul.onrender.com/api/planning`);
     console.log('Raw planning response data:', planningResponse.data);
 
     // Fetch coaches data

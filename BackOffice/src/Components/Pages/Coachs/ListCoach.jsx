@@ -28,7 +28,7 @@ const clientTypes = [
   { label: "Tous", value: "all" },
   { label: "Client Actif", value: "client_actif" },
   { label: "Prospect VRG", value: "prospect_vr" },
-  // { label: "Prospect Qlf", value: "prospect_qlf" },
+  { label: "Hors planning", value: "hors_planning" },
 ];
 
 const CoachList = () => {
@@ -59,14 +59,50 @@ const CoachList = () => {
   const [activeCoaches, setActiveCoaches] = useState([]);
   const [prospectCoaches, setProspectCoaches] = useState([]);
   const [filteredCoaches, setFilteredCoaches] = useState([]);
+  const [filteredCoachesPlanning, setFilteredCoachesPlanning] = useState([]);
 
   useEffect(() => {
     fetchCoaches();
     fetchSpecialities();
     fetchCommercials();
     fetchContracts();
+    fetchPlannings();
   }, []);
 
+  const fetchPlannings = async () => {
+  setLoading(true);
+  try {
+    // Fetch planning data
+    const planningResponse = await axios.get(`http://localhost:3000/api/planning`);
+    console.log('Raw planning response data:', planningResponse.data);
+
+    // Fetch coaches data
+    const token = localStorage.getItem("token");
+    const coachesResponse = await axios.get("https://go-ko-9qul.onrender.com/coaches", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log('Raw coaches response data:', coachesResponse.data);
+
+    // Extract coach IDs from planning data with call situation "Hors planning"
+    const coachIds = planningResponse.data
+      .filter(planning => planning.callSituation === "Hors planning" || planning.callSituation === "Canceled")
+      .map(planning => planning.coachId);
+      console.log('coadIds', coachIds)
+
+    // Filter coaches based on the extracted coach IDs
+    const filteredCoachesData = coachesResponse.data.filter(coach =>
+      coachIds.includes(coach._id)
+    );
+
+    setFilteredCoachesPlanning(filteredCoachesData);
+    console.log('Filtered Coaches with Hors planning situation:', filteredCoachesData);
+  } catch (error) {
+    console.error("Error fetching planning or coaches:", error);
+  } finally {
+    setLoading(false);
+  }
+}
+  
   const fetchCoaches = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -170,9 +206,10 @@ const CoachList = () => {
     setFilteredCoaches(filtered);
   };
 
+
   useEffect(() => {
     if (searchQuery.trim() === "") {
-      setCoaches(filteredClients); // Reset to original data when search is cleared
+      setCoaches(filteredClients);
     } else {
       const delayDebounceFn = setTimeout(() => {
         handleSearch();
@@ -181,31 +218,88 @@ const CoachList = () => {
     }
   }, [searchQuery]);
 
+
   const handleSearch = async () => {
     try {
-      // Perform the search with postal code filter
       setLoading(true);
       const response = await axios.get(
         `https://go-ko-9qul.onrender.com/api/search?search=${searchQuery}`
       );
+  
       console.log("Search response:", response.data);
-
-      // Update coaches with filtered data
-      setCoaches(response.data);
-      setPagination({ current: 1, pageSize: 8 }); // Reset pagination for filtered results
+  
+      // Depending on the filterType, update the corresponding coach state
+      let updatedCoaches = [];
+  
+      if (filterType === "client_actif") {
+        updatedCoaches = response.data.filter(coach =>
+          contracts.some(contract => {
+            const hasPhoneMatch = contract.phone === coach.phone;
+            const hasRaisonSocialMatch =
+              contract.raisonsociale &&
+              coach.raisonsociale &&
+              contract.raisonsociale.toLowerCase() ===
+                coach.raisonsociale.toLowerCase();
+            return hasPhoneMatch || hasRaisonSocialMatch;
+          })
+        );
+        setActiveCoaches(updatedCoaches);
+      } else if (filterType === "prospect_vr") {
+        updatedCoaches = response.data.filter(coach =>
+          !contracts.some(contract => {
+            const hasPhoneMatch = contract.phone === coach.phone;
+            const hasRaisonSocialMatch =
+              contract.raisonsociale &&
+              coach.raisonsociale &&
+              contract.raisonsociale.toLowerCase() ===
+                coach.raisonsociale.toLowerCase();
+            return hasPhoneMatch || hasRaisonSocialMatch;
+          })
+        );
+        setProspectCoaches(updatedCoaches);
+      } else if (filterType === "hors_planning") {
+        // Implement your filtering logic for hors_planning
+        updatedCoaches = response.data; // Adjust based on actual hors_planning data
+        setFilteredCoachesPlanning(updatedCoaches);
+      } else {
+        // For "all" filter type
+        setCoaches(response.data);
+      }
+  
+      setPagination({ current: 1, pageSize: 8 }); // Reset pagination for new data
     } catch (error) {
       console.error("Error searching coaches:", error);
-      setCoaches(filteredClients); // Reset to original state if search fails
     } finally {
-      setLoading(false); // Stop loading after search completes
+      setLoading(false);
     }
   };
-
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       handleSearch();
     }
   };
+
+  // const handleSearch = async () => {
+  //   try {
+  //     // Perform the search with postal code filter
+  //     setLoading(true);
+  //     const response = await axios.get(
+  //       `https://go-ko-9qul.onrender.com/api/search?search=${searchQuery}`
+  //     );
+  //     console.log("Search response:", response.data);
+
+  //     // Update coaches with filtered data
+  //     setCoaches(response.data);
+  //     setPagination({ current: 1, pageSize: 8 }); // Reset pagination for filtered results
+  //   } catch (error) {
+  //     console.error("Error searching coaches:", error);
+  //     setCoaches(filteredClients); // Reset to original state if search fails
+  //   } finally {
+  //     setLoading(false); // Stop loading after search completes
+  //   }
+  // };
+
+ 
 
   const fetchSpecialities = async () => {
     try {
@@ -415,6 +509,7 @@ const CoachList = () => {
       message.error("Failed to unassign coaches");
     }
   };
+ 
 
   const handleUploadChange = ({ fileList }) => {
     setFileList(fileList);
@@ -825,6 +920,27 @@ const CoachList = () => {
             tableLayout="fixed"
           />
         )}
+    
+    {filterType === "hors_planning" && (
+      <Table
+        loading={loading}
+        onChange={handleTableChange}
+        columns={columns}
+        dataSource={filteredCoachesPlanning.map((coach) => ({
+          ...coach,
+          key: coach._id,
+        }))}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: filteredCoachesPlanning.length, // Make sure to update this
+          onChange: (page, pageSize) => {
+            setPagination({ current: page, pageSize });
+          },
+        }}
+        tableLayout="fixed"
+      />
+    )}
         <Modal
           // className="fixed-modal"
           title={currentCoach ? "Modifier Coach" : "Ajouter Coach"}

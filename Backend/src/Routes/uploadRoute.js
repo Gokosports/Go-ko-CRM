@@ -8,6 +8,7 @@ const nodemailer = require("nodemailer");
 // const Calendar = require("../Models/CalendarModel");
 const Planning = require("../Models/PlanningModel");
 const Coach = require('../Models/CoachModel');
+// const axios = require("axios");
 
 
 
@@ -16,6 +17,8 @@ const router = express.Router();
 
 // Use multer to store file in memory temporarily
 const upload = multer({ storage: multer.memoryStorage() });
+// const DOCUSEAL_API_KEY = "LRd6LSfxpQjXHcXvESqaSLZmep6d2XyyXEo4a9TQsQQ"; 
+// const DOCUSEAL_API_URL = "https://api.docuseal.co/submissions";
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -57,6 +60,8 @@ const uploadFile = (file) => {
     stream.end(file.buffer);
   });
 };
+
+
 
 // Route to handle file upload
 router.post("/upload", upload.single("pdf"), async (req, res) => {
@@ -103,7 +108,8 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
     // Send email with the file URL
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: req.body.email,
+      // to: req.body.email,
+      to: 'Admin@gokosports.com',
       subject: `Contrat pour ${req.body.clientName}`,
       text: `Cher(e) ${req.body.clientName},\n\nNous avons le plaisir de vous informer que votre contrat est maintenant disponible. Vous pouvez le consulter et le télécharger via le lien suivant : ${fileUrl}\n\nSi vous avez des questions ou si vous avez besoin d'une assistance supplémentaire, n'hésitez pas à nous contacter.\n\nNous vous remercions de votre confiance et restons à votre disposition pour toute information complémentaire.\n\nCordialement,\nL'équipe GOKO`,
     };
@@ -119,6 +125,7 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
     res.status(500).send("Error uploading file or sending email.");
   }
 });
+
 
 // Route to handle file upload
 // router.post("/upload", upload.single("pdf"), async (req, res) => {
@@ -158,7 +165,7 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
 //     console.error(error);
 //     res.status(500).send("Error uploading file or sending email.");
 //   }
-// });
+// }
 
 
 
@@ -245,6 +252,7 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
 //     `Document status did not change to draft within the maximum retries. Current status: ${status}`
 //   );
 // };
+
 
 
 // Function to send the document for signing
@@ -408,7 +416,6 @@ router.get('/planning/:coachId', async (req, res) => {
 router.get('/planning', async (req, res) => {
   try {
     const AllPlannings = await Planning.find();
-    console.log("All Plannings", AllPlannings)
     res.status(200).json(AllPlannings)
   } catch (error) {
     console.error('Error fetching planning entries for coach:', error);

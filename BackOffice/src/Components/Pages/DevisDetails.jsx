@@ -387,6 +387,7 @@ Fait à Roubaix, le 23 septembre 2024.
       message.error("Échec de l'envoi du PDF.");
     }
   };
+  
   const renderCoachLink = () => {
     if (userRole === "Admin") {
       return <Link to={`/coach/${id}`}>Informations</Link>;
@@ -408,7 +409,7 @@ Fait à Roubaix, le 23 septembre 2024.
           tab={<Link to={`/coach/${coachId}/planningDetails`}>Commentaires</Link>}
           key="2"
         ></TabPane>
-        <TabPane tab={<Link to={`/devis/${id}`}>Contrat</Link>} key="3">
+        <TabPane tab={<Link to={`/CréerContrat/${id}`}>Contrat</Link>} key="3">
           {/* Add information tab content here */}
         </TabPane>
         <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="4">

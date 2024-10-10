@@ -47,11 +47,11 @@ const totalPrice = contracts.reduce((total, contract) => {
   return (
     <div className="max-w-6xl mx-auto p-6 bg-gray-50 rounded-lg shadow-md">
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-        Télécharger Contrat
+        Les devis Créés
       </h1>
 
       <h2 className="text-xl text-center text-gray-700 mb-4">
-        Nombre de contrats créés:{" "}
+        Nombre de devis créés:{" "}
         <span className="font-semibold">{contracts.length}</span>
         <br />
         Prix total TTC:{" "}

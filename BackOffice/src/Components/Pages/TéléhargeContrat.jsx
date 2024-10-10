@@ -91,11 +91,20 @@ const TéléhargeContrat = () => {
     return summary;
   }, {});
 
+  const validatedContractsCount = filteredContracts.filter(
+    (contract) => contract.status === "validé"
+  ).length;
+
+  const totalValidatedPrice = filteredContracts
+  .filter(contract => contract.status === "validé")
+  .reduce((total, contract) => total + extractPrice(contract.contractDuration), 0);
+
   return (
     <div className="max-w-6xl mx-auto p-8 bg-gray-50 rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold text-center text-blue-600 mb-8">
+      {/* <h1 className="text-3xl font-bold text-center text-blue-600 mb-8">
         Télécharger Contrats
       </h1>
+      
 
       <div className="mb-6 flex justify-center items-center">
         <label
@@ -124,7 +133,48 @@ const TéléhargeContrat = () => {
         <br />
         Prix total TTC:{" "}
         <span className="font-bold">{totalPrice.toFixed(2)} €</span>
-      </h2>
+        <br />
+      Nombre de contrats validés:{" "}
+      <span className="font-bold">{validatedContractsCount}</span>
+      </h2> */}
+      <h1 className="text-4xl font-extrabold text-center text-blue-700 mb-8 bg-blue-100 rounded-lg py-4 shadow-lg">
+  Télécharger Contrats
+</h1>
+
+<div className="mb-6 flex justify-center items-center bg-gray-50 rounded-lg shadow-md p-4">
+  <label
+    htmlFor="month"
+    className="mr-2 text-lg font-semibold text-gray-800"
+  >
+    Filtrer par Mois
+  </label>
+  <select
+    id="month"
+    value={selectedMonth}
+    onChange={handleMonthFilter}
+    className="border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+  >
+    <option value="">Tous les mois</option>
+    {[...Array(12)].map((_, i) => (
+      <option key={i + 1} value={i + 1}>
+        {new Date(0, i).toLocaleString("default", { month: "long" })}
+      </option>
+    ))}
+  </select>
+</div>
+
+<h2 className="text-2xl text-center mb-6 text-gray-800 bg-gray-100 rounded-lg p-4 shadow-md">
+  Nombre de contrats créés: <span className="font-bold">{filteredContracts.length}</span>
+  <br />
+  {/* Prix total TTC:{" "}
+  <span className="font-bold text-green-600">{totalPrice.toFixed(2)} €</span> */}
+  Prix total TTC (Validés):{" "}
+  <span className="font-bold text-green-600">{totalValidatedPrice.toFixed(2)} €</span>
+  <br />
+  Nombre de contrats validés:{" "}
+  <span className="font-bold text-blue-600">{validatedContractsCount}</span>
+</h2>
+
 
       <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg mb-8">
         <thead>

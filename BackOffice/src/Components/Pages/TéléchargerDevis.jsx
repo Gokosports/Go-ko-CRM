@@ -54,8 +54,8 @@ const totalPrice = contracts.reduce((total, contract) => {
         Nombre de devis créés:{" "}
         <span className="font-semibold">{contracts.length}</span>
         <br />
-        Prix total TTC:{" "}
-        <span className="font-semibold">{totalPrice.toFixed(2)} €</span>
+        {/* Prix total TTC:{" "}
+        <span className="font-semibold">{totalPrice.toFixed(2)} €</span> */}
       </h2>
 
       <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">

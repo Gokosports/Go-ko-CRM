@@ -133,6 +133,12 @@ const SideBar = () => {
         //     label: 'Importer Coachs',
         //     icon: <FontAwesomeIcon icon={faFileImport} />,
         // },
+      
+          {
+            key: "/ajouter-coachs",
+            label: "Ajouter Coachs",
+            icon: <FontAwesomeIcon icon={faPlusCircle} />,
+          },
       ],
     },
 

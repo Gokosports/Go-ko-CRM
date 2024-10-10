@@ -68,7 +68,7 @@ const PlanningDetails = () => {
   
        
    
-        <TabPane tab="Contrat" key="3">
+        <TabPane tab="Devis" key="3">
           {/* Add information tab content here */}
         </TabPane>
         <TabPane tab="Planning" key="4">

@@ -176,7 +176,7 @@ const Planning = () => {
           key="2"
         ></TabPane>
         <TabPane
-          tab={<Link to={`/CréerContrat/${coachId}`}>Contrat</Link>}
+          tab={<Link to={`/CréerContrat/${coachId}`}>Devis</Link>}
           key="3"
         ></TabPane>
         <TabPane

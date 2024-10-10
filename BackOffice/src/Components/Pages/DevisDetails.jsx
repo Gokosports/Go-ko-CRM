@@ -178,7 +178,7 @@ const DevisDetails = () => {
       ["Montant Total HT", `${ht.toFixed(2)} €`],
       ["Montant Total TTC", `${ttc.toFixed(2)} €`],
       ["Suppléments", supplementsList],
-      ["RIB", contract.rib],
+      ["RIB (Carte Bancaire)", contract.rib],
       [
         "MANDAT DE PRÉLÈVEMENT SEPA",
         "En signant ce mandat, vous autorisez GOKO à transmettre des instructions à votre banque afin de débiter votre compte. Par ailleurs, vous autorisez votre banque à débiter votre compte conformément aux instructions transmises par GOKO.",
@@ -409,7 +409,7 @@ Fait à Roubaix, le 23 septembre 2024.
           tab={<Link to={`/coach/${coachId}/planningDetails`}>Commentaires</Link>}
           key="2"
         ></TabPane>
-        <TabPane tab={<Link to={`/CréerContrat/${id}`}>Contrat</Link>} key="3">
+        <TabPane tab={<Link to={`/CréerContrat/${id}`}>Devis</Link>} key="3">
           {/* Add information tab content here */}
         </TabPane>
         <TabPane tab={<Link to={`/planning/${id}`}>Planning</Link>} key="4">

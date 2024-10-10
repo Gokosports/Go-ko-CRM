@@ -8,7 +8,8 @@ const contractSchema = new mongoose.Schema({
   commercialName: { type: String, required: true },
   contractDuration: { type: String, required: true },
   raisonsociale: {type: String, required: true},
-  phone: {type: String, required: true}
+  phone: {type: String, required: true},
+  status: { type: String, default: 'pending' }, 
 }, { timestamps: true });
 
 const Contract = mongoose.model('Contract', contractSchema);

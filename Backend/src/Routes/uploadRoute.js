@@ -17,6 +17,8 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 
@@ -197,117 +199,37 @@ router.post('/upload', upload.single('pdf'), async (req, res) => {
   }
 });
 
+// Update contract status
+router.patch('/contracts/:id', async (req, res) => {
+  try {
+    const contractId = req.params.id;
+    const { status } = req.body;
 
-// router.post('/upload', upload.single('pdf'), async (req, res) => {
-//   try {
-//     const fileUrl = await uploadFile(req.file);
-  
-//     const requestData = {
-//       name: req.file.originalname,
-//       documents: [
-//         {
-//           name: req.file.originalname,
-//           file: fileUrl,
-//         },
-//       ],
-//     };
-//     const response = await axios.post('https://api.docuseal.co/templates/pdf',
-//        requestData, {
-//       headers: {
-//         'X-Auth-Token': "KEJ7sPJRCvrazb4tN9mJcRiU3PoDyHEvswCLeaQg3xz",
-//         'Content-Type': 'application/json',
-//       },
-//     });
-//     res.status(200).json({
-//       message: 'File uploaded successfully',
-//       firebaseUrl: fileUrl,
-//       docusealResponse: response.data, 
-//     });
-//   } catch (error) {
-//     console.error('Upload error:', error);
+    const contract = await Contract.findById(contractId);
+    if (!contract) {
+      return res.status(404).json({ message: 'Contract not found' });
+    }
 
-//     if (error.response) {
-   
-//       if (error.response.status === 401) {
-//         console.log("Token is invalid or expired");
-//       }
-    
-//       return res.status(error.response.status).json({
-//         message: 'Error uploading PDF to Docuseal',
-//         error: error.response.data || error.response.statusText,
-//       });
-//     }
-//     res.status(500).json({
-//       message: 'Error uploading PDF',
-//       error: error.message, 
-//     });
-//   }
-// });
+    contract.status = status || contract.status;
+    await contract.save();
 
+    res.status(200).json({ message: 'Contract status updated successfully', contract });
+  } catch (error) {
+    console.error('Error updating contract status:', error);
+    res.status(500).json({ message: 'Error updating contract status' });
+  }
+});
 
-// Route to handle file upload
-// router.post("/upload", upload.single("pdf"), async (req, res) => {
-//   if (!req.file) {
-//     return res.status(400).send("No file uploaded.");
-//   }
-//   if (!req.body.email) {
-//     return res.status(400).send("Recipient email is required.");
-//   }
-//   if (!req.body.clientName) {
-//     return res.status(400).send("Recipient clientName is required.");
-//   }
-//   if (!req.body.commercialName) {
-//     return res.status(400).send("Recipient commercial is required.");
-//   }
-//   if (!req.body.contractDuration) {
-//     return res.status(400).send("Recipient contractDuration is required.");
-//   }
+router.get("/contracts", async (req, res) => {
+  try {
+    const contracts = await Contract.find().sort({ createdAt: -1 });
 
-//   if (!req.body.raisonsociale) {
-//     return res.status(400).send("raisonsociale is required");
-//   }
-//   if (!req.body.phone) {
-//     return res.status(400).send('phone is required')
-//   }
-
-//   try {
-//     const fileUrl = await uploadFile(req.file); // Upload file to Firebase
-
-//     // Save the contract metadata to the database
-//     const newContract = new Contract({
-//       fileName: req.file.originalname,
-//       fileUrl: fileUrl,
-//       email: req.body.email,
-//       clientName: req.body.clientName,
-//       commercialName: req.body.commercialName,
-//       contractDuration: req.body.contractDuration,
-//       raisonsociale: req.body.raisonsociale,
-//       phone: req.body.phone
-//     });
-//     const savedContract = await newContract.save();
-//     console.log("Contract saved to database:", savedContract);
-
-//     // Send email with the file URL
-//     const mailOptions = {
-//       from: process.env.EMAIL_USER,
-//       // to: req.body.email,
-//       to: 'Admin@gokosports.com',
-//       subject: `Contrat pour ${req.body.clientName}`,
-//       text: `Cher(e) ${req.body.clientName},\n\nNous avons le plaisir de vous informer que votre contrat est maintenant disponible. Vous pouvez le consulter et le télécharger via le lien suivant : ${fileUrl}\n\nSi vous avez des questions ou si vous avez besoin d'une assistance supplémentaire, n'hésitez pas à nous contacter.\n\nNous vous remercions de votre confiance et restons à votre disposition pour toute information complémentaire.\n\nCordialement,\nL'équipe GOKO`,
-//     };
-    
-
-//     await transporter.sendMail(mailOptions);
-//     console.log("Email sent successfully!");
-
-//     res.status(200).send({ fileUrl });
-    
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Error uploading file or sending email.");
-//   }
-// });
-
+    res.status(200).json(contracts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching contracts.");
+  }
+});
 
 // Route to handle file upload
 // router.post("/upload", upload.single("pdf"), async (req, res) => {
@@ -516,56 +438,7 @@ router.post('/upload', upload.single('pdf'), async (req, res) => {
 // };
 
 
-router.get("/contracts", async (req, res) => {
-  try {
-    const contracts = await Contract.find().sort({ createdAt: -1 });
 
-    res.status(200).json(contracts);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error fetching contracts.");
-  }
-});
-// router.post("/uploads", upload.single("pdf"), async (req, res) => {
-
-//   if (!req.file) {
-//     return res.status(400).send("No file uploaded.");
-//   }
-
-//   try {
-//     // Upload the file to your storage and get the URL
-//     const fileUrl = await uploadFile(req.file);
-
-//     // Save the contract metadata to the database
-//     const newContract = new Devis({
-//       fileName: req.file.originalname,
-//       fileUrl: fileUrl,
-//     });
-
-//     // Save the contract details in the database
-//     const savedContract = await newContract.save();
-
-//     // Send a response back with the uploaded file URL
-//     res.status(200).send({ fileUrl });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Error uploading file.");
-//   }
-// });
-
-
-
-
-// router.get("/devis", async (req, res) => {
-//   try {
-//     const devis = await Devis.find().sort({ createdAt: -1 });
-
-//     res.status(200).json(devis);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Error fetching contracts.");
-//   }
-// });
 
 router.post('/planning', async (req, res) => {
   try {

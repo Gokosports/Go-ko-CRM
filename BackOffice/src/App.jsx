@@ -38,6 +38,7 @@ import TéléchargerDevis from "./Components/Pages/TéléchargerDevis";
 import Planning from "./Components/Pages/Planning";
 import PlanningCommerciale from "./Components/Pages/PlanningCommerciale";
 import PlananningDetails from "./Components/Pages/PlananningDetails";
+import ValidateContract from "./Components/Pages/ValidateContract";
 
 
 
@@ -319,6 +320,14 @@ function App() {
   element={
     <MainLayout>
       <TéléchargerDevis />
+    </MainLayout>
+  }
+/>
+<Route
+  path="/DevisValidé"
+  element={
+    <MainLayout>
+      <ValidateContract />
     </MainLayout>
   }
 />

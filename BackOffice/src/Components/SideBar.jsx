@@ -148,6 +148,12 @@ const SideBar = () => {
       label: "Devis",
       role: "Commercial",
     },
+    {
+      key: "/DevisValidé",
+      icon: <FontAwesomeIcon icon={faFileContract} />,
+      label: "DevisValidé",
+      role: "Commercial",
+    },
     // {
     //   key: "/CalendarCommerciale",
     //   icon: <FontAwesomeIcon icon={faCalendarAlt} />,

@@ -108,7 +108,7 @@ const totalPrice = contracts.reduce((total, contract) => {
           ) : (
             <tr>
               <td colSpan="6" className="py-3 px-6 text-center text-gray-500">
-                Aucun contrat trouvé.
+                Aucun devis trouvé.
               </td>
             </tr>
           )}

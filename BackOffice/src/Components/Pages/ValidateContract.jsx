@@ -87,31 +87,40 @@ const ValidateContract = () => {
             </tr>
           </thead>
           <tbody>
-            {contracts.map((contract) => (
-              <tr
-                key={contract._id}
-                className="border-t border-gray-200 hover:bg-gray-50"
-              >
-                <td className="py-3 px-6">{contract.fileName}</td>
-                <td className="py-3 px-6">{contract.commercialName}</td>
-                <td className="py-3 px-6">{contract.clientName}</td>
-                <td className="py-3 px-6">
-                  <button
-                    className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-all"
-                    onClick={() => handleRedirect(contract.fileUrl)}
-                  >
-                    Télécharger
-                  </button>
-                </td>
-                <td className="py-3 px-6">
-                  {new Date(contract.createdAt).toLocaleString()}
-                </td>
-                <td className="py-3 px-6">
-                  {extractPrice(contract.contractDuration).toFixed(2)} €
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {contracts.length > 0 ? (
+    contracts.map((contract) => (
+      <tr
+        key={contract._id}
+        className="border-t border-gray-200 hover:bg-gray-50"
+      >
+        <td className="py-3 px-6">{contract.fileName}</td>
+        <td className="py-3 px-6">{contract.commercialName}</td>
+        <td className="py-3 px-6">{contract.clientName}</td>
+        <td className="py-3 px-6">
+          <button
+            className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-all"
+            onClick={() => handleRedirect(contract.fileUrl)}
+          >
+            Télécharger
+          </button>
+        </td>
+        <td className="py-3 px-6">
+          {new Date(contract.createdAt).toLocaleString()}
+        </td>
+        <td className="py-3 px-6">
+          {extractPrice(contract.contractDuration).toFixed(2)} €
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="6" className="py-3 px-6 text-center text-gray-500">
+        Aucun devis validé trouvé.
+      </td>
+    </tr>
+  )}
+</tbody>
+
         </table>
       </div>
     );

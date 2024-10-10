@@ -39,6 +39,7 @@ import Planning from "./Components/Pages/Planning";
 import PlanningCommerciale from "./Components/Pages/PlanningCommerciale";
 import PlananningDetails from "./Components/Pages/PlananningDetails";
 import ValidateContract from "./Components/Pages/ValidateContract";
+import AddCoachByCommerciale from "./Components/Pages/Coachs/AddCoachByCommerciale";
 
 
 
@@ -182,6 +183,14 @@ function App() {
         element={
           <MainLayout>
             <AjoutCoach />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/ajouter-coaches"
+        element={
+          <MainLayout>
+            <AddCoachByCommerciale />
           </MainLayout>
         }
       />

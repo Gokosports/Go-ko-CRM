@@ -135,7 +135,7 @@ const SideBar = () => {
         // },
       
           {
-            key: "/ajouter-coachs",
+            key: "/ajouter-coaches",
             label: "Ajouter Coachs",
             icon: <FontAwesomeIcon icon={faPlusCircle} />,
           },

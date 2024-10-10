@@ -4,21 +4,11 @@ const path = require("path");
 const { bucket } = require("../../firebase-config");
 const Contract = require("../Models/ContractModel");
 const nodemailer = require("nodemailer");
-// const Devis = require("../Models/DevisModel");
-// const Calendar = require("../Models/CalendarModel");
 const Planning = require("../Models/PlanningModel");
 const Coach = require('../Models/CoachModel');
-// const axios = require("axios");
-
-
+const axios = require("axios");
 
 const router = express.Router();
-// const PANDA_DOC_API_KEY = process.env.PANDADOC_API_KEY;
-
-// Use multer to store file in memory temporarily
-const upload = multer({ storage: multer.memoryStorage() });
-// const DOCUSEAL_API_KEY = "LRd6LSfxpQjXHcXvESqaSLZmep6d2XyyXEo4a9TQsQQ"; 
-// const DOCUSEAL_API_URL = "https://api.docuseal.co/submissions";
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -27,19 +17,23 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+const upload = multer({ storage: multer.memoryStorage() });
 
 
 // Helper function to upload file to Firebase Storage
 const uploadFile = (file) => {
   return new Promise((resolve, reject) => {
-    const fileName = `contrats/${Date.now()}-${path.basename(file.originalname)}`; // Change here
+    const fileName = `contrats/${Date.now()}-${path.basename(file.originalname)}`;
     const fileUpload = bucket.file(fileName);
+    
 
     const stream = fileUpload.createWriteStream({
       metadata: {
         contentType: file.mimetype,
       },
     });
+
+    console.log("Stream:", stream);
 
     stream.on("error", (error) => {
       reject(error);
@@ -61,14 +55,17 @@ const uploadFile = (file) => {
   });
 };
 
+const fetchPDFBase64 = async (url) => {
+  const response = await axios.get(url, { responseType: 'arraybuffer' });
+  const base64 = Buffer.from(response.data).toString('base64');
+  return base64;
+};
 
-
-// Route to handle file upload
-router.post("/upload", upload.single("pdf"), async (req, res) => {
+router.post('/upload', upload.single('pdf'), async (req, res) => {
   if (!req.file) {
     return res.status(400).send("No file uploaded.");
   }
-  if (!req.body.email) {
+    if (!req.body.email) {
     return res.status(400).send("Recipient email is required.");
   }
   if (!req.body.clientName) {
@@ -88,11 +85,11 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
     return res.status(400).send('phone is required')
   }
 
-  try {
-    const fileUrl = await uploadFile(req.file); // Upload file to Firebase
 
-    // Save the contract metadata to the database
-    const newContract = new Contract({
+  try {
+    // Upload the PDF to Firebase and get the URL
+    const fileUrl = await uploadFile(req.file);
+      const newContract = new Contract({
       fileName: req.file.originalname,
       fileUrl: fileUrl,
       email: req.body.email,
@@ -105,26 +102,211 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
     const savedContract = await newContract.save();
     console.log("Contract saved to database:", savedContract);
 
-    // Send email with the file URL
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      // to: req.body.email,
-      to: 'Admin@gokosports.com',
-      subject: `Contrat pour ${req.body.clientName}`,
-      text: `Cher(e) ${req.body.clientName},\n\nNous avons le plaisir de vous informer que votre contrat est maintenant disponible. Vous pouvez le consulter et le télécharger via le lien suivant : ${fileUrl}\n\nSi vous avez des questions ou si vous avez besoin d'une assistance supplémentaire, n'hésitez pas à nous contacter.\n\nNous vous remercions de votre confiance et restons à votre disposition pour toute information complémentaire.\n\nCordialement,\nL'équipe GOKO`,
+    // Fetch the PDF as Base64 from Firebase Storage URL
+    const base64File = await fetchPDFBase64(fileUrl);
+
+
+    // Prepare the request data for DocuSeal
+    const requestData = {
+      name: req.file.originalname,
+     
+      documents: [
+        {
+          name: req.file.originalname,
+          file: base64File,
+          fields: [
+            {
+              name: "Signature",
+              areas: [{ x: 390, y: 740, w: 160, h: 50, page: 1 }],
+              type: "signature",
+            },
+            {
+              name: "Texte",
+              areas: [{ x: 126, y: 560, w: 430, h: 22, page: 1 }],
+            },
+            {
+              name: "Initials",
+              areas: [{ x: 25, y: 810, w: 40, h: 30, page: 1 }],
+              type: "initials"
+            },
+            {
+              name: "Initials",
+              areas: [{ x: 25, y: 810, w: 40, h: 30, page: 2 }],
+             type: "initials"
+            },
+            {
+              name: "Initials",
+              areas: [{ x: 25, y: 810, w: 40, h: 30, page: 3 }],
+              type: "initials"
+            },
+            {
+              name: "Signature",
+              areas: [{ x: 380, y: 720, w: 180, h: 50, page: 4 }],
+              type: "signature",
+            },
+          ],
+        },
+      ],
+      
     };
-    
 
-    await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully!");
+    // Send the request to DocuSeal
+    const response = await axios.post('https://api.docuseal.eu/templates/pdf', requestData, {
+      headers: {
+        'X-Auth-Token': 'zHX6ZwEdSjqUkNqEtm8VHxFufCWCnesi5pnJdPRuXur',
+        'Content-Type': 'application/json',
+      },
+    });
 
-    res.status(200).send({ fileUrl });
-    
+     // Prepare the submission data with the template_id and email details
+     const submissionData = {
+      template_id: response.data.id,  // Use the template ID from the previous request
+      send_email: true,
+      submitters: [{ role: 'First Party', email: req.body.email }]
+    };
+
+      // Send the submission request to DocuSeal
+      const sendEmailResponse = await axios.post('https://api.docuseal.eu/submissions', submissionData, {
+        headers: {
+          'X-Auth-Token': 'zHX6ZwEdSjqUkNqEtm8VHxFufCWCnesi5pnJdPRuXur',
+          'Content-Type': 'application/json',
+        },
+      });
+
+       // Respond with the result
+    res.status(200).json({
+      message: 'File uploaded successfully, and email sent',
+      firebaseUrl: fileUrl,
+      response: response.data,
+      emailResponse: sendEmailResponse.data
+    });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Error uploading file or sending email.");
+    console.error('Upload error:', error);
+
+    if (error.response) {
+      return res.status(error.response.status).json({
+        message: 'Error uploading PDF to DocuSeal',
+        error: error.response.data || error.response.statusText,
+      });
+    }
+    res.status(500).json({
+      message: 'Error uploading PDF',
+      error: error.message,
+    });
   }
 });
+
+
+// router.post('/upload', upload.single('pdf'), async (req, res) => {
+//   try {
+//     const fileUrl = await uploadFile(req.file);
+  
+//     const requestData = {
+//       name: req.file.originalname,
+//       documents: [
+//         {
+//           name: req.file.originalname,
+//           file: fileUrl,
+//         },
+//       ],
+//     };
+//     const response = await axios.post('https://api.docuseal.co/templates/pdf',
+//        requestData, {
+//       headers: {
+//         'X-Auth-Token': "KEJ7sPJRCvrazb4tN9mJcRiU3PoDyHEvswCLeaQg3xz",
+//         'Content-Type': 'application/json',
+//       },
+//     });
+//     res.status(200).json({
+//       message: 'File uploaded successfully',
+//       firebaseUrl: fileUrl,
+//       docusealResponse: response.data, 
+//     });
+//   } catch (error) {
+//     console.error('Upload error:', error);
+
+//     if (error.response) {
+   
+//       if (error.response.status === 401) {
+//         console.log("Token is invalid or expired");
+//       }
+    
+//       return res.status(error.response.status).json({
+//         message: 'Error uploading PDF to Docuseal',
+//         error: error.response.data || error.response.statusText,
+//       });
+//     }
+//     res.status(500).json({
+//       message: 'Error uploading PDF',
+//       error: error.message, 
+//     });
+//   }
+// });
+
+
+// Route to handle file upload
+// router.post("/upload", upload.single("pdf"), async (req, res) => {
+//   if (!req.file) {
+//     return res.status(400).send("No file uploaded.");
+//   }
+//   if (!req.body.email) {
+//     return res.status(400).send("Recipient email is required.");
+//   }
+//   if (!req.body.clientName) {
+//     return res.status(400).send("Recipient clientName is required.");
+//   }
+//   if (!req.body.commercialName) {
+//     return res.status(400).send("Recipient commercial is required.");
+//   }
+//   if (!req.body.contractDuration) {
+//     return res.status(400).send("Recipient contractDuration is required.");
+//   }
+
+//   if (!req.body.raisonsociale) {
+//     return res.status(400).send("raisonsociale is required");
+//   }
+//   if (!req.body.phone) {
+//     return res.status(400).send('phone is required')
+//   }
+
+//   try {
+//     const fileUrl = await uploadFile(req.file); // Upload file to Firebase
+
+//     // Save the contract metadata to the database
+//     const newContract = new Contract({
+//       fileName: req.file.originalname,
+//       fileUrl: fileUrl,
+//       email: req.body.email,
+//       clientName: req.body.clientName,
+//       commercialName: req.body.commercialName,
+//       contractDuration: req.body.contractDuration,
+//       raisonsociale: req.body.raisonsociale,
+//       phone: req.body.phone
+//     });
+//     const savedContract = await newContract.save();
+//     console.log("Contract saved to database:", savedContract);
+
+//     // Send email with the file URL
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       // to: req.body.email,
+//       to: 'Admin@gokosports.com',
+//       subject: `Contrat pour ${req.body.clientName}`,
+//       text: `Cher(e) ${req.body.clientName},\n\nNous avons le plaisir de vous informer que votre contrat est maintenant disponible. Vous pouvez le consulter et le télécharger via le lien suivant : ${fileUrl}\n\nSi vous avez des questions ou si vous avez besoin d'une assistance supplémentaire, n'hésitez pas à nous contacter.\n\nNous vous remercions de votre confiance et restons à votre disposition pour toute information complémentaire.\n\nCordialement,\nL'équipe GOKO`,
+//     };
+    
+
+//     await transporter.sendMail(mailOptions);
+//     console.log("Email sent successfully!");
+
+//     res.status(200).send({ fileUrl });
+    
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Error uploading file or sending email.");
+//   }
+// });
 
 
 // Route to handle file upload
@@ -332,10 +514,6 @@ router.post("/upload", upload.single("pdf"), async (req, res) => {
 //     console.error("Error sending the document for signing:", error.response?.data || error);
 //   }
 // };
-
-
-
-
 
 
 router.get("/contracts", async (req, res) => {

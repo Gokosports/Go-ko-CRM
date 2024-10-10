@@ -5,7 +5,7 @@ const { authenticateUser, authorize } = require('../Middlewares/adminMiddleware'
 
 
 // Route to create a new coach
-router.post('/', authenticateUser, authorize(['Admin']), createCoach);
+router.post('/', authenticateUser, authorize(['Admin', 'Commercial']), createCoach);
 
 // Route to get all coaches (with authentication and filtering)
 router.get('/',  getCoaches);

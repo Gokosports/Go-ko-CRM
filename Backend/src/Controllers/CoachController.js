@@ -4,6 +4,10 @@ const Coach = require('../Models/CoachModel');
 exports.createCoach = async (req, res) => {
     try {
         const newCoach = new Coach(req.body);
+         // Check if the logged-in user is a commercial and assign them to the commercial field
+         if (req.user && req.user.role === 'Commercial') {
+            newCoach.commercial = req.user.userId;
+        }
         await newCoach.save();
         res.status(201).json(newCoach);
     } catch (error) {
@@ -16,8 +20,6 @@ exports.createCoach = async (req, res) => {
 // Get all coaches
 exports.getCoaches = async (req, res) => {
     try {
- 
-
         let coaches;
         if (req.user && req.user.role === 'Commercial') {
             // Si l'utilisateur est un commercial, ne montrer que les coachs qui lui sont affectés

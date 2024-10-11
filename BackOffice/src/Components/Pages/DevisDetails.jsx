@@ -480,7 +480,7 @@ Fait à Roubaix, le 23 septembre 2024.
           >
             <Input className="rounded-md" />
           </Form.Item>
-          <Form.Item
+          {/* <Form.Item
             name="raisonsociale"
             label="Raison Sociale"
             rules={[
@@ -491,7 +491,7 @@ Fait à Roubaix, le 23 septembre 2024.
             ]}
           >
             <Input className="rounded-md p-4" />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             name="codepostal"
             label="Code Postal"

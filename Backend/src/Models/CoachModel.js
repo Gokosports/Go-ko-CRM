@@ -4,7 +4,7 @@ const CommentSchema = require('./Comment').schema;
 const CoachSchema = mongoose.Schema({
     nom: { type: String, required: false },
     prenom: { type: String, required: false },
-    email: { type: String, required: false, unique: true },
+    email: { type: String, required: false },
     type: { type: String, default: "all" },
     categoryComment: { type: String, default: "N/A" },
     password: { type: String, required: false },

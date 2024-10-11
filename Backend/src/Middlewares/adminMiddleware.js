@@ -34,8 +34,6 @@ const authorize = (requiredRoles) => {
             console.log('Access denied for role:', req.user ? req.user.role : 'undefined');
             return res.status(403).json({ message: 'Forbidden: Access Denied' });
         }
-        
-        console.log('Authorization passed for role:', req.user.role);
         next();
     };
 };

@@ -151,13 +151,13 @@ const SideBar = () => {
     {
       key: "/ContratInfos",
       icon: <FontAwesomeIcon icon={faFileContract} />,
-      label: "Devis",
+      label: "Proposition",
       role: "Commercial",
     },
     {
       key: "/DevisValidé",
       icon: <FontAwesomeIcon icon={faFileContract} />,
-      label: "DevisValidé",
+      label: "Contrat",
       role: "Commercial",
     },
     // {

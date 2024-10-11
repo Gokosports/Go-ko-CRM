@@ -923,7 +923,7 @@ const ListCoaches = () => {
                 label="Raison sociale"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: "Veuillez entrer la raison sociale",
                   },
                 ]}

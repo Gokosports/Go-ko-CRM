@@ -114,7 +114,7 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
     try {
       const validData = fileData.filter((coach) => {
         return (
-          coach.email &&
+
           coach.phone &&
           coach.ville &&
           coach.raisonsociale &&
@@ -127,20 +127,32 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
       console.log("Données valides:", validData);
 
       const emailSet = new Set();
-      const uniqueData = validData.filter((coach) => {
-        if (!coach.email || emailSet.has(coach.email)) {
-          return false;
-        }
+    const uniqueData = validData.map((coach) => {
+      if (coach.email) {
         emailSet.add(coach.email);
-        return true;
-      });
-
-      if (uniqueData.length !== validData.length) {
-        message.error(
-          "Certaines entrées ont des e-mails en double ou manquants"
-        );
-        return;
       }
+      return coach; // Return coach regardless of email presence
+    });
+      // const emailSet = new Set();
+      // const uniqueData = validData.filter((coach) => {
+      //   // if (coach.email) {
+      //   //   return false;
+      //   // }
+      //   // emailSet.add(coach.email);
+      //   // return true;
+      //   if (coach.email) {
+      //     return false; // This will always return false for any coach with an email.
+      // }
+      // emailSet.add(coach.email);
+      // return true; 
+      // });
+
+      // if (uniqueData.length !== validData.length) {
+      //   message.error(
+      //     "Certaines entrées ont des e-mails en double ou manquants"
+      //   );
+      //   return;
+      // }
 
       console.log("Données uniques:", uniqueData);
 

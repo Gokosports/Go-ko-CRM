@@ -642,6 +642,7 @@ router.get('/search', async (req, res) => {
         { prenom: { $regex: upperSearch, $options: "i" } },
         { phone: { $regex: search, $options: "i" } },
         { siret: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
       ],
     };
     console.log("Query:", query); // Log the query object

@@ -259,7 +259,7 @@ function Dashboard() {
     };
 
     fetchData();
-    // fetchAssignedCoaches(decodedToken.userId);
+    
   }, [decodedToken.role, decodedToken.userId, token]);
   // useEffect(() => {
 
@@ -313,6 +313,7 @@ function Dashboard() {
 
   const isAdmin =
     decodedToken.role && decodedToken.role.toLowerCase() === "admin";
+    const isCommercial = decodedToken.role && decodedToken.role.toLowerCase() === "commercial";
 
   return (
     <>
@@ -337,38 +338,67 @@ function Dashboard() {
       </div>
 
       <div className="flex flex-wrap justify-center items-start mt-10">
-        <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4 mb-4 px-2">
-          <Link to="/list-coachs">
-            <Card
-              title={
-                <div className="flex flex-col items-center mt-4">
-                  <div className="w-12 h-12 flex items-center justify-center rounded bg-blue-500">
-                    <FontAwesomeIcon icon={faUsers} className="text-white" />
-                  </div>
-                  <span className="mt-2">Coachs</span>
-                </div>
-              }
-              style={{ width: "80%" }}
-              className="transform transition-transform hover:scale-105 border-1 border-opacity-50 mx-auto shadow-lg"
-            >
-              {loading ? (
-                <p>Loading...</p>
-              ) : (
-                <p className="text-4xl font-bold text-blue-900 text-center">
-                  {counts.coaches}
-                </p>
-              )}
-            </Card>
-          </Link>
-        </div>
+       {isCommercial && (
+             <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4 mb-4 px-2">
+             <Link to="/list-coaches">
+               <Card
+                 title={
+                   <div className="flex flex-col items-center mt-4">
+                     <div className="w-12 h-12 flex items-center justify-center rounded bg-blue-500">
+                       <FontAwesomeIcon icon={faUsers} className="text-white" />
+                     </div>
+                     <span className="mt-2">Coachs</span>
+                   </div>
+                 }
+                 style={{ width: "80%" }}
+                 className="transform transition-transform hover:scale-105 border-1 border-opacity-50 mx-auto shadow-lg"
+               >
+                 {loading ? (
+                   <p>Loading...</p>
+                 ) : (
+                   <p className="text-4xl font-bold text-blue-900 text-center">
+                     {counts.coaches}
+                   </p>
+                 )}
+               </Card>
+             </Link>
+           </div>
+       )} 
+     
 
         {isAdmin && ( // Render Clients and Specialties only for Admin
           <>
+          <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4 mb-4 px-2">
+             <Link to="/list-coachs">
+               <Card
+                 title={
+                   <div className="flex flex-col items-center mt-4">
+                     <div className="w-12 h-12 flex items-center justify-center rounded bg-blue-500">
+                       <FontAwesomeIcon icon={faUsers} className="text-white" />
+                     </div>
+                     <span className="mt-2">Coachs</span>
+                   </div>
+                 }
+                 style={{ width: "80%" }}
+                 className="transform transition-transform hover:scale-105 border-1 border-opacity-50 mx-auto shadow-lg"
+               >
+                 {loading ? (
+                   <p>Loading...</p>
+                 ) : (
+                   <p className="text-4xl font-bold text-blue-900 text-center">
+                     {counts.coaches}
+                   </p>
+                 )}
+               </Card>
+             </Link>
+           </div>
             <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/4 mb-4 px-2">
+            
               <Link to="/list-clients">
                 <Card
                   title={
                     <div className="flex flex-col items-center mt-4">
+                      
                       <div className="w-12 h-12 flex items-center justify-center rounded bg-blue-500">
                         <FontAwesomeIcon
                           icon={faUserFriends}

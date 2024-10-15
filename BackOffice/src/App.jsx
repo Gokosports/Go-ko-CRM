@@ -136,6 +136,14 @@ function App() {
         }
       />
     )} 
+    <Route
+        path="/speciality"
+        element={
+          <MainLayout>
+            <Speciality />
+          </MainLayout>
+        }
+      />
 
       <Route
         path="/appointments"

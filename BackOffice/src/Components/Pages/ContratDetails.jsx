@@ -552,7 +552,8 @@ const ContractPage = () => {
   const [ht, setHT] = useState(0); // State for HT (Hors Taxes)
   const [ttc, setTTC] = useState(0); // State for TTC (Toutes Taxes Comprises)
   const taxRate = 0.2; // Fixed tax rate (20%)
-  const [discountedPrice, setDiscountedPrice] = useState(0);
+  // const [discountedPrice, setDiscountedPrice] = useState(0);
+  const [specialities, setSpecialities] = useState([]);
 
   const token = localStorage.getItem("token");
   const decodedToken = token ? jwtDecode(token) : null;
@@ -592,7 +593,25 @@ const ContractPage = () => {
 
   useEffect(() => {
     fetchCoach();
+    fetchSpecialities();
   }, []);
+
+  const fetchSpecialities = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        "https://go-ko-9qul.onrender.com/speciality",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setSpecialities(response.data);
+    } catch (error) {
+      console.error("Error fetching specialities:", error);
+    }
+  };
 
   const fetchCoach = async () => {
     try {
@@ -632,7 +651,12 @@ const ContractPage = () => {
   };
 
   const handleFinish = (values) => {
-    const newContract = { ...values, id: new Date().getTime() };
+    const selectedSpecialities = values.supplement.map((id) => {
+      const speciality = specialities.find((spec) => spec._id === id);
+      return speciality ? speciality.nom : null; // Return name or null if not found
+    }).filter(Boolean);
+      console.log("Submitted values:", selectedSpecialities);
+      const newContract = { ...values, supplement: selectedSpecialities, id: new Date().getTime() };
     generateAndUploadPDF(newContract); // Call PDF generation and upload
     message.success("Contrat créé avec succès");
     form.resetFields();
@@ -1153,7 +1177,7 @@ Fait à Roubaix, le 23 septembre 2024.
           {/* <Form.Item label="Montant Total avec Bonus">
   <Input value={`€ ${discountedPrice.toFixed(2)}`} readOnly className="rounded-md" />
 </Form.Item> */}
-          <Form.Item
+          {/* <Form.Item
             name="supplement"
             label="Suppléments"
             rules={[
@@ -1221,7 +1245,29 @@ Fait à Roubaix, le 23 septembre 2024.
               <Option value="Badminton">Badminton</Option>
               <Option value="Électrostimulation">Électrostimulation</Option>
             </Select>
-          </Form.Item>
+          </Form.Item> */}
+          <Form.Item
+              name="supplement"
+              label="Suppléments"
+              rules={[
+                {
+                  required: true,
+                  message: "Veuillez sélectionner la spécialité",
+                },
+              ]}
+            >
+              <Select mode="multiple" allowClear
+              placeholder="Choisissez un supplément"
+              className="rounded-md"
+              showSearch optionFilterProp="children">
+                {specialities.map((speciality) => (
+                  <Option key={speciality._id} value={speciality._id}>
+                    {speciality.nom}
+                  </Option>
+                ))}
+              </Select>
+       
+            </Form.Item>
           <Form.Item
             name="rib"
             label="RIB"

@@ -114,7 +114,6 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
     try {
       const validData = fileData.filter((coach) => {
         return (
-
           coach.phone &&
           coach.ville &&
           coach.raisonsociale &&
@@ -127,32 +126,12 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
       console.log("Données valides:", validData);
 
       const emailSet = new Set();
-    const uniqueData = validData.map((coach) => {
-      if (coach.email) {
-        emailSet.add(coach.email);
-      }
-      return coach; // Return coach regardless of email presence
-    });
-      // const emailSet = new Set();
-      // const uniqueData = validData.filter((coach) => {
-      //   // if (coach.email) {
-      //   //   return false;
-      //   // }
-      //   // emailSet.add(coach.email);
-      //   // return true;
-      //   if (coach.email) {
-      //     return false; // This will always return false for any coach with an email.
-      // }
-      // emailSet.add(coach.email);
-      // return true; 
-      // });
-
-      // if (uniqueData.length !== validData.length) {
-      //   message.error(
-      //     "Certaines entrées ont des e-mails en double ou manquants"
-      //   );
-      //   return;
-      // }
+      const uniqueData = validData.map((coach) => {
+        if (coach.email) {
+          emailSet.add(coach.email);
+        }
+        return coach;
+      });
 
       console.log("Données uniques:", uniqueData);
 
@@ -186,8 +165,6 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
         })
       );
 
-      console.log("Données avec ID de spécialité:", dataWithSpecialityIds);
-
       const cleanedData = dataWithSpecialityIds.map((coach) => {
         coach.speciality = coach.speciality.filter(
           (speciality) => speciality !== null && speciality !== undefined
@@ -195,22 +172,40 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
         return coach;
       });
 
-      console.log("Données nettoyées à transférer:", cleanedData);
+      // Log the size of the entire payload
+      console.log("Payload size:", JSON.stringify(cleanedData).length, "bytes");
 
-      const token = localStorage.getItem("token"); // Récupérer le token JWT
+      // Split the cleaned data into smaller batches
+      const batchSize = 50; // You can adjust the batch size if needed
+      const token = localStorage.getItem("token"); // Retrieve JWT token
 
-      const response = await axios.post(
-        "https://go-ko-9qul.onrender.com/coaches/import",
-        cleanedData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Inclure le token JWT dans les en-têtes
-          },
-        }
-      );
+      for (let i = 0; i < cleanedData.length; i += batchSize) {
+        const batch = cleanedData.slice(i, i + batchSize);
+
+        // Log the size of each batch
+        console.log(
+          `Batch ${Math.floor(i / batchSize) + 1} payload size:`,
+          JSON.stringify(batch).length,
+          "bytes"
+        );
+
+        const response = await axios.post(
+          "https://go-ko-9qul.onrender.com/coaches/import",
+          batch,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Include the JWT token in the headers
+            },
+          }
+        );
+
+        console.log(
+          `Batch ${Math.floor(i / batchSize) + 1} imported successfully.`
+        );
+      }
 
       message.success("Coachs importés avec succès");
-      onImportSuccess(response.data);
+      onImportSuccess(); // Trigger the success callback
       setImportedFiles([...importedFiles, fileName]);
       setFileData(null);
       setFileName(null);
@@ -223,6 +218,126 @@ const ExcelImport = ({ onImportSuccess = () => {} }) => {
       message.error(`Erreur lors de l'importation des coachs: ${errorMessage}`);
     }
   };
+
+  // const handleTransfer = async () => {
+  //   if (!fileData) {
+  //     message.error("Aucune donnée à transférer");
+  //     return;
+  //   }
+
+  //   try {
+  //     const validData = fileData.filter((coach) => {
+  //       return (
+
+  //         coach.phone &&
+  //         coach.ville &&
+  //         coach.raisonsociale &&
+  //         coach.siret &&
+  //         coach.adresse &&
+  //         coach.codepostal
+  //       );
+  //     });
+
+  //     console.log("Données valides:", validData);
+
+  //     const emailSet = new Set();
+  //   const uniqueData = validData.map((coach) => {
+  //     if (coach.email) {
+  //       emailSet.add(coach.email);
+  //     }
+  //     return coach; // Return coach regardless of email presence
+  //   });
+  //     // const emailSet = new Set();
+  //     // const uniqueData = validData.filter((coach) => {
+  //     //   // if (coach.email) {
+  //     //   //   return false;
+  //     //   // }
+  //     //   // emailSet.add(coach.email);
+  //     //   // return true;
+  //     //   if (coach.email) {
+  //     //     return false; // This will always return false for any coach with an email.
+  //     // }
+  //     // emailSet.add(coach.email);
+  //     // return true;
+  //     // });
+
+  //     // if (uniqueData.length !== validData.length) {
+  //     //   message.error(
+  //     //     "Certaines entrées ont des e-mails en double ou manquants"
+  //     //   );
+  //     //   return;
+  //     // }
+
+  //     console.log("Données uniques:", uniqueData);
+
+  //     const specialitySet = new Set();
+  //     const dataWithSpecialityIds = await Promise.all(
+  //       uniqueData.map(async (coach) => {
+  //         const specialities = coach.speciality
+  //           ? await Promise.all(
+  //               coach.speciality.split(",").map(async (speciality) => {
+  //                 const trimmedSpeciality = speciality.trim();
+  //                 const lowerCaseSpeciality = trimmedSpeciality.toLowerCase();
+  //                 if (specialityMap[lowerCaseSpeciality]) {
+  //                   return specialityMap[lowerCaseSpeciality]._id;
+  //                 } else {
+  //                   const newSpecialityId = await addNewSpeciality(
+  //                     trimmedSpeciality,
+  //                     specialitySet
+  //                   );
+  //                   console.log(
+  //                     `Nouvelle spécialité ajoutée: ${trimmedSpeciality} avec ID: ${newSpecialityId}`
+  //                   );
+  //                   return newSpecialityId;
+  //                 }
+  //               })
+  //             )
+  //           : [];
+  //         return {
+  //           ...coach,
+  //           speciality: specialities,
+  //         };
+  //       })
+  //     );
+
+  //     console.log("Données avec ID de spécialité:", dataWithSpecialityIds);
+
+  //     const cleanedData = dataWithSpecialityIds.map((coach) => {
+  //       coach.speciality = coach.speciality.filter(
+  //         (speciality) => speciality !== null && speciality !== undefined
+  //       );
+  //       return coach;
+  //     });
+  //     console.log("Payload size:", JSON.stringify(cleanedData).length, "bytes");
+
+  //     console.log("Données nettoyées à transférer:", cleanedData);
+
+  //     const token = localStorage.getItem("token"); // Récupérer le token JWT
+
+  //     const response = await axios.post(
+  //       "https://go-ko-9qul.onrender.comcoaches/import",
+  //       cleanedData,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`, // Inclure le token JWT dans les en-têtes
+  //         },
+  //       }
+  //     );
+
+  //     message.success("Coachs importés avec succès");
+  //     onImportSuccess(response.data);
+  //     setImportedFiles([...importedFiles, fileName]);
+  //     setFileData(null);
+  //     setFileName(null);
+  //   } catch (error) {
+  //     console.error("Erreur lors de l'importation des coachs:", error);
+  //     const errorMessage =
+  //       error.response && error.response.data && error.response.data.message
+  //         ? error.response.data.message
+  //         : "Erreur inconnue";
+  //     message.error(`Erreur lors de l'importation des coachs: ${errorMessage}`);
+  //   }
+  // };
 
   const handleRemove = () => {
     setFileData(null);

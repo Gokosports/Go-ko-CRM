@@ -85,13 +85,47 @@ exports.importCoaches = async (req, res) => {
 
     try {
         console.log('Importing coaches:', coaches);
-        const savedCoaches = await Coach.insertMany(coaches);
+
+        // Loop through each coach and check for duplicates based on phone number
+        const importedCoaches = await Promise.all(
+            coaches.map(async (coach) => {
+                const existingCoach = await Coach.findOne({ phone: coach.phone });
+
+                if (existingCoach) {
+                    console.log(`Coach with phone ${coach.phone} already exists. Skipping...`);
+                    return null; // Skip this coach if phone number already exists
+                }
+
+                // If the phone number is unique, insert the coach
+                const newCoach = new Coach(coach);
+                return await newCoach.save();
+            })
+        );
+
+        // Filter out any null values (i.e., skipped coaches)
+        const savedCoaches = importedCoaches.filter((coach) => coach !== null);
+
         res.status(200).json(savedCoaches);
     } catch (error) {
         console.error('Error importing coaches:', error.message);
         res.status(500).json({ message: 'Error importing coaches', error });
     }
 };
+
+// // Import coaches
+// exports.importCoaches = async (req, res) => {
+
+//     const coaches = req.body;
+
+//     try {
+//         console.log('Importing coaches:', coaches);
+//         const savedCoaches = await Coach.insertMany(coaches);
+//         res.status(200).json(savedCoaches);
+//     } catch (error) {
+//         console.error('Error importing coaches:', error.message);
+//         res.status(500).json({ message: 'Error importing coaches', error });
+//     }
+// };
 
 // Assigner un coach à un commercial
 exports.assignCoachToCommercial = async (req, res) => {

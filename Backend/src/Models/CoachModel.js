@@ -8,7 +8,7 @@ const CoachSchema = mongoose.Schema({
     type: { type: String, default: "all" },
     categoryComment: { type: String, default: "N/A" },
     password: { type: String, required: false },
-    phone :{type: String},
+    phone :{type: String, unique: true},
     image:{type: String},
     age:{type: String},
     sex: { type: String, enum: ['homme', 'femme']},

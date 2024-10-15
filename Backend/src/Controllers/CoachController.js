@@ -86,31 +86,91 @@ exports.importCoaches = async (req, res) => {
     try {
         console.log('Importing coaches:', coaches);
 
-        // Loop through each coach and check for duplicates based on phone number
+        // Get an array of all phone numbers from the incoming coaches
+        const coachPhones = coaches.map(coach => coach.phone);
+
+        // 1. Check if any of the phone numbers already exist in the database
+        const existingCoaches = await Coach.find({ phone: { $in: coachPhones } });
+
+        if (existingCoaches.length > 0) {
+            const duplicatePhones = existingCoaches.map(coach => coach.phone);
+            console.log(`Duplicate phones found in database: ${duplicatePhones.join(', ')}. Stopping import...`);
+
+            return res.status(400).json({
+                message: 'Some coaches have duplicate phone numbers in the database and were not imported.',
+                duplicatePhones
+            });
+        }
+
+        // 2. Check for duplicate phone numbers within the imported data itself
+        const phoneSet = new Set();
+        const duplicateInImport = [];
+
+        coaches.forEach(coach => {
+            if (phoneSet.has(coach.phone)) {
+                duplicateInImport.push(coach.phone);
+            } else {
+                phoneSet.add(coach.phone);
+            }
+        });
+
+        if (duplicateInImport.length > 0) {
+            console.log(`Duplicate phones found in imported data: ${duplicateInImport.join(', ')}. Stopping import...`);
+
+            return res.status(400).json({
+                message: 'The imported data contains duplicate phone numbers and was not imported.',
+                duplicateInImport
+            });
+        }
+
+        // 3. If no duplicates, proceed with importing all coaches
         const importedCoaches = await Promise.all(
             coaches.map(async (coach) => {
-                const existingCoach = await Coach.findOne({ phone: coach.phone });
-
-                if (existingCoach) {
-                    console.log(`Coach with phone ${coach.phone} already exists. Skipping...`);
-                    return null; // Skip this coach if phone number already exists
-                }
-
-                // If the phone number is unique, insert the coach
                 const newCoach = new Coach(coach);
                 return await newCoach.save();
             })
         );
 
-        // Filter out any null values (i.e., skipped coaches)
-        const savedCoaches = importedCoaches.filter((coach) => coach !== null);
-
-        res.status(200).json(savedCoaches);
+        res.status(200).json(importedCoaches);
     } catch (error) {
         console.error('Error importing coaches:', error.message);
         res.status(500).json({ message: 'Error importing coaches', error });
     }
 };
+
+
+// // Import coaches
+// exports.importCoaches = async (req, res) => {
+//     const coaches = req.body;
+
+//     try {
+//         console.log('Importing coaches:', coaches);
+
+//         // Loop through each coach and check for duplicates based on phone number
+//         const importedCoaches = await Promise.all(
+//             coaches.map(async (coach) => {
+//                 const existingCoach = await Coach.findOne({ phone: coach.phone });
+
+//                 if (existingCoach) {
+//                     console.log(`Coach with phone ${coach.phone} already exists. Skipping...`);
+//                     return null; // Skip this coach if phone number already exists
+//                 }
+
+//                 // If the phone number is unique, insert the coach
+//                 const newCoach = new Coach(coach);
+//                 return await newCoach.save();
+//             })
+//         );
+
+//         // Filter out any null values (i.e., skipped coaches)
+//         const savedCoaches = importedCoaches.filter((coach) => coach !== null);
+
+//         res.status(200).json(savedCoaches);
+//     } catch (error) {
+//         console.error('Error importing coaches:', error.message);
+//         res.status(500).json({ message: 'Error importing coaches', error });
+//     }
+// };
 
 // // Import coaches
 // exports.importCoaches = async (req, res) => {

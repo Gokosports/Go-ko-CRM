@@ -203,7 +203,7 @@ const AddCoach = () => {
               },
             ]}
           >
-            <Select mode="multiple">
+            <Select mode="multiple" showSearch optionFilterProp="children" allowClear>
               {specialities.map((speciality) => (
                 <Option key={speciality._id} value={speciality._id}>
                   {speciality.nom}

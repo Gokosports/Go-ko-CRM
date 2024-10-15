@@ -10,6 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+
 const DashboardRoutes = require('./src/Routes/dashboardRoutes');
 const AdminRoutes = require('./src/Routes/AdminRoutes');
 const CoachRoutes = require('./src/Routes/CoachRoutes');
@@ -28,6 +29,14 @@ const contractRoutes = require('./src/Routes/uploadRoute');
 
 // Connecter à MongoDB
 const uri = process.env.MONGODB_URI;
+
+// Middlewares
+app.use(cors());
+app.use(fileUpload());
+app.use(express.json({ limit: '10mb' }));  // Increased body size limit
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(fileUpload({ limits: { fileSize: 50 * 1024 * 1024 } })); // Limit file size to 50MB
+
 
 // Connection to the database
 mongoose
@@ -63,8 +72,6 @@ app.use('/commandes', commandeRoutes); // Route pour les commandes
 
 app.use('/api', contractRoutes);
 
-
-app.use(fileUpload());
 
 app.get('/*', function (req, res) {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
